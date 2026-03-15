@@ -241,20 +241,32 @@ async function handler(req: NextRequest, ctx: AuthContext, tournamentId: string)
       await Promise.all(pbpPromises);
     }
 
-    // 경기 완료 시 승자 진출 + 전적 업데이트 (실패 시 warnings로 클라이언트에 알림)
+    // 경기 완료 시 승자 진출 + 전적 업데이트 (Promise.allSettled로 동시 실행)
     const warnings: string[] = [];
+    let postProcessStatus: "ok" | "partial_failure" | "skipped" = "skipped";
+
     if (match.status === "completed") {
-      try {
-        await advanceWinner(matchId);
-      } catch (e) {
-        console.error("[match-sync] advanceWinner failed:", e);
-        warnings.push("승자 진출 처리 실패 — 관리자에게 문의하세요");
-      }
-      try {
-        await updateTeamStandings(matchId);
-      } catch (e) {
-        console.error("[match-sync] updateTeamStandings failed:", e);
-        warnings.push("전적 갱신 실패 — 관리자에게 문의하세요");
+      const [advanceResult, standingsResult] = await Promise.allSettled([
+        advanceWinner(matchId),
+        updateTeamStandings(matchId),
+      ]);
+
+      const advanceFailed = advanceResult.status === "rejected";
+      const standingsFailed = standingsResult.status === "rejected";
+
+      if (advanceFailed || standingsFailed) {
+        postProcessStatus = "partial_failure";
+        console.error("[match-sync:post-process] partial failure", {
+          matchId: Number(matchId),
+          advance: advanceResult.status,
+          standings: standingsResult.status,
+          advanceError: advanceFailed ? String((advanceResult as PromiseRejectedResult).reason) : null,
+          standingsError: standingsFailed ? String((standingsResult as PromiseRejectedResult).reason) : null,
+        });
+        if (advanceFailed) warnings.push("승자 진출 처리 실패 — 관리자에게 문의하세요");
+        if (standingsFailed) warnings.push("전적 갱신 실패 — 관리자에게 문의하세요");
+      } else {
+        postProcessStatus = "ok";
       }
     }
 
@@ -263,6 +275,7 @@ async function handler(req: NextRequest, ctx: AuthContext, tournamentId: string)
       player_count: player_stats?.length ?? 0,
       play_by_play_count: play_by_plays?.length ?? 0,
       synced_at: now.toISOString(),
+      postProcessStatus,
       ...(warnings.length > 0 && { warnings }),
     });
   } catch (err) {
