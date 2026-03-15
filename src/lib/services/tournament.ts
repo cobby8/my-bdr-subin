@@ -6,6 +6,7 @@
  * Service 함수는 순수 데이터만 반환한다 (NextResponse 사용 금지).
  */
 import { prisma } from "@/lib/db/prisma";
+import { filterTournamentsByPrefs, type UserPreferences } from "@/lib/utils/content-filter";
 
 // ---------------------------------------------------------------------------
 // Select 상수 — 동일 쿼리의 select 객체 중복을 제거한다
@@ -33,6 +34,9 @@ export const TOURNAMENT_HOME_SELECT = {
   format: true,
   status: true,
   startDate: true,
+  divisions: true,
+  target_genders: true,
+  city: true,
 } as const;
 
 /** 내 대회 목록 (Flutter API: my-tournaments) 에서 사용하는 select */
@@ -79,12 +83,16 @@ export const TOURNAMENT_DETAIL_INCLUDE = {
 export interface TournamentListFilters {
   status?: string;
   take?: number;
+  /** 유저 선호 기반 필터 (종별/성별/지역) */
+  userPrefs?: UserPreferences;
 }
 
 export interface CreateTournamentInput {
   name: string;
   organizerId: bigint;
   format?: string;
+  divisions?: string[];
+  targetGenders?: string[];
   startDate?: Date | null;
   endDate?: Date | null;
   primaryColor?: string;
@@ -168,28 +176,38 @@ function toMyTournamentItem(
  * 대회 목록 (공개) — tournaments/page.tsx, 홈페이지에서 사용
  */
 export async function listTournaments(filters: TournamentListFilters = {}) {
-  const { status, take = 60 } = filters;
+  const { status, take = 60, userPrefs } = filters;
 
-  return prisma.tournament.findMany({
+  // Tournament의 divisions/target_genders는 JSON 배열이므로
+  // Prisma에서 직접 필터링하기 어려움 → 조회 후 JS 필터링
+  const extraTake = userPrefs ? take * 3 : take; // 필터링 여유분
+  const results = await prisma.tournament.findMany({
     where: {
       status: status && status !== "all" ? status : { not: "draft" },
     },
     orderBy: { startDate: "desc" },
-    take,
-    select: TOURNAMENT_LIST_SELECT,
+    take: extraTake,
+    select: { ...TOURNAMENT_LIST_SELECT, divisions: true, target_genders: true },
   });
+
+  if (!userPrefs) return results.slice(0, take);
+  return filterTournamentsByPrefs(results, userPrefs).slice(0, take);
 }
 
 /**
  * 홈페이지용 다가오는 대회 (active/published/registration_open)
  */
-export async function listUpcomingTournaments(take = 4) {
-  return prisma.tournament.findMany({
+export async function listUpcomingTournaments(take = 4, userPrefs?: UserPreferences) {
+  const extraTake = userPrefs ? take * 3 : take;
+  const results = await prisma.tournament.findMany({
     where: { status: { in: ["active", "published", "registration_open"] } },
     orderBy: { startDate: "asc" },
-    take,
+    take: extraTake,
     select: TOURNAMENT_HOME_SELECT,
   });
+
+  if (!userPrefs) return results.slice(0, take);
+  return filterTournamentsByPrefs(results, userPrefs).slice(0, take);
 }
 
 /**
@@ -272,6 +290,8 @@ export async function createTournament(input: CreateTournamentInput) {
       name: input.name,
       organizerId: input.organizerId,
       format: input.format ?? "single_elimination",
+      divisions: input.divisions ?? [],
+      target_genders: input.targetGenders ?? [],
       startDate: input.startDate ?? null,
       endDate: input.endDate ?? null,
       primary_color: input.primaryColor || "#F4A261",

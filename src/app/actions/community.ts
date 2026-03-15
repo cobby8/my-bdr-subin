@@ -12,9 +12,14 @@ export async function createPostAction(_prevState: { error: string } | null, for
   const title = (formData.get("title") as string)?.trim();
   const content = (formData.get("content") as string)?.trim();
   const category = (formData.get("category") as string) || "general";
+  const division = (formData.get("division") as string)?.trim() || null;
+  const targetGender = (formData.get("target_gender") as string)?.trim() || null;
 
   if (!title || !content) {
     return { error: "제목과 내용을 입력하세요." };
+  }
+  if (!division) {
+    return { error: "종별을 선택해주세요." };
   }
 
   let publicId: string;
@@ -25,6 +30,8 @@ export async function createPostAction(_prevState: { error: string } | null, for
         title,
         content,
         category,
+        division,
+        target_gender: targetGender,
         status: "published",
         created_at: new Date(),
         updated_at: new Date(),

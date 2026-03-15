@@ -11,11 +11,16 @@ export async function createTeamAction(_prevState: { error: string } | null, for
 
   const name = (formData.get("name") as string)?.trim();
   const description = (formData.get("description") as string)?.trim();
+  const division = (formData.get("division") as string)?.trim() || null;
+  const targetGender = (formData.get("target_gender") as string)?.trim() || null;
   const primaryColor = (formData.get("primary_color") as string) || "#F4A261";
   const secondaryColor = (formData.get("secondary_color") as string) || "#E76F51";
 
   if (!name) {
     return { error: "팀 이름은 필수입니다." };
+  }
+  if (!division) {
+    return { error: "종별을 선택해주세요." };
   }
 
   let createdTeamId: bigint;
@@ -44,6 +49,8 @@ export async function createTeamAction(_prevState: { error: string } | null, for
         uuid: crypto.randomUUID(),
         name,
         description: description || null,
+        division,
+        target_gender: targetGender,
         primaryColor,
         secondaryColor,
         captainId: userId,

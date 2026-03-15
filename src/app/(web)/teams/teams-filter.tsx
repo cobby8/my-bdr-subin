@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useCallback, useRef } from "react";
+import { DIVISION_LABEL, GENDER_LABEL } from "@/lib/constants/categories";
 
 const selectCls =
   "h-10 appearance-none rounded-[12px] border border-[#E8ECF0] bg-[#FFFFFF] pl-3 pr-8 text-sm text-[#111827] focus:border-[#0066FF]/60 focus:outline-none cursor-pointer";
@@ -61,6 +62,34 @@ export function TeamsFilter({ cities }: { cities: string[] }) {
           className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
           width="12" height="12" viewBox="0 0 12 12" fill="none"
         >
+          <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+
+      <div className="relative flex-shrink-0">
+        <select
+          value={params.get("division") ?? "all"}
+          onChange={(e) => update({ division: e.target.value })}
+          className={selectCls}
+        >
+          <option value="all">전체 종별</option>
+          {Object.entries(DIVISION_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+        </select>
+        <svg className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+
+      <div className="relative flex-shrink-0">
+        <select
+          value={params.get("gender") ?? "all"}
+          onChange={(e) => update({ gender: e.target.value })}
+          className={selectCls}
+        >
+          <option value="all">전체 성별</option>
+          {Object.entries(GENDER_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+        </select>
+        <svg className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]" width="12" height="12" viewBox="0 0 12 12" fill="none">
           <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>

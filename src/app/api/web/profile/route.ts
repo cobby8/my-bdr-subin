@@ -55,6 +55,8 @@ export const PATCH = withWebAuth(async (req: Request, ctx: WebAuthContext) => {
       name, phone, birth_date, district, weight,
       // 계좌 필드 (account_consent 필수)
       bank_name, bank_code, account_number, account_holder, account_consent,
+      // 선호 설정 필드
+      preferred_divisions, preferred_genders, preferred_regions,
     } = body;
 
     // 계좌 필드: account_consent가 true일 때만 업데이트
@@ -79,6 +81,9 @@ export const PATCH = withWebAuth(async (req: Request, ctx: WebAuthContext) => {
       ...(birth_date !== undefined && { birth_date: birth_date ? new Date(birth_date as string) : null }),
       ...(district !== undefined && { district: district as string || null }),
       ...(weight !== undefined && { weight: weight ? Number(weight) : null }),
+      ...(Array.isArray(preferred_divisions) && { preferred_divisions: preferred_divisions }),
+      ...(Array.isArray(preferred_genders) && { preferred_genders: preferred_genders }),
+      ...(Array.isArray(preferred_regions) && { preferred_regions: preferred_regions }),
       ...bankUpdate,
     });
 

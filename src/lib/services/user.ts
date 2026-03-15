@@ -30,6 +30,11 @@ export const PROFILE_DETAIL_SELECT = {
   bank_code: true,
   account_number: true,
   account_holder: true,
+  // 선호 설정 (온보딩/프로필 편집)
+  preferred_divisions: true,
+  preferred_genders: true,
+  preferred_regions: true,
+  onboarding_completed: true,
 } as const;
 
 /** 게임 상세에서 사용하는 유저 프로필 select */

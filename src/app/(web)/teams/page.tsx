@@ -9,9 +9,9 @@ export const revalidate = 60;
 export default async function TeamsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; city?: string }>;
+  searchParams: Promise<{ q?: string; city?: string; division?: string; gender?: string }>;
 }) {
-  const { q, city } = await searchParams;
+  const { q, city, division, gender } = await searchParams;
 
   const [teams, citiesRaw] = await Promise.all([
     prisma.team.findMany({
@@ -20,6 +20,8 @@ export default async function TeamsPage({
         is_public: true,
         ...(q ? { name: { contains: q, mode: "insensitive" } } : {}),
         ...(city && city !== "all" ? { city: { contains: city, mode: "insensitive" } } : {}),
+        ...(division && division !== "all" ? { division } : {}),
+        ...(gender && gender !== "all" ? { target_gender: gender } : {}),
       },
       orderBy: [{ wins: "desc" }, { createdAt: "desc" }],
       take: 60,
@@ -66,7 +68,7 @@ export default async function TeamsPage({
       </Suspense>
 
       {/* 결과 카운트 */}
-      {(q || (city && city !== "all")) && (
+      {(q || (city && city !== "all") || (division && division !== "all") || (gender && gender !== "all")) && (
         <p className="mb-3 text-sm text-[#9CA3AF]">
           검색 결과 <span className="text-[#111827]">{teams.length}개</span>
         </p>

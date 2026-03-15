@@ -39,11 +39,15 @@ async function GamesGrid({
   type,
   city,
   date,
+  division,
+  gender,
 }: {
   q?: string;
   type?: string;
   city?: string;
   date?: string;
+  division?: string;
+  gender?: string;
 }) {
   // 날짜 범위 계산
   let scheduledAtFilter: { gte?: Date; lt?: Date } | undefined;
@@ -72,11 +76,13 @@ async function GamesGrid({
     q,
     type,
     city,
+    division,
+    gender,
     scheduledAt: scheduledAtFilter,
     take: 60,
   }).catch(() => []);
 
-  const hasFilters = q || (type && type !== "all") || (city && city !== "all") || (date && date !== "all");
+  const hasFilters = q || (type && type !== "all") || (city && city !== "all") || (date && date !== "all") || (division && division !== "all") || (gender && gender !== "all");
 
   return (
     <>
@@ -112,9 +118,9 @@ async function GamesGrid({
 export default async function GamesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; type?: string; city?: string; date?: string }>;
+  searchParams: Promise<{ q?: string; type?: string; city?: string; date?: string; division?: string; gender?: string }>;
 }) {
-  const { q, type, city, date } = await searchParams;
+  const { q, type, city, date, division, gender } = await searchParams;
 
   // 도시 목록은 캐시에서 빠르게 로드 (필터 UI에 필요)
   const cities = await getCities();
@@ -149,7 +155,7 @@ export default async function GamesPage({
 
       {/* 데이터 그리드: Suspense로 스트리밍 */}
       <Suspense fallback={<GamesGridSkeleton />}>
-        <GamesGrid q={q} type={type} city={city} date={date} />
+        <GamesGrid q={q} type={type} city={city} date={date} division={division} gender={gender} />
       </Suspense>
     </div>
   );

@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { createPostAction } from "@/app/actions/community";
+import { DIVISION_LABEL, GENDER_LABEL } from "@/lib/constants/categories";
 
 export default function NewPostPage() {
   const [state, formAction, pending] = useActionState(createPostAction, null);
@@ -26,6 +27,26 @@ export default function NewPostPage() {
               <option value="review">후기게시판</option>
               <option value="marketplace">장터게시판</option>
             </select>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="mb-1 block text-sm text-[#6B7280]">종별 *</label>
+              <select name="division" required className="w-full rounded-[16px] border-none bg-[#E8ECF0] px-4 py-3 text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#0066FF]/50">
+                <option value="">선택하세요</option>
+                {Object.entries(DIVISION_LABEL).map(([k, v]) => (
+                  <option key={k} value={k}>{v}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-[#6B7280]">성별</label>
+              <select name="target_gender" className="w-full rounded-[16px] border-none bg-[#E8ECF0] px-4 py-3 text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#0066FF]/50">
+                <option value="">전체</option>
+                {Object.entries(GENDER_LABEL).map(([k, v]) => (
+                  <option key={k} value={k}>{v}</option>
+                ))}
+              </select>
+            </div>
           </div>
           <div>
             <label className="mb-1 block text-sm text-[#6B7280]">제목 *</label>

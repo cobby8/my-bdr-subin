@@ -40,6 +40,8 @@ function extractGameFields(formData: FormData) {
     venueAddress: (formData.get("venue_address") as string)?.trim() || null,
     courtId: courtIdRaw ? BigInt(courtIdRaw) : null,
     minParticipants: parseInt(formData.get("min_participants") as string) || 4,
+    division: (formData.get("division") as string)?.trim() || null,
+    targetGender: (formData.get("target_gender") as string)?.trim() || null,
     skillLevel: (formData.get("skill_level") as string) || "all",
     requirements: (formData.get("requirements") as string)?.trim() || null,
     allowGuests: formData.get("allow_guests") === "true",
@@ -97,6 +99,8 @@ async function createRecurringGames(
       recurrence_rule: recurrenceRule,
       notes: fields.notes,
       contact_phone: fields.contactPhone,
+      division: fields.division,
+      target_gender: fields.targetGender,
       entry_fee_note: fields.entryFeeNote,
       status: 1,
       cloned_from_id: baseGameId,
@@ -121,6 +125,9 @@ export async function createGameAction(
 
   if (!fields.title || !fields.scheduledAt) {
     return { error: "제목과 일시는 필수입니다." };
+  }
+  if (!fields.division) {
+    return { error: "종별을 선택해주세요." };
   }
 
   // 권한 체크: membershipType 기반 (서버사이드 2차 검증)
@@ -172,6 +179,8 @@ export async function createGameAction(
         recurrence_rule: fields.isRecurring ? fields.recurrenceRule : null,
         notes: fields.notes,
         contact_phone: fields.contactPhone,
+        division: fields.division,
+        target_gender: fields.targetGender,
         entry_fee_note: fields.entryFeeNote,
         status: 1,
         created_at: new Date(),

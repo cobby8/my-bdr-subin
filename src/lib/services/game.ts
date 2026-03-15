@@ -5,6 +5,7 @@
  */
 import { prisma } from "@/lib/db/prisma";
 import type { Prisma } from "@prisma/client";
+import { buildSingleCategoryFilter, type UserPreferences } from "@/lib/utils/content-filter";
 
 // ---------------------------------------------------------------------------
 // 타입
@@ -14,8 +15,12 @@ export interface GameListFilters {
   q?: string;
   type?: string;
   city?: string;
+  division?: string;
+  gender?: string;
   scheduledAt?: { gte?: Date; lt?: Date };
   take?: number;
+  /** 유저 선호 기반 필터 (종별/성별/지역) */
+  userPrefs?: UserPreferences;
 }
 
 // ---------------------------------------------------------------------------
@@ -26,7 +31,7 @@ export interface GameListFilters {
  * 경기 목록 조회 (필터 + 페이지네이션)
  */
 export async function listGames(filters: GameListFilters = {}) {
-  const { q, type, city, scheduledAt, take = 60 } = filters;
+  const { q, type, city, division, gender, scheduledAt, take = 60, userPrefs } = filters;
 
   const where: Prisma.gamesWhereInput = {};
   if (q) where.title = { contains: q, mode: "insensitive" };
@@ -34,6 +39,14 @@ export async function listGames(filters: GameListFilters = {}) {
   if (city && city !== "all")
     where.city = { contains: city, mode: "insensitive" };
   if (scheduledAt) where.scheduled_at = scheduledAt;
+  if (division && division !== "all") where.division = division;
+  if (gender && gender !== "all") where.target_gender = gender;
+
+  // 유저 선호 기반 필터 적용
+  if (userPrefs) {
+    const categoryFilter = buildSingleCategoryFilter(userPrefs);
+    Object.assign(where, categoryFilter);
+  }
 
   return prisma.games.findMany({
     where,

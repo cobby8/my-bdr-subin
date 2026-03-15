@@ -57,6 +57,8 @@ export interface WizardFormData {
   district: string;
   // STEP 3
   title: string;
+  division: string;
+  targetGender: string;
   maxParticipants: number;
   minParticipants: number;
   feePerPerson: number;
@@ -86,6 +88,8 @@ const INITIAL_DATA: WizardFormData = {
   city: "",
   district: "",
   title: "",
+  division: "",
+  targetGender: "",
   maxParticipants: 10,
   minParticipants: 4,
   feePerPerson: 0,
@@ -215,6 +219,9 @@ export function GameWizard({ permissions }: { permissions: Permissions }) {
       }
 
       if (stepIndex === 2) {
+        if (!data.division) {
+          errs.division = "종별을 선택해주세요";
+        }
         if (data.gameType === "2") {
           // 팀 대결: title 필수
           if (!data.title.trim()) {
@@ -405,6 +412,8 @@ export function GameWizard({ permissions }: { permissions: Permissions }) {
     fd.set("max_participants", String(data.maxParticipants));
     fd.set("min_participants", String(data.minParticipants));
     fd.set("fee_per_person", String(data.feePerPerson));
+    fd.set("division", data.division);
+    fd.set("target_gender", data.targetGender);
     fd.set("skill_level", data.skillLevel);
     fd.set("allow_guests", String(data.allowGuests));
     fd.set("requirements", data.requirements);

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { createTeamAction } from "@/app/actions/teams";
+import { DIVISION_LABEL, GENDER_LABEL } from "@/lib/constants/categories";
 
 export function NewTeamForm() {
   const [state, formAction, pending] = useActionState(createTeamAction, null);
@@ -52,6 +53,33 @@ export function NewTeamForm() {
               className="w-full rounded-[16px] border-none bg-[#E8ECF0] px-4 py-3 text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#0066FF]/50"
               placeholder="팀 소개"
             />
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="mb-1 block text-sm text-[#6B7280]">종별 *</label>
+              <select
+                name="division"
+                required
+                className="w-full rounded-[16px] border-none bg-[#E8ECF0] px-4 py-3 text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#0066FF]/50"
+              >
+                <option value="">선택하세요</option>
+                {Object.entries(DIVISION_LABEL).map(([k, v]) => (
+                  <option key={k} value={k}>{v}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-[#6B7280]">성별</label>
+              <select
+                name="target_gender"
+                className="w-full rounded-[16px] border-none bg-[#E8ECF0] px-4 py-3 text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#0066FF]/50"
+              >
+                <option value="">전체</option>
+                {Object.entries(GENDER_LABEL).map(([k, v]) => (
+                  <option key={k} value={k}>{v}</option>
+                ))}
+              </select>
+            </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>

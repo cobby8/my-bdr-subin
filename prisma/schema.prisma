@@ -53,7 +53,10 @@ model User {
   tutorial_completed_games                                                  Boolean                      @default(false)
   tutorial_completed_community                                              Boolean                      @default(false)
   preferred_divisions                                                       Json                         @default("[]")
+  preferred_genders                                                         Json                         @default("[]")
+  preferred_regions                                                         Json                         @default("[]")
   preferred_board_categories                                                Json                         @default("[]")
+  onboarding_completed                                                      Boolean                      @default(false)
   profile_completed                                                         Boolean                      @default(false)
   profileReminderShownAt                                                    DateTime?                    @map("profile_reminder_shown_at") @db.Timestamp(6)
   admin_logs                                                                admin_logs[]
@@ -150,6 +153,7 @@ model Tournament {
   mvp_player_id                          BigInt?
   divisions                              Json                    @default("[]")
   division_tiers                         Json                    @default("[]")
+  target_genders                         Json                    @default("[]")
   bank_name                              String?                 @db.VarChar
   bank_account                           String?                 @db.VarChar
   bank_holder                            String?                 @db.VarChar
@@ -241,6 +245,8 @@ model Team {
   teamMembers                                                     TeamMember[]
   users_teams_manager_idTousers                                   User?                   @relation("teams_manager_idTousers", fields: [manager_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_rails_93b029b083")
   users_teams_captain_idTousers                                   User                    @relation("teams_captain_idTousers", fields: [captainId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_rails_ecb2d22ad1")
+  division                                                        String?                 @db.VarChar
+  target_gender                                                   String?                 @db.VarChar
   tournamentTeams                                                 TournamentTeam[]
   tournaments                                                     Tournament[]
 
@@ -716,6 +722,8 @@ model community_posts {
   negotiable       Boolean? @default(false)
   share_contact    Boolean? @default(false)
   trade_status     String?  @default("available") @db.VarChar
+  division         String?  @db.VarChar
+  target_gender    String?  @db.VarChar
   users            User     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_rails_0b2d1de074")
   teams            Team?    @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_rails_e4a581c07d")
 
@@ -953,6 +961,8 @@ model games {
   recurrence_rule      String?             @db.VarChar
   applications_count   Int?                @default(0)
   views_count          Int?                @default(0)
+  division             String?             @db.VarChar
+  target_gender        String?             @db.VarChar
   created_at           DateTime            @db.Timestamp(6)
   updated_at           DateTime            @db.Timestamp(6)
   game_applications    game_applications[]

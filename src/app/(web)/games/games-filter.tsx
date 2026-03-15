@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useCallback, useRef } from "react";
+import { DIVISION_LABEL, GENDER_LABEL } from "@/lib/constants/categories";
 
 const GAME_TYPES = [
   { value: "all", label: "전체 유형" },
@@ -98,6 +99,16 @@ export function GamesFilter({ cities }: { cities: string[] }) {
 
       <Select value={params.get("date") ?? "all"} onChange={(v) => update({ date: v })}>
         {DATE_OPTIONS.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
+      </Select>
+
+      <Select value={params.get("division") ?? "all"} onChange={(v) => update({ division: v })}>
+        <option value="all">전체 종별</option>
+        {Object.entries(DIVISION_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+      </Select>
+
+      <Select value={params.get("gender") ?? "all"} onChange={(v) => update({ gender: v })}>
+        <option value="all">전체 성별</option>
+        {Object.entries(GENDER_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
       </Select>
     </div>
   );

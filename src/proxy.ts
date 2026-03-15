@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkRateLimit, RATE_LIMITS } from "@/lib/security/rate-limit";
 import { getClientIp } from "@/lib/security/get-client-ip";
+import { verifyToken } from "@/lib/auth/jwt";
 
 function extractSubdomain(hostname: string, searchParams?: URLSearchParams): string | null {
   // 개발 환경: ?_sub=rookie 로 서브도메인 시뮬레이션
@@ -79,7 +80,70 @@ export async function proxy(req: NextRequest) {
     return response;
   }
 
+  // 온보딩 미완료 유저 리다이렉트
+  const onboardingResult = await checkOnboarding(req, pathname);
+  if (onboardingResult) return onboardingResult;
+
   return processRequest(req, pathname, hostname);
+}
+
+const ONBOARDING_SKIP_PATHS = [
+  "/onboarding",
+  "/api/",
+  "/login",
+  "/signup",
+  "/logout",
+  "/_next/",
+  "/_site",
+  "/sw.js",
+  "/manifest",
+  "/icons/",
+  "/privacy",
+  "/terms",
+];
+
+async function checkOnboarding(
+  req: NextRequest,
+  pathname: string
+): Promise<NextResponse | null> {
+  // 스킵 경로 체크
+  if (ONBOARDING_SKIP_PATHS.some((p) => pathname.startsWith(p))) return null;
+
+  const isProduction = process.env.NODE_ENV === "production";
+  const cookieName = isProduction ? "__Host-bdr_session" : "bdr_session";
+  const token = req.cookies.get(cookieName)?.value;
+  if (!token) return null; // 비로그인 유저는 패스
+
+  const payload = await verifyToken(token);
+  if (!payload) return null;
+
+  // onboarding_completed 체크 — JWT에 없으므로 DB 조회 (캐시 가능)
+  // 성능: proxy에서 매번 DB 조회는 비효율 → JWT payload에 onboarding 상태 포함하는 것이 이상적
+  // 우선 간단한 방법: 쿠키로 onboarding 완료 여부 트래킹
+  const onboardingDone = req.cookies.get("bdr_onboarding_done")?.value;
+  if (onboardingDone === "1") return null;
+
+  // DB 체크 (onboarding 쿠키 없는 경우만)
+  const { prisma } = await import("@/lib/db/prisma");
+  const user = await prisma.user.findUnique({
+    where: { id: BigInt(payload.sub) },
+    select: { onboarding_completed: true },
+  });
+
+  if (user?.onboarding_completed) {
+    // 쿠키 설정하여 다음 요청부터 DB 조회 스킵
+    const response = NextResponse.next();
+    response.cookies.set("bdr_onboarding_done", "1", {
+      httpOnly: true,
+      maxAge: 60 * 60 * 24 * 30,
+      path: "/",
+    });
+    return response;
+  }
+
+  // 온보딩 미완료 → 리다이렉트
+  const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
+  return NextResponse.redirect(`${baseUrl}/onboarding`);
 }
 
 async function processRequest(

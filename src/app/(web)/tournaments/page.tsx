@@ -68,6 +68,8 @@ interface CachedTournament {
   venue_name: string | null;
   maxTeams: number | null;
   teamCount: number;
+  divisions: unknown;
+  target_genders: unknown;
 }
 
 const getTournaments = (status: string | undefined) =>
@@ -87,6 +89,8 @@ const getTournaments = (status: string | undefined) =>
         venue_name: t.venue_name,
         maxTeams: t.maxTeams,
         teamCount: t._count.tournamentTeams,
+        divisions: (t as Record<string, unknown>).divisions ?? [],
+        target_genders: (t as Record<string, unknown>).target_genders ?? [],
       }));
     },
     [`tournaments-list-${status ?? "all"}`],
@@ -113,8 +117,22 @@ function TournamentGridSkeleton() {
 }
 
 // -- Async data component (streamed via Suspense) --
-async function TournamentGrid({ status }: { status: string | undefined }) {
-  const tournaments = await getTournaments(status);
+async function TournamentGrid({ status, division, gender }: { status?: string; division?: string; gender?: string }) {
+  let tournaments = await getTournaments(status);
+
+  // JS-side filtering for JSON array fields
+  if (division && division !== "all") {
+    tournaments = tournaments.filter((t) => {
+      const divs = Array.isArray(t.divisions) ? (t.divisions as string[]) : [];
+      return divs.length === 0 || divs.includes(division);
+    });
+  }
+  if (gender && gender !== "all") {
+    tournaments = tournaments.filter((t) => {
+      const genders = Array.isArray(t.target_genders) ? (t.target_genders as string[]) : [];
+      return genders.length === 0 || genders.includes(gender);
+    });
+  }
 
   return (
     <>
@@ -207,9 +225,9 @@ async function TournamentGrid({ status }: { status: string | undefined }) {
 export default async function TournamentsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; division?: string; gender?: string }>;
 }) {
-  const { status } = await searchParams;
+  const { status, division, gender } = await searchParams;
 
   return (
     <div>
@@ -232,7 +250,7 @@ export default async function TournamentsPage({
 
       {/* 데이터 그리드: Suspense로 스트리밍 */}
       <Suspense fallback={<TournamentGridSkeleton />}>
-        <TournamentGrid status={status} />
+        <TournamentGrid status={status} division={division} gender={gender} />
       </Suspense>
     </div>
   );

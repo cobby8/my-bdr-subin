@@ -176,8 +176,16 @@ export async function GET(req: NextRequest) {
 
     // JWT 발급 후 쿠키를 redirect 응답에 직접 설정
     const token = await generateToken(user);
-    const response = NextResponse.redirect(`${baseUrl}/`);
+    const redirectPath = user.onboarding_completed ? "/" : "/onboarding";
+    const response = NextResponse.redirect(`${baseUrl}${redirectPath}`);
     response.cookies.set(WEB_SESSION_COOKIE, token, COOKIE_OPTIONS);
+    if (user.onboarding_completed) {
+      response.cookies.set("bdr_onboarding_done", "1", {
+        httpOnly: true,
+        maxAge: 60 * 60 * 24 * 30,
+        path: "/",
+      });
+    }
     return response;
   } catch (err) {
     console.error("[OAuth] Kakao callback error:", String(err));

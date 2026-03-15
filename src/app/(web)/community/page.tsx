@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db/prisma";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { DIVISION_LABEL, GENDER_LABEL } from "@/lib/constants/categories";
 
 export const dynamic = "force-dynamic";
 
@@ -15,9 +16,9 @@ const categoryMap: Record<string, { label: string; variant: "default" | "success
 export default async function CommunityPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string; q?: string }>;
+  searchParams: Promise<{ category?: string; q?: string; division?: string; gender?: string }>;
 }) {
-  const { category, q } = await searchParams;
+  const { category, q, division, gender } = await searchParams;
 
   const where = {
     ...(category ? { category } : {}),
@@ -29,6 +30,8 @@ export default async function CommunityPage({
           ],
         }
       : {}),
+    ...(division && division !== "all" ? { division } : {}),
+    ...(gender && gender !== "all" ? { target_gender: gender } : {}),
   };
 
   const posts = await prisma.community_posts.findMany({
@@ -98,6 +101,36 @@ export default async function CommunityPage({
             >
               {val.label}
             </Link>
+          );
+        })}
+      </div>
+
+      {/* 종별/성별 필터 */}
+      <div className="mb-4 flex gap-2">
+        {([
+          { key: "division", label: "전체 종별", options: DIVISION_LABEL, current: division },
+          { key: "gender", label: "전체 성별", options: GENDER_LABEL, current: gender },
+        ] as const).map(({ key, label, options, current: cur }) => {
+          const base = new URLSearchParams();
+          if (category) base.set("category", category);
+          if (q) base.set("q", q);
+          if (division && division !== "all" && key !== "division") base.set("division", division);
+          if (gender && gender !== "all" && key !== "gender") base.set("gender", gender);
+          return (
+            <div key={key} className="relative flex-shrink-0">
+              <select
+                defaultValue={cur ?? "all"}
+                onChange={(e) => {
+                  const sp = new URLSearchParams(base.toString());
+                  if (e.target.value && e.target.value !== "all") sp.set(key, e.target.value);
+                  window.location.href = `/community?${sp.toString()}`;
+                }}
+                className="h-10 appearance-none rounded-[12px] border border-[#E8ECF0] bg-white pl-3 pr-8 text-sm text-[#111827] focus:border-[#0066FF]/60 focus:outline-none cursor-pointer"
+              >
+                <option value="all">{label}</option>
+                {Object.entries(options).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+              </select>
+            </div>
           );
         })}
       </div>

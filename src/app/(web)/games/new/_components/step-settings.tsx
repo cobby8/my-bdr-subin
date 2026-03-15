@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { WizardFormData } from "./game-wizard";
+import { DIVISION_LABEL, GENDER_LABEL } from "@/lib/constants/categories";
 
 const SKILL_LEVELS = [
   { value: "all", label: "전체" },
@@ -71,6 +72,43 @@ export function StepSettings({ data, updateData, errors, generateTitle }: StepSe
             자동 제안: &quot;{suggestedTitle}&quot; ← 적용
           </button>
         )}
+      </div>
+
+      {/* Division + Gender */}
+      <div className="mb-5 grid grid-cols-2 gap-4">
+        <div>
+          <label className="mb-1 block text-sm font-medium text-[#6B7280]">
+            종별 <span className="text-[#F4A261]">*</span>
+          </label>
+          <select
+            value={data.division}
+            onChange={(e) => updateData("division", e.target.value)}
+            className={`w-full rounded-[16px] border bg-white px-4 py-3 text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#0066FF]/50 ${
+              errors.division ? "border-red-400" : "border-[#E8ECF0]"
+            }`}
+          >
+            <option value="">선택하세요</option>
+            {Object.entries(DIVISION_LABEL).map(([k, v]) => (
+              <option key={k} value={k}>{v}</option>
+            ))}
+          </select>
+          {errors.division && (
+            <p role="alert" className="mt-1 text-xs text-red-400">{errors.division}</p>
+          )}
+        </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium text-[#6B7280]">성별</label>
+          <select
+            value={data.targetGender}
+            onChange={(e) => updateData("targetGender", e.target.value)}
+            className="w-full rounded-[16px] border border-[#E8ECF0] bg-white px-4 py-3 text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#0066FF]/50"
+          >
+            <option value="">전체</option>
+            {Object.entries(GENDER_LABEL).map(([k, v]) => (
+              <option key={k} value={k}>{v}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Max Participants + Skill Level */}
@@ -248,6 +286,43 @@ function TeamMatchSettings({
         {errors.title && (
           <p role="alert" className="mt-1 text-xs text-red-400">{errors.title}</p>
         )}
+      </div>
+
+      {/* Division + Gender */}
+      <div className="mb-5 grid grid-cols-2 gap-4">
+        <div>
+          <label className="mb-1 block text-sm font-medium text-[#6B7280]">
+            종별 <span className="text-[#F4A261]">*</span>
+          </label>
+          <select
+            value={data.division}
+            onChange={(e) => updateData("division", e.target.value)}
+            className={`w-full rounded-[16px] border bg-white px-4 py-3 text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#0066FF]/50 ${
+              errors.division ? "border-red-400" : "border-[#E8ECF0]"
+            }`}
+          >
+            <option value="">선택하세요</option>
+            {Object.entries(DIVISION_LABEL).map(([k, v]) => (
+              <option key={k} value={k}>{v}</option>
+            ))}
+          </select>
+          {errors.division && (
+            <p role="alert" className="mt-1 text-xs text-red-400">{errors.division}</p>
+          )}
+        </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium text-[#6B7280]">성별</label>
+          <select
+            value={data.targetGender}
+            onChange={(e) => updateData("targetGender", e.target.value)}
+            className="w-full rounded-[16px] border border-[#E8ECF0] bg-white px-4 py-3 text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#0066FF]/50"
+          >
+            <option value="">전체</option>
+            {Object.entries(GENDER_LABEL).map(([k, v]) => (
+              <option key={k} value={k}>{v}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Max Participants (per team) */}

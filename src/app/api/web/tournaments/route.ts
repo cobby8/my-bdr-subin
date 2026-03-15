@@ -13,10 +13,13 @@ const FORMAT_MAP: Record<string, string> = {
 export const POST = withWebAuth(async (req: Request, ctx: WebAuthContext) => {
   try {
     const body = await req.json();
-    const { name, format, startDate, endDate, subdomain, primaryColor, secondaryColor } = body;
+    const { name, format, divisions, target_genders, startDate, endDate, subdomain, primaryColor, secondaryColor } = body;
 
     if (!name?.trim()) {
       return apiError("대회 이름은 필수입니다.", 400);
+    }
+    if (!Array.isArray(divisions) || divisions.length === 0) {
+      return apiError("종별을 최소 1개 선택하세요.", 400);
     }
 
     // 슈퍼관리자는 구독 체크 우회
@@ -45,6 +48,8 @@ export const POST = withWebAuth(async (req: Request, ctx: WebAuthContext) => {
       name: name.trim(),
       organizerId: ctx.userId,
       format: normalizedFormat,
+      divisions: Array.isArray(divisions) ? divisions : [],
+      targetGenders: Array.isArray(target_genders) ? target_genders : [],
       startDate: parsedStart,
       endDate: parsedEnd,
       primaryColor,

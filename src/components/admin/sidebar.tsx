@@ -12,6 +12,7 @@ const navItems = [
   { href: "/admin/payments", label: "결제", icon: "💳" },
   { href: "/admin/suggestions", label: "건의사항", icon: "💡" },
   { href: "/admin/analytics", label: "분석", icon: "📈" },
+  { href: "/admin/classify", label: "콘텐츠 분류", icon: "🏷️" },
   { href: "/admin/settings", label: "시스템 설정", icon: "⚙️" },
   { href: "/admin/logs", label: "활동 로그", icon: "📋" },
 ];

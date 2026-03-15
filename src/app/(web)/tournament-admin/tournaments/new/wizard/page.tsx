@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { DIVISION_LABEL, GENDER_LABEL } from "@/lib/constants/categories";
 
 const steps = [
   { id: "template", label: "템플릿", icon: "🎨" },
@@ -82,6 +83,8 @@ export default function NewTournamentWizardPage() {
     template: "기본형",
     name: "",
     format: "싱글 엘리미네이션",
+    divisions: [] as string[],
+    target_genders: [] as string[],
     startDate: "",
     endDate: "",
     subdomain: "",
@@ -177,6 +180,61 @@ export default function NewTournamentWizardPage() {
             >
               {FORMAT_OPTIONS.map((f) => <option key={f}>{f}</option>)}
             </select>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-[#6B7280]">
+                종별 <span className="text-[#F4A261]">*</span> (복수 선택 가능)
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {Object.entries(DIVISION_LABEL).map(([k, v]) => (
+                  <button
+                    key={k}
+                    type="button"
+                    onClick={() =>
+                      setForm((prev) => ({
+                        ...prev,
+                        divisions: prev.divisions.includes(k)
+                          ? prev.divisions.filter((d) => d !== k)
+                          : [...prev.divisions, k],
+                      }))
+                    }
+                    className={`rounded-full px-4 py-2 text-sm transition-colors ${
+                      form.divisions.includes(k)
+                        ? "bg-[#F4A261] text-white"
+                        : "bg-[#E8ECF0] text-[#6B7280] hover:bg-[#D1D5DB]"
+                    }`}
+                  >
+                    {v}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-[#6B7280]">성별 (복수 선택 가능)</label>
+              <div className="flex flex-wrap gap-2">
+                {Object.entries(GENDER_LABEL).map(([k, v]) => (
+                  <button
+                    key={k}
+                    type="button"
+                    onClick={() =>
+                      setForm((prev) => ({
+                        ...prev,
+                        target_genders: prev.target_genders.includes(k)
+                          ? prev.target_genders.filter((g) => g !== k)
+                          : [...prev.target_genders, k],
+                      }))
+                    }
+                    className={`rounded-full px-4 py-2 text-sm transition-colors ${
+                      form.target_genders.includes(k)
+                        ? "bg-[#0066FF] text-white"
+                        : "bg-[#E8ECF0] text-[#6B7280] hover:bg-[#D1D5DB]"
+                    }`}
+                  >
+                    {v}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-1 text-xs text-[#9CA3AF]">선택하지 않으면 전체</p>
+            </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className="mb-1 block text-xs text-[#6B7280]">시작일</label>
@@ -230,6 +288,8 @@ export default function NewTournamentWizardPage() {
             <div className="rounded-[16px] bg-[#EEF2FF] p-4 space-y-2 text-sm">
               <div className="flex justify-between"><span className="text-[#6B7280]">대회명</span><span className="font-medium">{form.name || "미입력"}</span></div>
               <div className="flex justify-between"><span className="text-[#6B7280]">형식</span><span>{form.format}</span></div>
+              <div className="flex justify-between"><span className="text-[#6B7280]">종별</span><span>{form.divisions.map((d) => DIVISION_LABEL[d as keyof typeof DIVISION_LABEL]).join(", ") || "미선택"}</span></div>
+              <div className="flex justify-between"><span className="text-[#6B7280]">성별</span><span>{form.target_genders.map((g) => GENDER_LABEL[g as keyof typeof GENDER_LABEL]).join(", ") || "전체"}</span></div>
               <div className="flex justify-between"><span className="text-[#6B7280]">기간</span><span>{form.startDate || "-"} ~ {form.endDate || "-"}</span></div>
               <div className="flex justify-between"><span className="text-[#6B7280]">URL</span><span>{form.subdomain ? `${form.subdomain}.mybdr.kr` : "자동 생성"}</span></div>
             </div>
@@ -249,9 +309,15 @@ export default function NewTournamentWizardPage() {
         {currentStep < steps.length - 1 ? (
           <Button
             onClick={() => {
-              if (currentStep === 1 && !form.name.trim()) {
-                alert("대회 이름을 입력하세요.");
-                return;
+              if (currentStep === 1) {
+                if (!form.name.trim()) {
+                  alert("대회 이름을 입력하세요.");
+                  return;
+                }
+                if (form.divisions.length === 0) {
+                  alert("종별을 최소 1개 선택하세요.");
+                  return;
+                }
               }
               setCurrentStep(currentStep + 1);
             }}
