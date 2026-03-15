@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  /* Light Mode Colors (Toss Blue + Orange Accent) */
+  --color-background: #F5F7FA;
+  --color-card: #FFFFFF;
+  --color-elevated: #EEF2FF;
+  --color-surface: #E8ECF0;
+
+  /* Toss Blue Primary + Orange Accent */
+  --color-primary: #0066FF;
+  --color-primary-hover: #0052CC;
+  --color-primary-light: rgba(0, 102, 255, 0.08);
+  --color-accent: #F4A261;
+  --color-accent-coral: #F4A261;
+
+  /* Text */
+  --color-text-primary: #111827;
+  --color-text-secondary: #6B7280;
+  --color-text-muted: #9CA3AF;
+  --color-text-on-primary: #FFFFFF;
+
+  /* Status */
+  --color-success: #4ADE80;
+  --color-error: #EF4444;
+  --color-warning: #FBBF24;
+  --color-info: #60A5FA;
+
+  /* Border */
+  --color-border: #E8ECF0;
+  --color-border-subtle: #F1F5F9;
+
+  /* Border Radius */
+  --radius-card: 16px;
+  --radius-card-lg: 24px;
+  --radius-pill: 9999px;
+
+  /* Shadows */
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.12);
+
+  /* Font */
+  --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+}
+
+/* 모바일 터치 개선 */
+button,
+a,
+[role="button"] {
+  /* 300ms 탭 딜레이 제거, 더블탭 줌 방지 */
+  touch-action: manipulation;
+  /* iOS 탭 하이라이트 제거 (시각적 피드백은 active: 클래스로 대체) */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 스크롤 가능한 컨테이너 터치 개선 */
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 모바일 하단 내비 영역 확보 (safe area 포함) */
+@media (max-width: 1023px) {
+  .footer-mobile-space {
+    padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+  }
+}
