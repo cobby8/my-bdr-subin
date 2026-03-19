@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 export default function TournamentAdminTemplatesPage() {
   return (
     <div>
-      <h1 className="mb-6 text-xl font-bold sm:text-2xl">사이트 템플릿</h1>
+      <h1 className="mb-6 text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>사이트 템플릿</h1>
       <div className="grid gap-4 sm:grid-cols-3">
         {["기본형", "리그형", "토너먼트형"].map((t) => (
           <Card key={t} className="text-center hover:bg-[#EEF2FF] transition-colors cursor-pointer">

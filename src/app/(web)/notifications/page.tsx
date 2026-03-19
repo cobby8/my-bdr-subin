@@ -22,7 +22,7 @@ export default async function NotificationsPage() {
   return (
     <div>
       <div className="mb-6 flex items-center gap-3">
-        <h1 className="text-xl font-bold sm:text-2xl">알림</h1>
+        <h1 className="text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>알림</h1>
         {unreadCount > 0 && (
           <Badge>{unreadCount}개 안읽음</Badge>
         )}
@@ -33,7 +33,7 @@ export default async function NotificationsPage() {
           {notifications.map((n) => (
             <Card
               key={n.id.toString()}
-              className={`transition-colors ${n.status === "unread" ? "border-l-2 border-[#1B3C87]" : "opacity-70"}`}
+              className={`rounded-[16px] border border-[#E8ECF0] overflow-hidden transition-colors ${n.status === "unread" ? "border-l-2 border-l-[#1B3C87]" : "opacity-70"}`}
             >
               {n.action_url ? (
                 <Link href={n.action_url} className="block">
@@ -47,7 +47,7 @@ export default async function NotificationsPage() {
         </div>
       ) : (
         <Card className="py-12 text-center text-[#6B7280]">
-          <div className="mb-2 text-3xl">🔔</div>
+          <div className="mb-2"><svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-8 w-8 text-[#9CA3AF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></div>
           새로운 알림이 없습니다.
         </Card>
       )}

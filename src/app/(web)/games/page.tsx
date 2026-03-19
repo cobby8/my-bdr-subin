@@ -19,13 +19,16 @@ const getCities = unstable_cache(
 // -- Skeleton for games grid --
 function GamesGridSkeleton() {
   return (
-    <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-3">
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
       {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="rounded-[14px] bg-white border border-[#E8ECF0] p-3 space-y-2">
-          <div className="h-4 w-12 rounded bg-[#E8ECF0]" />
-          <div className="h-4 w-3/4 rounded bg-[#E8ECF0]" />
-          <div className="h-3 w-1/2 rounded bg-[#E8ECF0]" />
-          <div className="h-1 w-full rounded bg-[#E8ECF0]" />
+        <div key={i} className="rounded-[16px] bg-white border border-[#E8ECF0] overflow-hidden">
+          <div className="h-1 bg-[#E8ECF0]" />
+          <div className="p-3.5 space-y-2.5">
+            <div className="h-4 w-14 rounded-[6px] bg-[#E8ECF0]" />
+            <div className="h-4 w-3/4 rounded bg-[#E8ECF0]" />
+            <div className="h-3 w-1/2 rounded bg-[#E8ECF0]" />
+            <div className="h-1.5 w-full rounded-full bg-[#E8ECF0]" />
+          </div>
         </div>
       ))}
     </div>
@@ -87,7 +90,7 @@ async function GamesGrid({
       )}
 
       {/* 카드 그리드 — 모바일 2열 */}
-      <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
         {games.map((g) => (
           <GameCardCompact key={g.id.toString()} game={g} />
         ))}
@@ -117,9 +120,9 @@ export default async function GamesPage({
 
   return (
     <div>
-      {/* 헤더 — 컴팩트 */}
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-bold sm:text-2xl">경기</h1>
+      {/* 헤더 */}
+      <div className="mb-5 flex items-center justify-between">
+        <h1 className="text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>GAMES</h1>
         <div className="flex items-center gap-2">
           <Link
             href="/games/my-games"

@@ -140,7 +140,7 @@ export default function AdminPlansPage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-bold sm:text-2xl">요금제 관리</h1>
+        <h1 className="text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>요금제 관리</h1>
         <Button onClick={openCreate}>+ 요금제 추가</Button>
       </div>
 
@@ -167,12 +167,12 @@ export default function AdminPlansPage() {
                   <button
                     onClick={() => endPromotion(tier.membershipType, tier.label)}
                     disabled={endingPromo === tier.membershipType}
-                    className="rounded-full bg-[rgba(239,68,68,0.1)] px-4 py-2 text-xs font-semibold text-[#EF4444] hover:bg-[rgba(239,68,68,0.2)] disabled:opacity-50"
+                    className="rounded-[10px] bg-[rgba(239,68,68,0.1)] px-4 py-2 text-xs font-semibold text-[#EF4444] hover:bg-[rgba(239,68,68,0.2)] disabled:opacity-50"
                   >
                     {endingPromo === tier.membershipType ? "처리 중..." : "프로모션 종료"}
                   </button>
                 ) : (
-                  <span className="rounded-full bg-[#EEF2FF] px-3 py-1 text-xs text-[#9CA3AF]">
+                  <span className="rounded-[10px] bg-[#EEF2FF] px-3 py-1 text-xs text-[#9CA3AF]">
                     프로모션 없음
                   </span>
                 )}
@@ -189,7 +189,7 @@ export default function AdminPlansPage() {
         <div className="py-12 text-center text-[#6B7280]">로딩 중...</div>
       ) : plans.length === 0 ? (
         <Card className="py-12 text-center text-[#6B7280]">
-          <div className="mb-2 text-3xl">💰</div>
+          <div className="mb-2 text-3xl text-[#9CA3AF]">--</div>
           등록된 요금제가 없습니다.
         </Card>
       ) : (

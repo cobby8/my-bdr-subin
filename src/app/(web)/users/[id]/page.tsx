@@ -22,7 +22,7 @@ const ROLE_LABEL: Record<string, string> = {
 
 function StatBox({ value, label }: { value: number | string; label: string }) {
   return (
-    <div className="flex flex-col items-center rounded-[12px] bg-[#EEF2FF] px-4 py-3 min-w-[64px]">
+    <div className="flex flex-col items-center rounded-[16px] border border-[#E8ECF0] bg-[#EEF2FF] px-4 py-3 min-w-[64px]">
       <span className="text-lg font-bold text-[#111827]">{value}</span>
       <span className="mt-0.5 text-[10px] text-[#6B7280]">{label}</span>
     </div>
@@ -78,7 +78,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
           </div>
 
           <div className="flex-1 min-w-0">
-            <h1 className="text-2xl font-black text-[#111827]">{displayName}</h1>
+            <h1 className="text-2xl font-extrabold uppercase tracking-wide text-[#111827] sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>{displayName}</h1>
 
             <div className="mt-1.5 flex flex-wrap items-center gap-2">
               {user.position && (
@@ -88,7 +88,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
                 </span>
               )}
               {location && (
-                <span className="text-sm text-[#6B7280]">📍 {location}</span>
+                <span className="inline-flex items-center gap-1 text-sm text-[#6B7280]"><svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>{location}</span>
               )}
             </div>
 
@@ -115,7 +115,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
 
       {/* 소속 팀 */}
       <div className="rounded-[16px] bg-[#FFFFFF] p-5">
-        <h2 className="mb-4 font-semibold">
+        <h2 className="mb-4 font-semibold uppercase tracking-wide" style={{ fontFamily: "var(--font-heading)" }}>
           소속 팀
           <span className="ml-2 text-sm font-normal text-[#9CA3AF]">
             {user.teamMembers.length}개
@@ -134,7 +134,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
                 <Link
                   key={m.id.toString()}
                   href={`/teams/${m.team.id}`}
-                  className="flex items-center gap-3 rounded-[12px] bg-[#EEF2FF] px-4 py-3 hover:bg-[#E8ECF0] transition-colors"
+                  className="flex items-center gap-3 rounded-[16px] border border-[#E8ECF0] bg-[#EEF2FF] px-4 py-3 transition-all hover:-translate-y-1 hover:shadow-lg"
                 >
                   <div
                     className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold"

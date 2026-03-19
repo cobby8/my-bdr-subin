@@ -34,6 +34,7 @@
   --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.12);
 
   --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-heading: 'Barlow Condensed', 'Pretendard', sans-serif;
 }
 
 /* ---- Dark Mode Variables ---- */
@@ -51,8 +52,8 @@ html.dark {
   --color-accent-light: rgba(240, 78, 84, 0.15);
 
   --color-text-primary: #F1F3F5;
-  --color-text-secondary: #9CA3AF;
-  --color-text-muted: #6B7280;
+  --color-text-secondary: #CBD5E1;
+  --color-text-muted: #94A3B8;
   --color-text-on-primary: #FFFFFF;
 
   --color-success: #4ADE80;
@@ -120,11 +121,11 @@ html.dark [class*="text-[#374151]"] {
 }
 
 html.dark [class*="text-[#6B7280]"] {
-  color: var(--color-text-secondary) !important;
+  color: #CBD5E1 !important;
 }
 
 html.dark [class*="text-[#9CA3AF]"] {
-  color: var(--color-text-muted) !important;
+  color: #94A3B8 !important;
 }
 
 /* Gradient overlays */
@@ -161,6 +162,16 @@ html.dark [class*="from-[#1B3C87]/10"][class*="to-[#E31B23]"],
 html.dark [class*="from-[#1B3C87]/15"][class*="to-[#E31B23]"] {
   background: linear-gradient(135deg, rgba(91,127,214,0.20), rgba(240,78,84,0.14)) !important;
   border-color: rgba(91,127,214,0.25) !important;
+}
+
+/* ====== Typography ====== */
+h1, h2, h3,
+[class*="text-xl"],
+[class*="text-2xl"],
+[class*="text-3xl"],
+[class*="text-4xl"] {
+  font-family: var(--font-heading);
+  letter-spacing: 0.01em;
 }
 
 /* 모바일 터치 개선 */

@@ -12,7 +12,7 @@ export default async function AdminSuggestionsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-bold sm:text-2xl">건의사항</h1>
+      <h1 className="mb-6 text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>건의사항</h1>
       <div className="space-y-3">
         {suggestions.map((s) => (
           <Card key={s.id.toString()}>

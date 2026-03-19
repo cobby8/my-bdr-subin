@@ -49,7 +49,7 @@ export default async function CommunityPostPage({ params }: { params: Promise<{ 
       <Card>
         <div className="mb-3 flex items-center gap-2">
           {post.category && <Badge>{post.category}</Badge>}
-          <h1 className="text-xl font-bold">{post.title}</h1>
+          <h1 className="text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>{post.title}</h1>
         </div>
         <div className="mb-4 flex items-center gap-3 text-xs text-[#9CA3AF]">
           <span>{post.users?.nickname ?? "익명"}</span>
@@ -62,10 +62,10 @@ export default async function CommunityPostPage({ params }: { params: Promise<{ 
       </Card>
 
       <Card>
-        <h2 className="mb-4 text-lg font-semibold">댓글 {comments.length}개</h2>
+        <h2 className="mb-4 text-lg font-semibold uppercase tracking-wide" style={{ fontFamily: "var(--font-heading)" }}>댓글 {comments.length}개</h2>
         <div className="space-y-3">
           {comments.map((c) => (
-            <div key={c.id.toString()} className="rounded-[12px] bg-[#EEF2FF] p-3">
+            <div key={c.id.toString()} className="rounded-[16px] border border-[#E8ECF0] bg-[#EEF2FF] p-3">
               <div className="mb-1 flex items-center gap-2 text-xs text-[#9CA3AF]">
                 <span className="font-medium text-[#111827]">{c.users?.nickname ?? "익명"}</span>
                 <span>{c.created_at.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}</span>

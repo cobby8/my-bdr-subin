@@ -45,7 +45,7 @@ export default function ProfilePage() {
     return (
       <div className="flex min-h-[60vh] items-center justify-center text-[#6B7280]">
         <div className="text-center">
-          <div className="mb-2 text-3xl">⏳</div>
+          <div className="mb-2"><svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-8 w-8 animate-spin text-[#1B3C87]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></div>
           <p>로딩 중...</p>
         </div>
       </div>
@@ -57,7 +57,7 @@ export default function ProfilePage() {
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="text-center">
           <p className="mb-4 text-[#6B7280]">로그인이 필요합니다.</p>
-          <Link href="/login" className="rounded-full bg-[#1B3C87] px-6 py-2 text-sm font-semibold text-white">
+          <Link href="/login" className="rounded-[10px] bg-[#1B3C87] px-6 py-2 text-sm font-semibold text-white">
             로그인
           </Link>
         </div>
@@ -75,7 +75,7 @@ export default function ProfilePage() {
             {initial}
           </div>
           <div className="flex-1 min-w-0">
-            <h1 className="truncate text-xl font-bold">{user.nickname ?? "사용자"}</h1>
+            <h1 className="truncate text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>{user.nickname ?? "사용자"}</h1>
             <p className="truncate text-sm text-[#6B7280]">{user.email}</p>
             {user.position && (
               <span className="mt-1 inline-block rounded-full bg-[rgba(27,60,135,0.12)] px-2 py-0.5 text-xs text-[#E31B23]">
@@ -95,10 +95,10 @@ export default function ProfilePage() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`whitespace-nowrap rounded-full px-4 py-2 text-sm transition-colors ${
+            className={`whitespace-nowrap rounded-[10px] px-4 py-2 text-sm transition-colors ${
               activeTab === tab.id
-                ? "bg-[rgba(27,60,135,0.12)] font-medium text-[#E31B23]"
-                : "text-[#6B7280] hover:text-[#111827]"
+                ? "bg-[#1B3C87] font-semibold text-white"
+                : "border border-[#E8ECF0] text-[#6B7280] hover:bg-[#EEF2FF] hover:text-[#111827]"
             }`}
           >
             {tab.label}
@@ -139,7 +139,7 @@ export default function ProfilePage() {
                 <Link
                   key={g.id}
                   href={`/games/${g.id.slice(0, 8)}`}
-                  className="flex items-center justify-between rounded-[12px] bg-[#EEF2FF] px-4 py-2 hover:bg-[#E8ECF0]"
+                  className="flex items-center justify-between rounded-[16px] border border-[#E8ECF0] bg-[#EEF2FF] px-4 py-2 transition-all hover:-translate-y-1 hover:shadow-lg"
                 >
                   <span className="text-sm">{g.title ?? "경기"}</span>
                   <span className="text-xs text-[#6B7280]">
@@ -168,7 +168,7 @@ export default function ProfilePage() {
                 <Link
                   key={t.id}
                   href={`/teams/${t.id}`}
-                  className="flex items-center justify-between rounded-[12px] bg-[#EEF2FF] px-4 py-2 hover:bg-[#E8ECF0]"
+                  className="flex items-center justify-between rounded-[16px] border border-[#E8ECF0] bg-[#EEF2FF] px-4 py-2 transition-all hover:-translate-y-1 hover:shadow-lg"
                 >
                   <span className="text-sm font-medium">{t.name}</span>
                   <Badge>{t.role === "captain" ? "주장" : "멤버"}</Badge>
@@ -185,7 +185,7 @@ export default function ProfilePage() {
                 <Link
                   key={t.id}
                   href={`/tournaments/${t.id}`}
-                  className="flex items-center justify-between rounded-[12px] bg-[#EEF2FF] px-4 py-2 hover:bg-[#E8ECF0]"
+                  className="flex items-center justify-between rounded-[16px] border border-[#E8ECF0] bg-[#EEF2FF] px-4 py-2 transition-all hover:-translate-y-1 hover:shadow-lg"
                 >
                   <span className="text-sm">{t.name}</span>
                   <span className="text-xs text-[#6B7280]">{TOURNAMENT_STATUS_LABEL[t.status ?? ""] ?? t.status ?? "-"}</span>

@@ -12,7 +12,7 @@ export function NewTeamForm() {
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-bold sm:text-2xl">팀 만들기</h1>
+      <h1 className="mb-6 text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>팀 만들기</h1>
 
       {isUpgradeRequired && (
         <div className="mb-4 rounded-[16px] border border-[#1B3C87]/30 bg-[rgba(27,60,135,0.08)] p-4">
@@ -40,7 +40,7 @@ export function NewTeamForm() {
               name="name"
               type="text"
               required
-              className="w-full rounded-[16px] border-none bg-[#E8ECF0] px-4 py-3 text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#1B3C87]/50"
+              className="w-full rounded-[16px] border border-[#E8ECF0] bg-[#FFFFFF] px-4 py-3 text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:border-[#1B3C87] focus:outline-none focus:ring-2 focus:ring-[#1B3C87]/20"
               placeholder="팀 이름"
             />
           </div>
@@ -49,7 +49,7 @@ export function NewTeamForm() {
             <textarea
               name="description"
               rows={3}
-              className="w-full rounded-[16px] border-none bg-[#E8ECF0] px-4 py-3 text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#1B3C87]/50"
+              className="w-full rounded-[16px] border border-[#E8ECF0] bg-[#FFFFFF] px-4 py-3 text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:border-[#1B3C87] focus:outline-none focus:ring-2 focus:ring-[#1B3C87]/20"
               placeholder="팀 소개"
             />
           </div>
@@ -60,7 +60,7 @@ export function NewTeamForm() {
                 name="primary_color"
                 type="color"
                 defaultValue="#E31B23"
-                className="h-12 w-full rounded-[16px] border-none bg-[#E8ECF0] p-1"
+                className="h-12 w-full cursor-pointer rounded-[16px] border border-[#E8ECF0] bg-[#FFFFFF] p-1"
               />
             </div>
             <div>
@@ -69,7 +69,7 @@ export function NewTeamForm() {
                 name="secondary_color"
                 type="color"
                 defaultValue="#E76F51"
-                className="h-12 w-full rounded-[16px] border-none bg-[#E8ECF0] p-1"
+                className="h-12 w-full cursor-pointer rounded-[16px] border border-[#E8ECF0] bg-[#FFFFFF] p-1"
               />
             </div>
           </div>

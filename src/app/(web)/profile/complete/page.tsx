@@ -149,8 +149,8 @@ export default function ProfileCompletePage() {
     <div className="mx-auto max-w-lg py-8">
       {/* 환영 메시지 */}
       <div className="mb-8 text-center">
-        <div className="mb-3 text-4xl">🏀</div>
-        <h1 className="text-2xl font-bold text-[#111827]">환영합니다!</h1>
+        <div className="mb-3"><svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-10 w-10 text-[#E31B23]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/><path d="M19.07 4.93A10 10 0 0 1 22 12c0 2.76-1.12 5.26-2.93 7.07"/><path d="M4.93 19.07A10 10 0 0 1 2 12c0-2.76 1.12-5.26 2.93-7.07"/></svg></div>
+        <h1 className="text-2xl font-extrabold uppercase tracking-wide text-[#111827] sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>환영합니다!</h1>
         <p className="mt-2 text-sm text-[#6B7280]">
           프로필을 완성하면 더 나은 경험을 제공해드릴 수 있어요.
         </p>
@@ -162,7 +162,7 @@ export default function ProfileCompletePage() {
 
       {/* 기본 정보 */}
       <div className="mb-6 rounded-[20px] border border-[#E8ECF0] bg-[#FFFFFF] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.07)]">
-        <h2 className="mb-4 font-semibold text-[#111827]">기본 정보</h2>
+        <h2 className="mb-4 font-semibold uppercase tracking-wide text-[#111827]" style={{ fontFamily: "var(--font-heading)" }}>기본 정보</h2>
         <div className="space-y-4">
           <div>
             <label className={lbl}>이름 (실명)</label>
@@ -194,7 +194,7 @@ export default function ProfileCompletePage() {
                   type="button"
                   onClick={handleSendCode}
                   disabled={sendingCode || stripPhone(form.phone).length < 10}
-                  className="flex-shrink-0 rounded-[16px] bg-[#1B3C87] px-4 py-3 text-sm font-medium text-white hover:bg-[#142D6B] disabled:opacity-50"
+                  className="flex-shrink-0 rounded-[10px] bg-[#1B3C87] px-4 py-3 text-sm font-medium text-white hover:bg-[#142D6B] disabled:opacity-50"
                 >
                   {sendingCode ? "발송 중..." : verifyStep === "sent" ? "재발송" : "인증요청"}
                 </button>
@@ -223,7 +223,7 @@ export default function ProfileCompletePage() {
                   type="button"
                   onClick={handleVerifyCode}
                   disabled={verifyCode.length < 4}
-                  className="flex-shrink-0 rounded-[16px] bg-[#E31B23] px-4 py-3 text-sm font-medium text-white hover:bg-[#C8101E] disabled:opacity-50"
+                  className="flex-shrink-0 rounded-[10px] bg-[#E31B23] px-4 py-3 text-sm font-medium text-white hover:bg-[#C8101E] disabled:opacity-50"
                 >
                   확인
                 </button>
@@ -265,7 +265,7 @@ export default function ProfileCompletePage() {
 
       {/* 경기 정보 */}
       <div className="mb-6 rounded-[20px] border border-[#E8ECF0] bg-[#FFFFFF] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.07)]">
-        <h2 className="mb-4 font-semibold text-[#111827]">경기 정보</h2>
+        <h2 className="mb-4 font-semibold uppercase tracking-wide text-[#111827]" style={{ fontFamily: "var(--font-heading)" }}>경기 정보</h2>
         <div className="space-y-4">
           <div>
             <label className={lbl}>포지션</label>
@@ -280,6 +280,7 @@ export default function ProfileCompletePage() {
                       ? "border-[#1B3C87] bg-[rgba(27,60,135,0.12)] text-[#1B3C87]"
                       : "border-[#E8ECF0] text-[#6B7280] hover:border-[#1B3C87]"
                   }`}
+                  style={{ borderRadius: "10px" }}
                 >
                   {pos}
                 </button>
@@ -331,13 +332,13 @@ export default function ProfileCompletePage() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="w-full rounded-full bg-[#1B3C87] py-4 text-sm font-semibold text-white hover:bg-[#142D6B] disabled:opacity-60"
+          className="w-full rounded-[10px] bg-[#1B3C87] py-4 text-sm font-semibold text-white hover:bg-[#142D6B] disabled:opacity-60"
         >
           {saving ? "저장 중..." : "프로필 저장하고 시작하기"}
         </button>
         <button
           onClick={() => router.push("/")}
-          className="w-full rounded-full border border-[#E8ECF0] py-4 text-sm font-medium text-[#6B7280] hover:bg-[#F5F7FA]"
+          className="w-full rounded-[10px] border border-[#E8ECF0] py-4 text-sm font-medium text-[#6B7280] hover:bg-[#F5F7FA]"
         >
           나중에 할게요
         </button>

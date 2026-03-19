@@ -35,10 +35,10 @@ export default async function SeriesListPage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-bold sm:text-2xl">시리즈</h1>
+        <h1 className="text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>시리즈</h1>
         <Link
           href="/tournament-admin/series/new"
-          className="rounded-full bg-[#1B3C87] px-4 py-2 text-sm font-semibold text-white hover:bg-[#142D6B] transition-colors"
+          className="rounded-[10px] bg-[#1B3C87] px-4 py-2 text-sm font-semibold text-white hover:bg-[#142D6B] transition-colors"
         >
           새 시리즈 만들기
         </Link>
@@ -75,11 +75,11 @@ export default async function SeriesListPage() {
         </div>
       ) : (
         <Card className="py-16 text-center text-[#6B7280]">
-          <div className="mb-3 text-4xl">📋</div>
+          <div className="mb-3 text-lg font-semibold text-[#9CA3AF]">No Series</div>
           <p className="mb-4">아직 시리즈가 없습니다.</p>
           <Link
             href="/tournament-admin/series/new"
-            className="inline-block rounded-full bg-[#1B3C87] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#142D6B] transition-colors"
+            className="inline-block rounded-[10px] bg-[#1B3C87] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#142D6B] transition-colors"
           >
             첫 시리즈 만들기
           </Link>

@@ -73,9 +73,9 @@ function SlideNextGame({ data }: { data: DashboardData["next_game"] }) {
     return (
       <div className="flex h-full flex-col items-center justify-center text-center">
         <Calendar className="mb-2 text-[#1B3C87]" size={32} />
-        <p className="text-sm font-bold text-[#111827]">예정된 경기가 없어요</p>
-        <p className="mt-1 text-xs text-[#6B7280]">새로운 경기를 찾아보세요!</p>
-        <Link href="/games" className="mt-3 rounded-full bg-[#1B3C87] px-4 py-2 text-xs font-semibold text-white">
+        <p className="text-sm font-bold text-white" style={{ fontFamily: "var(--font-heading)" }}>예정된 경기가 없어요</p>
+        <p className="mt-1 text-xs text-[#9CA3AF]">새로운 경기를 찾아보세요!</p>
+        <Link href="/games" className="mt-3 rounded-[10px] bg-[#E31B23] px-4 py-2 text-xs font-bold text-white hover:bg-[#C8101E]">
           경기 찾기
         </Link>
       </div>
@@ -85,19 +85,19 @@ function SlideNextGame({ data }: { data: DashboardData["next_game"] }) {
     <Link href={`/games/${data.uuid?.slice(0, 8) ?? ""}`} className="flex h-full flex-col justify-between">
       <div>
         <div className="mb-2 flex items-center gap-2">
-          <span className="rounded-full bg-[#E31B23] px-2.5 py-0.5 text-[10px] font-bold text-white">
+          <span className="rounded-[6px] bg-[#E31B23] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
             {dDay(data.scheduled_at)}
           </span>
-          <span className="text-[10px] font-medium text-[#6B7280]">내 다음 경기</span>
+          <span className="text-[10px] font-medium text-[#9CA3AF]">내 다음 경기</span>
         </div>
-        <h3 className="text-base font-bold text-[#111827] line-clamp-2">{data.title}</h3>
+        <h3 className="text-base font-bold text-white line-clamp-2" style={{ fontFamily: "var(--font-heading)" }}>{data.title}</h3>
       </div>
       <div className="mt-2 space-y-1">
-        <div className="flex items-center gap-1.5 text-xs text-[#6B7280]">
+        <div className="flex items-center gap-1.5 text-xs text-[#9CA3AF]">
           <Calendar size={13} />
           <span>{formatDate(data.scheduled_at)} {formatTime(data.scheduled_at)}</span>
         </div>
-        <div className="flex items-center gap-1.5 text-xs text-[#6B7280]">
+        <div className="flex items-center gap-1.5 text-xs text-[#9CA3AF]">
           <MapPin size={13} />
           <span className="truncate">{[data.city, data.venue_name].filter(Boolean).join(" ")}</span>
         </div>
@@ -111,8 +111,8 @@ function SlideRecentStats({ data }: { data: DashboardData["recent_stats"] }) {
     return (
       <div className="flex h-full flex-col items-center justify-center text-center">
         <Flame className="mb-2 text-[#E31B23]" size={32} />
-        <p className="text-sm font-bold text-[#111827]">아직 기록이 없어요</p>
-        <p className="mt-1 text-xs text-[#6B7280]">대회에 참가하면 스탯이 기록됩니다</p>
+        <p className="text-sm font-bold text-white" style={{ fontFamily: "var(--font-heading)" }}>아직 기록이 없어요</p>
+        <p className="mt-1 text-xs text-[#9CA3AF]">대회에 참가하면 스탯이 기록됩니다</p>
       </div>
     );
   }
@@ -127,10 +127,10 @@ function SlideRecentStats({ data }: { data: DashboardData["recent_stats"] }) {
       <div>
         <div className="mb-2 flex items-center gap-2">
           <Flame size={14} className="text-[#E31B23]" />
-          <span className="text-[10px] font-medium text-[#6B7280]">내 최근 스탯</span>
+          <span className="text-[10px] font-medium text-[#9CA3AF]">내 최근 스탯</span>
         </div>
         {data.tournament_name && (
-          <p className="mb-1 text-xs text-[#6B7280]">
+          <p className="mb-1 text-xs text-[#9CA3AF]">
             {data.tournament_name} · {formatDate(data.match_date)}
           </p>
         )}
@@ -138,8 +138,8 @@ function SlideRecentStats({ data }: { data: DashboardData["recent_stats"] }) {
       <div className="grid grid-cols-4 gap-2">
         {stats.map((s) => (
           <div key={s.label} className="text-center">
-            <p className="text-xl font-black text-[#1B3C87]">{s.value}</p>
-            <p className="text-[10px] text-[#6B7280]">{s.label}</p>
+            <p className="text-xl font-black text-white">{s.value}</p>
+            <p className="text-[10px] text-[#9CA3AF]">{s.label}</p>
           </div>
         ))}
       </div>
@@ -152,9 +152,9 @@ function SlideMyTeams({ teams }: { teams: DashboardData["my_teams"] }) {
     return (
       <div className="flex h-full flex-col items-center justify-center text-center">
         <Users className="mb-2 text-[#1B3C87]" size={32} />
-        <p className="text-sm font-bold text-[#111827]">소속 팀이 없어요</p>
-        <p className="mt-1 text-xs text-[#6B7280]">팀에 가입하거나 새로 만들어보세요</p>
-        <Link href="/teams" className="mt-3 rounded-full bg-[#1B3C87] px-4 py-2 text-xs font-semibold text-white">
+        <p className="text-sm font-bold text-white" style={{ fontFamily: "var(--font-heading)" }}>소속 팀이 없어요</p>
+        <p className="mt-1 text-xs text-[#9CA3AF]">팀에 가입하거나 새로 만들어보세요</p>
+        <Link href="/teams" className="mt-3 rounded-[10px] bg-[#E31B23] px-4 py-2 text-xs font-bold text-white hover:bg-[#C8101E]">
           팀 찾기
         </Link>
       </div>
@@ -164,23 +164,23 @@ function SlideMyTeams({ teams }: { teams: DashboardData["my_teams"] }) {
     <div className="flex h-full flex-col justify-between">
       <div className="mb-2 flex items-center gap-2">
         <Users size={14} className="text-[#1B3C87]" />
-        <span className="text-[10px] font-medium text-[#6B7280]">내 팀 전적</span>
+        <span className="text-[10px] font-medium text-[#9CA3AF]">내 팀 전적</span>
       </div>
       <div className="space-y-2">
         {teams.map((t) => {
           const total = t.wins + t.losses;
           const winRate = total > 0 ? Math.round((t.wins / total) * 100) : 0;
           return (
-            <Link key={t.id} href={`/teams/${t.id}`} className="flex items-center gap-3 rounded-xl bg-white/60 px-3 py-2">
+            <Link key={t.id} href={`/teams/${t.id}`} className="flex items-center gap-3 rounded-xl bg-white/10 px-3 py-2 transition-colors hover:bg-white/20">
               <div
                 className="h-8 w-8 rounded-full"
                 style={{ backgroundColor: t.color || "#1B3C87" }}
               />
               <div className="flex-1 min-w-0">
-                <p className="truncate text-sm font-bold text-[#111827]">{t.name}</p>
-                <p className="text-[10px] text-[#6B7280]">{t.wins}승 {t.losses}패</p>
+                <p className="truncate text-sm font-bold text-white">{t.name}</p>
+                <p className="text-[10px] text-[#9CA3AF]">{t.wins}승 {t.losses}패</p>
               </div>
-              <span className="text-sm font-black text-[#1B3C87]">{winRate}%</span>
+              <span className="text-sm font-black text-[#E31B23]">{winRate}%</span>
             </Link>
           );
         })}
@@ -194,9 +194,9 @@ function SlideActiveTournament({ data }: { data: DashboardData["active_tournamen
     return (
       <div className="flex h-full flex-col items-center justify-center text-center">
         <Trophy className="mb-2 text-[#E31B23]" size={32} />
-        <p className="text-sm font-bold text-[#111827]">참가 중인 대회가 없어요</p>
-        <p className="mt-1 text-xs text-[#6B7280]">대회에 참가해서 실력을 겨뤄보세요</p>
-        <Link href="/tournaments" className="mt-3 rounded-full bg-[#E31B23] px-4 py-2 text-xs font-semibold text-white">
+        <p className="text-sm font-bold text-white" style={{ fontFamily: "var(--font-heading)" }}>참가 중인 대회가 없어요</p>
+        <p className="mt-1 text-xs text-[#9CA3AF]">대회에 참가해서 실력을 겨뤄보세요</p>
+        <Link href="/tournaments" className="mt-3 rounded-[10px] bg-[#E31B23] px-4 py-2 text-xs font-bold text-white hover:bg-[#C8101E]">
           대회 둘러보기
         </Link>
       </div>
@@ -212,19 +212,19 @@ function SlideActiveTournament({ data }: { data: DashboardData["active_tournamen
       <div>
         <div className="mb-2 flex items-center gap-2">
           <Trophy size={14} className="text-[#E31B23]" />
-          <span className="text-[10px] font-medium text-[#6B7280]">참가 중인 대회</span>
+          <span className="text-[10px] font-medium text-[#9CA3AF]">참가 중인 대회</span>
         </div>
-        <h3 className="text-base font-bold text-[#111827] line-clamp-2">{data.name}</h3>
+        <h3 className="text-base font-bold text-white line-clamp-2" style={{ fontFamily: "var(--font-heading)" }}>{data.name}</h3>
       </div>
       <div className="mt-2 flex items-center gap-2">
-        <span className="rounded-full bg-[#1B3C87] px-2.5 py-0.5 text-[10px] font-bold text-white">
+        <span className="rounded-[6px] bg-[#1B3C87] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
           {STATUS_KR[data.status ?? ""] ?? data.status}
         </span>
         {data.team_name && (
-          <span className="text-xs text-[#6B7280]">{data.team_name}</span>
+          <span className="text-xs text-[#9CA3AF]">{data.team_name}</span>
         )}
         {data.start_date && (
-          <span className="text-xs text-[#6B7280]">{formatDate(data.start_date)}</span>
+          <span className="text-xs text-[#9CA3AF]">{formatDate(data.start_date)}</span>
         )}
       </div>
     </Link>
@@ -236,8 +236,8 @@ function SlideRecommended({ games }: { games: DashboardData["recommended_games"]
     return (
       <div className="flex h-full flex-col items-center justify-center text-center">
         <MapPin className="mb-2 text-[#1B3C87]" size={32} />
-        <p className="text-sm font-bold text-[#111827]">추천 경기가 없어요</p>
-        <p className="mt-1 text-xs text-[#6B7280]">프로필에 지역을 설정하면 맞춤 추천해드려요</p>
+        <p className="text-sm font-bold text-white" style={{ fontFamily: "var(--font-heading)" }}>추천 경기가 없어요</p>
+        <p className="mt-1 text-xs text-[#9CA3AF]">프로필에 지역을 설정하면 맞춤 추천해드려요</p>
       </div>
     );
   }
@@ -245,23 +245,23 @@ function SlideRecommended({ games }: { games: DashboardData["recommended_games"]
     <div className="flex h-full flex-col justify-between">
       <div className="mb-2 flex items-center gap-2">
         <MapPin size={14} className="text-[#1B3C87]" />
-        <span className="text-[10px] font-medium text-[#6B7280]">내 지역 추천 경기</span>
+        <span className="text-[10px] font-medium text-[#9CA3AF]">내 지역 추천 경기</span>
       </div>
       <div className="space-y-2">
         {games.slice(0, 2).map((g, i) => (
           <Link
             key={i}
             href={`/games/${g.uuid?.slice(0, 8) ?? ""}`}
-            className="flex items-center justify-between rounded-xl bg-white/60 px-3 py-2"
+            className="flex items-center justify-between rounded-xl bg-white/10 px-3 py-2 transition-colors hover:bg-white/20"
           >
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-bold text-[#111827]">{g.title}</p>
-              <p className="text-[10px] text-[#6B7280]">
+              <p className="truncate text-sm font-bold text-white">{g.title}</p>
+              <p className="text-[10px] text-[#9CA3AF]">
                 {formatDate(g.scheduled_at)} {formatTime(g.scheduled_at)} · {g.venue_name ?? g.city}
               </p>
             </div>
             {g.spots_left !== null && (
-              <span className="ml-2 whitespace-nowrap rounded-full bg-[#E31B23]/10 px-2 py-0.5 text-[10px] font-bold text-[#E31B23]">
+              <span className="ml-2 whitespace-nowrap rounded-[6px] bg-[#E31B23]/20 px-2 py-0.5 text-[10px] font-bold text-[#E31B23]">
                 {g.spots_left}자리
               </span>
             )}
@@ -327,7 +327,7 @@ export function PersonalHero({ preloadedData }: { preloadedData?: Record<string,
 
   if (loading) {
     return (
-      <div className="h-[120px] animate-pulse rounded-[20px] bg-gradient-to-br from-[#1B3C87]/10 to-[#E31B23]/5 border border-[#E8ECF0]" />
+      <div className="h-[120px] animate-pulse rounded-[20px] bg-[#111827] border border-[#1F2937]" />
     );
   }
 
@@ -336,8 +336,8 @@ export function PersonalHero({ preloadedData }: { preloadedData?: Record<string,
   return (
     <div
       ref={containerRef}
-      className="relative overflow-hidden rounded-[20px] bg-gradient-to-br from-[#1B3C87]/10 to-[#E31B23]/8 border border-[#E8ECF0]"
-      style={{ background: "var(--hero-bg, linear-gradient(135deg, rgba(27,60,135,0.10), rgba(227,27,35,0.08)))" }}
+      className="relative overflow-hidden rounded-[20px] border border-[#1F2937]"
+      style={{ background: "var(--hero-bg, #111827)" }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onTouchStart={onTouchStart}
@@ -381,7 +381,7 @@ export function PersonalHero({ preloadedData }: { preloadedData?: Record<string,
             key={i}
             onClick={() => setCurrent(i)}
             className={`h-1.5 rounded-full transition-all ${
-              i === current ? "w-4 bg-[#1B3C87]" : "w-1.5 bg-[#1B3C87]/25"
+              i === current ? "w-4 bg-white" : "w-1.5 bg-white/30"
             }`}
           />
         ))}

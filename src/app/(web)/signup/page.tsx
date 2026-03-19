@@ -8,7 +8,7 @@ export default function SignupPage() {
     <div className="flex min-h-[80vh] items-center justify-center">
       <Card className="w-full max-w-md">
         <div className="mb-6 text-center">
-          <h1 className="text-xl font-bold sm:text-2xl">회원가입</h1>
+          <h1 className="text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>회원가입</h1>
           <p className="mt-1 text-sm text-[#6B7280]">BDR에 가입하고 농구를 즐기세요</p>
         </div>
 

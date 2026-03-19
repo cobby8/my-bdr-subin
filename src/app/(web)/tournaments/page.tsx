@@ -16,6 +16,7 @@ const STATUS_STYLE: Record<string, { variant: "success" | "default" | "error" | 
   registration:        { variant: "success",  accent: "#4ADE80" },
   registration_open:   { variant: "success",  accent: "#4ADE80" },
   registration_closed: { variant: "warning",  accent: "#FBBF24" },
+  in_progress:         { variant: "info",     accent: "#60A5FA" },
   ongoing:             { variant: "info",     accent: "#60A5FA" },
   completed:           { variant: "default",  accent: "#6B7280" },
   cancelled:           { variant: "error",    accent: "#EF4444" },
@@ -139,50 +140,52 @@ async function TournamentGrid({ status }: { status: string | undefined }) {
 
           return (
             <Link key={t.id} href={`/tournaments/${t.id}`} prefetch={true}>
-              <div
-                className="group relative overflow-hidden rounded-[16px] bg-[#FFFFFF] p-4 sm:p-5 transition-all hover:bg-[#F5F5F5] hover:-translate-y-0.5 hover:shadow-lg"
-                style={{ borderLeft: `3px solid ${style.accent}` }}
-              >
-                {/* 형식 + 상태 */}
-                <div className="mb-3 flex items-center justify-between">
-                  <span className="text-xs font-medium text-[#6B7280]">
-                    {formatLabel}
-                  </span>
-                  <Badge variant={style.variant}>{label}</Badge>
-                </div>
+              <div className="group overflow-hidden rounded-[16px] border border-[#E8ECF0] bg-[#FFFFFF] transition-all hover:-translate-y-1 hover:shadow-lg hover:border-[#1B3C87]/30">
+                {/* 상단 컬러 바 */}
+                <div className="h-1" style={{ backgroundColor: style.accent }} />
 
-                {/* 대회명 */}
-                <h3 className="mb-3 font-semibold leading-snug text-[#111827] line-clamp-2">
-                  {t.name}
-                </h3>
+                <div className="p-4 sm:p-5">
+                  {/* 형식 + 상태 */}
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="rounded-[6px] bg-[#111827] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
+                      {formatLabel}
+                    </span>
+                    <Badge variant={style.variant}>{label}</Badge>
+                  </div>
 
-                {/* 장소 + 날짜 */}
-                <div className="mb-3 space-y-1">
-                  {location && (
-                    <div className="flex items-center gap-1.5 text-xs text-[#6B7280]">
-                      <span>📍</span>
-                      <span className="truncate">{location}</span>
-                    </div>
-                  )}
-                  {dateRange && (
-                    <div className="flex items-center gap-1.5 text-xs text-[#6B7280]">
-                      <span>📅</span>
-                      <span>{dateRange}</span>
-                    </div>
-                  )}
-                </div>
+                  {/* 대회명 */}
+                  <h3 className="mb-3 text-[15px] font-bold leading-snug text-[#111827] line-clamp-2 group-hover:text-[#1B3C87] transition-colors">
+                    {t.name}
+                  </h3>
 
-                {/* 구분선 */}
-                <div className="mb-3 h-px bg-[#E8ECF0]" />
+                  {/* 장소 + 날짜 */}
+                  <div className="mb-3 space-y-1">
+                    {location && (
+                      <p className="flex items-center gap-1.5 text-xs text-[#6B7280]">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 opacity-50"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <span className="truncate">{location}</span>
+                      </p>
+                    )}
+                    {dateRange && (
+                      <p className="flex items-center gap-1.5 text-xs text-[#6B7280]">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 opacity-50"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                        <span>{dateRange}</span>
+                      </p>
+                    )}
+                  </div>
 
-                {/* 참가팀 현황 바 */}
-                <TeamCountBar current={t.teamCount} max={maxTeams} />
+                  {/* 구분선 */}
+                  <div className="mb-3 h-px bg-[#E8ECF0]" />
 
-                {/* 참가비 */}
-                <div className="mt-2 text-xs text-[#9CA3AF]">
-                  {hasFee
-                    ? `💰 참가비 ${Number(t.entry_fee).toLocaleString()}원`
-                    : "무료"}
+                  {/* 참가팀 현황 바 */}
+                  <TeamCountBar current={t.teamCount} max={maxTeams} />
+
+                  {/* 참가비 */}
+                  <div className="mt-2 text-xs font-semibold text-[#111827]">
+                    {hasFee
+                      ? `₩${Number(t.entry_fee).toLocaleString()}`
+                      : <span className="text-[#9CA3AF]">무료</span>}
+                  </div>
                 </div>
               </div>
             </Link>
@@ -215,11 +218,12 @@ export default async function TournamentsPage({
     <div>
       {/* 헤더 -- 즉시 렌더링 */}
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-bold sm:text-2xl">대회</h1>
+        <h1 className="text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>TOURNAMENTS</h1>
         <Link
           href="/tournament-admin/tournaments/new/wizard"
           prefetch={true}
-          className="rounded-full bg-[#E31B23] px-4 py-2 text-sm font-semibold text-white hover:bg-[#C8101E] transition-colors"
+          className="rounded-[10px] bg-[#E31B23] px-5 py-2 text-sm font-bold text-white hover:bg-[#C8101E] transition-colors"
+          style={{ fontFamily: "var(--font-heading)" }}
         >
           대회 만들기
         </Link>

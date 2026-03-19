@@ -58,7 +58,7 @@ export function SlideMenu({
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[#E8ECF0] p-4">
-          <span className="font-bold text-[#E31B23]">메뉴</span>
+          <span className="font-bold text-[#E31B23]" style={{ fontFamily: "var(--font-heading)" }}>메뉴</span>
           <button
             onClick={onClose}
             aria-label="메뉴 닫기"
@@ -89,13 +89,13 @@ export function SlideMenu({
 
               {/* 게시판 */}
               <div className="mb-6">
-                <p className="mb-2 text-xs font-medium text-[#9CA3AF]">게시판</p>
+                <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#9CA3AF]" style={{ fontFamily: "var(--font-heading)" }}>게시판</p>
                 {menuSections.boards.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
                     onClick={onClose}
-                    className="flex items-center rounded-[12px] px-3 py-2.5 text-sm text-[#6B7280] hover:bg-[#EEF2FF] hover:text-[#111827]"
+                    className="flex items-center rounded-[12px] px-3 py-2.5 text-sm text-[#374151] transition-colors hover:bg-[#EEF2FF] hover:text-[#111827]"
                   >
                     {item.label}
                   </Link>
@@ -104,7 +104,7 @@ export function SlideMenu({
 
               {/* 기타 */}
               <div className="mb-6">
-                <p className="mb-2 text-xs font-medium text-[#9CA3AF]">기타</p>
+                <p className="mb-2 text-xs font-bold uppercase tracking-wider text-[#9CA3AF]" style={{ fontFamily: "var(--font-heading)" }}>기타</p>
                 {menuSections.etc
                   .filter((item) => {
                     if (item.superAdminOnly) return role === "super_admin";
@@ -116,7 +116,7 @@ export function SlideMenu({
                       key={item.href}
                       href={item.href}
                       onClick={onClose}
-                      className="flex items-center gap-2 rounded-[12px] px-3 py-2.5 text-sm text-[#6B7280] hover:bg-[#EEF2FF] hover:text-[#111827]"
+                      className="flex items-center gap-2 rounded-[12px] px-3 py-2.5 text-sm text-[#374151] transition-colors hover:bg-[#EEF2FF] hover:text-[#111827]"
                     >
                       {item.icon && <span>{item.icon}</span>}
                       {item.label}
@@ -136,7 +136,7 @@ export function SlideMenu({
             <div className="flex flex-col">
               {/* 브랜드 */}
               <div className="mb-6 rounded-[16px] bg-[#EEF2FF] px-5 py-6 text-center">
-                <p className="text-xl font-bold sm:text-2xl text-[#E31B23]">BDR</p>
+                <p className="text-xl font-bold sm:text-2xl text-[#E31B23]" style={{ fontFamily: "var(--font-heading)" }}>BDR</p>
                 <p className="mt-1 text-xs text-[#6B7280]">농구인을 위한 농구 플랫폼</p>
               </div>
 
@@ -161,14 +161,14 @@ export function SlideMenu({
               <Link
                 href="/login"
                 onClick={onClose}
-                className="mb-2 w-full rounded-full bg-[#1B3C87] py-3 text-center text-sm font-semibold text-white hover:bg-[#142D6B]"
+                className="mb-2 w-full rounded-[10px] bg-[#111827] py-3 text-center text-sm font-bold text-white hover:bg-[#1F2937]"
               >
                 로그인
               </Link>
               <Link
                 href="/signup"
                 onClick={onClose}
-                className="w-full rounded-full border border-[#E8ECF0] py-3 text-center text-sm font-medium text-[#6B7280] hover:bg-[#F5F7FA]"
+                className="w-full rounded-[10px] border-2 border-[#111827] py-3 text-center text-sm font-bold text-[#111827] hover:bg-[#F5F7FA]"
               >
                 회원가입
               </Link>

@@ -32,7 +32,7 @@ export default function AdminSettingsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-bold sm:text-2xl">시스템 설정</h1>
+      <h1 className="mb-6 text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>시스템 설정</h1>
       <div className="space-y-4">
 
         {/* 점검 모드 */}
@@ -50,7 +50,7 @@ export default function AdminSettingsPage() {
             <button
               onClick={handleMaintenanceToggle}
               disabled={isPendingMaintenance}
-              className={`min-w-[80px] rounded-full px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-50 ${
+              className={`min-w-[80px] rounded-[10px] px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-50 ${
                 maintenanceEnabled
                   ? "bg-[rgba(239,68,68,0.1)] text-[#EF4444] hover:bg-[rgba(239,68,68,0.2)]"
                   : "bg-[#EF4444] text-white hover:bg-[#DC2626]"
@@ -74,7 +74,7 @@ export default function AdminSettingsPage() {
             <button
               onClick={handleCacheClear}
               disabled={isPendingCache}
-              className="rounded-full border border-[#E8ECF0] bg-[#F5F7FA] px-4 py-2 text-sm font-semibold text-[#374151] transition-colors hover:bg-[#E8ECF0] disabled:opacity-50"
+              className="rounded-[10px] border border-[#E8ECF0] bg-[#F5F7FA] px-4 py-2 text-sm font-semibold text-[#374151] transition-colors hover:bg-[#E8ECF0] disabled:opacity-50"
             >
               {isPendingCache ? "초기화중..." : "실행"}
             </button>

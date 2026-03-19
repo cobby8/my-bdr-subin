@@ -96,14 +96,14 @@ export default async function TeamDetailPage({
 
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-black text-[#111827]">{team.name}</h1>
+              <h1 className="text-2xl font-extrabold uppercase tracking-wide text-[#111827] sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>{team.name}</h1>
               {team.accepting_members && <Badge variant="success">모집중</Badge>}
             </div>
 
             <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-sm text-[#6B7280]">
-              {location && <span>📍 {location}</span>}
-              {team.founded_year && <span>🗓 {team.founded_year}년 창단</span>}
-              {captainName && <span>👑 주장 {captainName}</span>}
+              {location && <span className="inline-flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>{location}</span>}
+              {team.founded_year && <span className="inline-flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>{team.founded_year}년 창단</span>}
+              {captainName && <span className="inline-flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z"/><path d="M12 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg>주장 {captainName}</span>}
             </div>
 
             <div className="mt-3 flex flex-wrap gap-3">
@@ -140,7 +140,7 @@ export default async function TeamDetailPage({
       {/* 멤버 현황 바 */}
       <div className="rounded-[16px] bg-white px-5 py-4">
         <div className="mb-2 flex items-center justify-between text-sm">
-          <span className="font-medium">멤버 현황</span>
+          <span className="font-medium uppercase tracking-wide" style={{ fontFamily: "var(--font-heading)" }}>멤버 현황</span>
           <span className="text-[#6B7280]">{memberCount} / {maxMembers}명</span>
         </div>
         <div className="relative h-2 overflow-hidden rounded-full bg-[#E8ECF0]">

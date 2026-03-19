@@ -57,6 +57,15 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      { protocol: "http", hostname: "k.kakaocdn.net" },
+      { protocol: "https", hostname: "k.kakaocdn.net" },
+      { protocol: "https", hostname: "p.kakaocdn.net" },
+      { protocol: "https", hostname: "phinf.pstatic.net" },
+      { protocol: "https", hostname: "lh3.googleusercontent.com" },
+    ],
+  },
   // Serwist(@serwist/next)가 webpack config를 추가함 → Turbopack이 경고 발생
   // dev는 disable:true로 SW 비활성화, 프로덕션 빌드(webpack)만 Serwist 사용
   // turbopack: {} → "이 설정을 인지했다"고 Next.js에 알림 (경고 억제)

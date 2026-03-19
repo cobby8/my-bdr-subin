@@ -80,7 +80,7 @@ export default async function AdminTournamentsPage({
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold sm:text-2xl">토너먼트 관리</h1>
+          <h1 className="text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>토너먼트 관리</h1>
           <p className="mt-1 text-sm text-[#6B7280]">
             전체 <span className="font-semibold text-[#111827]">{totalCount}개</span>
           </p>
@@ -90,9 +90,9 @@ export default async function AdminTournamentsPage({
             name="q"
             defaultValue={q ?? ""}
             placeholder="대회명 검색"
-            className="rounded-full border border-[#E8ECF0] bg-[#FFFFFF] px-4 py-2 text-sm outline-none focus:border-[#1B3C87]"
+            className="rounded-[10px] border border-[#E8ECF0] bg-[#FFFFFF] px-4 py-2 text-sm outline-none focus:border-[#1B3C87]"
           />
-          <button type="submit" className="rounded-full bg-[#1B3C87] px-4 py-2 text-sm font-semibold text-white">
+          <button type="submit" className="rounded-[10px] bg-[#1B3C87] px-4 py-2 text-sm font-semibold text-white">
             검색
           </button>
         </form>
@@ -156,7 +156,7 @@ export default async function AdminTournamentsPage({
                             <select
                               name="status"
                               defaultValue=""
-                              className="rounded-full border border-[#E8ECF0] bg-[#FFFFFF] px-3 py-1 text-xs text-[#374151] outline-none focus:border-[#1B3C87]"
+                              className="rounded-[10px] border border-[#E8ECF0] bg-[#FFFFFF] px-3 py-1 text-xs text-[#374151] outline-none focus:border-[#1B3C87]"
                             >
                               <option value="" disabled>변경</option>
                               {transitions.map((s) => (
@@ -165,7 +165,7 @@ export default async function AdminTournamentsPage({
                             </select>
                             <button
                               type="submit"
-                              className="rounded-full bg-[#1B3C87] px-3 py-1 text-xs font-semibold text-white hover:bg-[#142D6B]"
+                              className="rounded-[10px] bg-[#1B3C87] px-3 py-1 text-xs font-semibold text-white hover:bg-[#142D6B]"
                             >
                               적용
                             </button>

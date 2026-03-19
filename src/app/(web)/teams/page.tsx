@@ -51,7 +51,7 @@ export default async function TeamsPage({
     <div>
       {/* 헤더 */}
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-bold sm:text-2xl">팀</h1>
+        <h1 className="text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>TEAMS</h1>
         <Link
           href="/teams/new"
           className="rounded-full bg-[#1B3C87] px-4 py-2 text-sm font-semibold text-white hover:bg-[#142D6B] transition-colors"

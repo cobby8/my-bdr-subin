@@ -80,7 +80,7 @@ export default async function AdminLogsPage({
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold sm:text-2xl">활동 로그</h1>
+          <h1 className="text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>활동 로그</h1>
           <p className="mt-1 text-sm text-[#6B7280]">
             {dateFilter ? `${dateFilter} 로그` : "최근 200건"} · 총 {logs.length}건
           </p>
@@ -89,7 +89,7 @@ export default async function AdminLogsPage({
           {dateFilter && (
             <Link
               href="/admin/logs"
-              className="rounded-full border border-[#E8ECF0] px-3 py-1.5 text-sm text-[#6B7280] hover:bg-[#EEF2FF]"
+              className="rounded-[10px] border border-[#E8ECF0] px-3 py-1.5 text-sm text-[#6B7280] hover:bg-[#EEF2FF]"
             >
               전체 보기
             </Link>
@@ -98,7 +98,7 @@ export default async function AdminLogsPage({
             <Link
               key={d}
               href={`?date=${d}`}
-              className={`rounded-full px-3 py-1.5 text-xs transition-colors ${
+              className={`rounded-[10px] px-3 py-1.5 text-xs transition-colors ${
                 dateFilter === d
                   ? "bg-[#1B3C87] text-white"
                   : "border border-[#E8ECF0] text-[#6B7280] hover:bg-[#EEF2FF]"

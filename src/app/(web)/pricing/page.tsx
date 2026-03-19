@@ -19,10 +19,10 @@ const FEATURE_DESCRIPTIONS: Record<string, string> = {
 };
 
 const FEATURE_ICONS: Record<string, string> = {
-  team_create: "🏀",
-  pickup_game: "⛹️",
-  court_rental: "🏟️",
-  tournament_create: "🏆",
+  team_create: "TM",
+  pickup_game: "PU",
+  court_rental: "CT",
+  tournament_create: "TR",
 };
 
 export default async function PricingPage() {
@@ -53,7 +53,7 @@ export default async function PricingPage() {
   return (
     <div className="py-8">
       <div className="mb-10 text-center">
-        <h1 className="mb-3 text-3xl font-bold">요금제</h1>
+        <h1 className="mb-3 text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>요금제</h1>
         <p className="text-[#6B7280]">
           MyBDR의 프리미엄 기능을 이용하고 농구를 더 즐겁게 즐기세요.
         </p>
@@ -61,7 +61,7 @@ export default async function PricingPage() {
 
       {plans.length === 0 ? (
         <div className="py-16 text-center text-[#6B7280]">
-          <div className="mb-2 text-4xl">🏀</div>
+          <div className="mb-2 text-lg font-semibold text-[#9CA3AF]">No Plans</div>
           <p>현재 등록된 요금제가 없습니다.</p>
         </div>
       ) : (
@@ -71,16 +71,16 @@ export default async function PricingPage() {
             return (
               <div
                 key={plan.id.toString()}
-                className="relative rounded-[20px] border border-[#E8ECF0] bg-[#FFFFFF] p-6 transition-all hover:border-[#1B3C87]/50"
+                className="relative rounded-[16px] border border-[#E8ECF0] bg-[#FFFFFF] p-6 transition-all hover:border-[#1B3C87]/50"
               >
                 {isSubscribed && (
-                  <span className="absolute right-4 top-4 rounded-full bg-[rgba(74,222,128,0.15)] px-3 py-0.5 text-xs font-medium text-[#4ADE80]">
+                  <span className="absolute right-4 top-4 rounded-[10px] bg-[rgba(74,222,128,0.15)] px-3 py-0.5 text-xs font-medium text-[#4ADE80]">
                     구독 중
                   </span>
                 )}
 
                 <div className="mb-4">
-                  <span className="text-3xl">{FEATURE_ICONS[plan.feature_key] ?? "💎"}</span>
+                  <span className="text-lg font-bold text-[#1B3C87]">{FEATURE_ICONS[plan.feature_key] ?? "PRO"}</span>
                 </div>
 
                 <h2 className="mb-1 text-lg font-bold">{plan.name}</h2>
@@ -123,7 +123,7 @@ export default async function PricingPage() {
       )}
 
       {/* 광고 문의 */}
-      <div className="mt-16 rounded-[20px] border border-[#E8ECF0] bg-[#FFFFFF] p-8 text-center">
+      <div className="mt-16 rounded-[16px] border border-[#E8ECF0] bg-[#FFFFFF] p-8 text-center">
         <h3 className="mb-2 text-lg font-bold">광고 문의</h3>
         <p className="mb-4 text-sm text-[#6B7280]">
           MyBDR에서 비즈니스를 홍보하고 싶으신가요? 맞춤 광고 패키지를 제공합니다.
@@ -137,7 +137,7 @@ export default async function PricingPage() {
       </div>
 
       {/* FAQ */}
-      <div className="mt-10 rounded-[20px] border border-[#E8ECF0] bg-[#FFFFFF] p-6">
+      <div className="mt-10 rounded-[16px] border border-[#E8ECF0] bg-[#FFFFFF] p-6">
         <h3 className="mb-4 text-base font-bold">자주 묻는 질문</h3>
         <div className="space-y-4 text-sm text-[#6B7280]">
           <div>

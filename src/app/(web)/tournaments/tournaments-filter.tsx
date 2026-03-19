@@ -4,10 +4,10 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useCallback } from "react";
 
 const STATUSES = [
-  { value: "all",               label: "전체" },
-  { value: "registration_open", label: "모집중" },
-  { value: "ongoing",           label: "진행중" },
-  { value: "completed",         label: "완료" },
+  { value: "all",           label: "전체" },
+  { value: "registration",  label: "모집중" },
+  { value: "in_progress",   label: "진행중" },
+  { value: "completed",     label: "완료" },
 ];
 
 export function TournamentsFilter() {

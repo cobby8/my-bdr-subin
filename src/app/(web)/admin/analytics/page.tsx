@@ -53,24 +53,24 @@ export default async function AdminAnalyticsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-bold sm:text-2xl">분석</h1>
+      <h1 className="mb-6 text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>분석</h1>
 
       {/* 이번 달 통계 */}
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
         <StatCard
           label="이번 달 가입"
           value={data.thisMonthUsers.toLocaleString()}
-          icon={<span className="text-xl">📈</span>}
+          icon={<span className="text-xl font-bold text-[#1B3C87]">+</span>}
         />
         <StatCard
           label="이번 달 대회"
           value={data.thisMonthTournaments.toLocaleString()}
-          icon={<span className="text-xl">🏆</span>}
+          icon={<span className="text-xl font-bold text-[#1B3C87]">T</span>}
         />
         <StatCard
           label="이번 달 경기"
           value={data.thisMonthGames.toLocaleString()}
-          icon={<span className="text-xl">🏀</span>}
+          icon={<span className="text-xl font-bold text-[#E31B23]">G</span>}
         />
       </div>
 

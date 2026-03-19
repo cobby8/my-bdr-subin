@@ -30,29 +30,29 @@ export default async function TournamentAdminDashboard() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-bold sm:text-2xl">대회 관리 대시보드</h1>
-        <Link href="/tournament-admin/tournaments/new/wizard" className="rounded-full bg-[#1B3C87] px-4 py-2 text-sm font-semibold text-white">새 대회 만들기</Link>
+        <h1 className="text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>대회 관리 대시보드</h1>
+        <Link href="/tournament-admin/tournaments/new/wizard" className="rounded-[10px] bg-[#1B3C87] px-4 py-2 text-sm font-semibold text-white">새 대회 만들기</Link>
       </div>
 
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <StatCard label="내 대회" value={total} icon={<span className="text-xl">🏆</span>} />
-        <StatCard label="진행 중" value={active} icon={<span className="text-xl">🔥</span>} />
-        <StatCard label="완료" value={completed} icon={<span className="text-xl">✅</span>} />
+        <StatCard label="내 대회" value={total} icon={<span className="text-xl font-bold text-[#1B3C87]">T</span>} />
+        <StatCard label="진행 중" value={active} icon={<span className="text-xl font-bold text-[#E31B23]">L</span>} />
+        <StatCard label="완료" value={completed} icon={<span className="text-xl font-bold text-[#1B3C87]">D</span>} />
       </div>
 
       <Card>
         <h2 className="mb-4 text-lg font-semibold">빠른 시작</h2>
         <div className="grid gap-3 sm:grid-cols-3">
           <Link href="/tournament-admin/tournaments/new/wizard" className="rounded-[16px] bg-[#EEF2FF] p-4 text-center hover:bg-[#E8ECF0] transition-colors">
-            <div className="mb-2 text-2xl">🏆</div>
+            <div className="mb-2 text-2xl font-bold text-[#1B3C87]">+</div>
             <p className="text-sm font-medium">대회 만들기</p>
           </Link>
           <Link href="/tournament-admin/tournaments" className="rounded-[16px] bg-[#EEF2FF] p-4 text-center hover:bg-[#E8ECF0] transition-colors">
-            <div className="mb-2 text-2xl">📋</div>
+            <div className="mb-2 text-2xl font-bold text-[#1B3C87]">=</div>
             <p className="text-sm font-medium">내 대회 목록</p>
           </Link>
           <Link href="/tournament-admin/templates" className="rounded-[16px] bg-[#EEF2FF] p-4 text-center hover:bg-[#E8ECF0] transition-colors">
-            <div className="mb-2 text-2xl">🎨</div>
+            <div className="mb-2 text-2xl font-bold text-[#1B3C87]">T</div>
             <p className="text-sm font-medium">템플릿 둘러보기</p>
           </Link>
         </div>
@@ -89,11 +89,11 @@ export default async function TournamentAdminDashboard() {
           </div>
         ) : (
           <Card className="py-8 text-center text-[#6B7280]">
-            <div className="mb-2 text-3xl">📋</div>
+            <div className="mb-2 text-lg font-semibold text-[#9CA3AF]">Series</div>
             <p className="mb-3 text-sm">정기 대회를 시리즈로 관리해보세요.</p>
             <Link
               href="/tournament-admin/series/new"
-              className="inline-block rounded-full bg-[#1B3C87] px-4 py-2 text-sm font-semibold text-white hover:bg-[#142D6B] transition-colors"
+              className="inline-block rounded-[10px] bg-[#1B3C87] px-4 py-2 text-sm font-semibold text-white hover:bg-[#142D6B] transition-colors"
             >
               첫 시리즈 만들기
             </Link>

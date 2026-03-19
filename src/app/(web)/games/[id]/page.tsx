@@ -24,10 +24,10 @@ const STATUS_LABEL: Record<number, string> = {
   5: "취소",
 };
 
-const GAME_TYPE_LABEL: Record<number, { label: string; emoji: string; accent: string }> = {
-  0: { label: "픽업",        emoji: "🏀", accent: "#E31B23" },
-  1: { label: "게스트 모집",  emoji: "🤝", accent: "#60A5FA" },
-  2: { label: "팀 대결",     emoji: "⚔️", accent: "#4ADE80" },
+const GAME_TYPE_LABEL: Record<number, { label: string; icon: React.ReactNode; accent: string }> = {
+  0: { label: "픽업", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/><path d="M19.07 4.93A10 10 0 0 1 22 12c0 2.76-1.12 5.26-2.93 7.07"/><path d="M4.93 19.07A10 10 0 0 1 2 12c0-2.76 1.12-5.26 2.93-7.07"/></svg>, accent: "#E31B23" },
+  1: { label: "게스트 모집", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, accent: "#60A5FA" },
+  2: { label: "팀 대결", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 9 7 9 7"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 15 7 15 7"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>, accent: "#4ADE80" },
 };
 
 export default async function GameDetailPage({
@@ -98,7 +98,7 @@ export default async function GameDetailPage({
       {/* 메인 정보 카드 */}
       <Card>
         <div className="mb-4 flex flex-wrap items-center gap-2">
-          <span className="text-xl">{gameTypeInfo.emoji}</span>
+          <span className="text-[#1B3C87]">{gameTypeInfo.icon}</span>
           <Badge variant="default">{gameTypeInfo.label}</Badge>
           <Badge
             variant={
@@ -112,7 +112,7 @@ export default async function GameDetailPage({
             {statusLabel}
           </Badge>
         </div>
-        <h1 className="mb-4 text-xl font-bold sm:text-2xl">{game.title}</h1>
+        <h1 className="mb-4 text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>{game.title}</h1>
 
         {/* 게임 타입별 상세 섹션 */}
         {game.game_type === 0 && <PickupDetail game={game} />}
@@ -143,8 +143,9 @@ export default async function GameDetailPage({
         )}
         {/* 이미 승인된 경우 */}
         {session && !isHost && myApplication?.status === 1 && (
-          <div className="mt-6 rounded-[12px] bg-green-50 px-4 py-3 text-sm text-green-700">
-            ✅ 참가가 승인되었습니다.
+          <div className="mt-6 flex items-center gap-2 rounded-[12px] bg-green-50 px-4 py-3 text-sm text-green-700">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            참가가 승인되었습니다.
           </div>
         )}
       </Card>
@@ -152,7 +153,7 @@ export default async function GameDetailPage({
       {/* 호스트 신청자 관리 패널 */}
       {isHost && (
         <Card>
-          <h2 className="mb-4 text-lg font-semibold">
+          <h2 className="mb-4 text-lg font-semibold uppercase tracking-wide" style={{ fontFamily: "var(--font-heading)" }}>
             신청자 관리{" "}
             <span className="text-sm font-normal text-[#6B7280]">
               ({applications.length} / {game.max_participants ?? "∞"}명)
@@ -177,7 +178,7 @@ export default async function GameDetailPage({
       {/* 일반 참가자 목록 (호스트 제외 모두에게 공개) */}
       {!isHost && (
         <Card>
-          <h2 className="mb-4 text-lg font-semibold">
+          <h2 className="mb-4 text-lg font-semibold uppercase tracking-wide" style={{ fontFamily: "var(--font-heading)" }}>
             참가자 ({applications.filter((a) => a.status === 1).length} / {game.max_participants ?? "∞"}명)
           </h2>
           {applications.filter((a) => a.status === 1).length > 0 ? (

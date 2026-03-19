@@ -4,15 +4,15 @@ type Variant = "primary" | "secondary" | "ghost" | "danger" | "cta";
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-[#1B3C87] text-white font-semibold hover:bg-[#142D6B]",
+    "bg-[#111827] text-white font-bold hover:bg-[#1F2937]",
   cta:
-    "bg-[#E31B23] text-white font-semibold hover:bg-[#C8101E]",
+    "bg-[#E31B23] text-white font-bold hover:bg-[#C8101E]",
   secondary:
-    "bg-[#FFFFFF] text-[#374151] border border-[#CBD5E1] hover:bg-[#F5F7FA] hover:border-[#1B3C87]",
+    "bg-[#FFFFFF] text-[#111827] border-2 border-[#111827] font-bold hover:bg-[#F5F7FA]",
   ghost:
-    "text-[#1B3C87] hover:bg-[rgba(27,60,135,0.08)]",
+    "text-[#1B3C87] font-bold hover:bg-[rgba(27,60,135,0.08)]",
   danger:
-    "bg-[rgba(239,68,68,0.2)] text-[#EF4444] hover:bg-[rgba(239,68,68,0.3)]",
+    "bg-[rgba(239,68,68,0.2)] text-[#EF4444] font-bold hover:bg-[rgba(239,68,68,0.3)]",
 };
 
 export function Button({
@@ -29,7 +29,7 @@ export function Button({
 } & ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
-      className={`rounded-full px-6 py-3 text-sm min-h-[44px] transition-all active:scale-[0.97] disabled:opacity-50 disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1B3C87] focus-visible:ring-offset-2 ${variants[variant]} ${className}`}
+      className={`rounded-[10px] px-6 py-3 text-sm min-h-[44px] transition-all active:scale-[0.97] disabled:opacity-50 disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1B3C87] focus-visible:ring-offset-2 ${variants[variant]} ${className}`}
       disabled={loading || props.disabled}
       {...props}
     >

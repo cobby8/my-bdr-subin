@@ -39,7 +39,7 @@ export default async function AdminPaymentsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-bold sm:text-2xl">결제 관리</h1>
+      <h1 className="mb-6 text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>결제 관리</h1>
 
       {/* 통계 카드 */}
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
@@ -62,7 +62,7 @@ export default async function AdminPaymentsPage() {
       {/* 결제 목록 */}
       {payments.length === 0 ? (
         <Card className="py-12 text-center text-[#6B7280]">
-          <div className="mb-2 text-3xl">💳</div>
+          <div className="mb-2 text-3xl text-[#9CA3AF]">--</div>
           결제 내역이 없습니다.
         </Card>
       ) : (

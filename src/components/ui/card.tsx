@@ -8,7 +8,7 @@ export function Card({
   className?: string;
 }) {
   return (
-    <div className={`rounded-[16px] border border-[#E8ECF0] bg-[#FFFFFF] p-4 sm:p-5 shadow-[0_2px_8px_rgba(0,0,0,0.06)] ${className}`}>
+    <div className={`rounded-[16px] border border-[#E8ECF0] bg-[#FFFFFF] p-4 sm:p-5 shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-all duration-200 hover:-translate-y-1 hover:shadow-lg ${className}`}>
       {children}
     </div>
   );

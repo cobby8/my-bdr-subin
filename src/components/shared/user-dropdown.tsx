@@ -47,7 +47,7 @@ export function UserDropdown({
       </button>
 
       {open && (
-        <div className="absolute right-0 top-12 w-56 rounded-[16px] border border-[#E8ECF0] bg-[#FFFFFF] py-2 shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
+        <div className="absolute right-0 top-12 w-56 rounded-[16px] border border-[#E8ECF0] bg-[#FFFFFF] py-2 shadow-[0_8px_32px_rgba(0,0,0,0.12)] animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="border-b border-[#E8ECF0] px-4 pb-3 pt-2 flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-[#EEF2FF] text-sm font-bold text-[#1B3C87] shrink-0">
               {profileImage ? (
@@ -76,7 +76,7 @@ export function UserDropdown({
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="block px-4 py-2 text-sm text-[#6B7280] hover:bg-[#EEF2FF] hover:text-[#111827]"
+                className="block px-4 py-2 text-sm text-[#374151] transition-colors hover:bg-[#EEF2FF] hover:text-[#111827] hover:pl-5"
               >
                 {item.label}
               </Link>
@@ -86,7 +86,7 @@ export function UserDropdown({
           <div className="border-t border-[#E8ECF0] pt-1">
             <a
               href="/api/auth/logout"
-              className="block w-full px-4 py-2 text-left text-sm text-[#EF4444] hover:bg-[rgba(239,68,68,0.1)]"
+              className="block w-full px-4 py-2 text-left text-sm text-[#EF4444] transition-colors hover:bg-[rgba(239,68,68,0.1)] hover:pl-5"
             >
               로그아웃
             </a>

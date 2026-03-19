@@ -155,10 +155,10 @@ export default function ProfileEditPage() {
     <div className="mx-auto max-w-lg">
       {/* 헤더 */}
       <div className="mb-6 flex items-center gap-3">
-        <Link href="/profile" className="rounded-full p-2 text-[#6B7280] hover:bg-[#EEF2FF]">
+        <Link href="/profile" className="rounded-[10px] p-2 text-[#6B7280] hover:bg-[#EEF2FF]">
           ←
         </Link>
-        <h1 className="text-xl font-bold">프로필 수정</h1>
+        <h1 className="text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>프로필 수정</h1>
       </div>
 
       {error && (
@@ -170,7 +170,7 @@ export default function ProfileEditPage() {
 
       {/* 기본 정보 */}
       <div className={section}>
-        <h2 className="mb-4 font-semibold text-[#111827]">기본 정보</h2>
+        <h2 className="mb-4 font-semibold uppercase tracking-wide text-[#111827]" style={{ fontFamily: "var(--font-heading)" }}>기본 정보</h2>
         <div className="space-y-4">
           <div>
             <label className={lbl}>이름 (실명)</label>
@@ -245,7 +245,7 @@ export default function ProfileEditPage() {
 
       {/* 경기 정보 */}
       <div className={section}>
-        <h2 className="mb-4 font-semibold text-[#111827]">경기 정보</h2>
+        <h2 className="mb-4 font-semibold uppercase tracking-wide text-[#111827]" style={{ fontFamily: "var(--font-heading)" }}>경기 정보</h2>
         <div className="space-y-4">
           <div>
             <label className={lbl}>포지션</label>
@@ -260,6 +260,7 @@ export default function ProfileEditPage() {
                       ? "border-[#1B3C87] bg-[rgba(27,60,135,0.12)] text-[#1B3C87]"
                       : "border-[#E8ECF0] text-[#6B7280] hover:border-[#1B3C87]"
                   }`}
+                  style={{ borderRadius: "10px" }}
                 >
                   {pos}
                 </button>
@@ -308,7 +309,7 @@ export default function ProfileEditPage() {
 
       {/* 환불 계좌 정보 */}
       <div className={section}>
-        <h2 className="mb-1 font-semibold text-[#111827]">환불 계좌 정보</h2>
+        <h2 className="mb-1 font-semibold uppercase tracking-wide text-[#111827]" style={{ fontFamily: "var(--font-heading)" }}>환불 계좌 정보</h2>
         <p className="mb-4 text-xs text-[#9CA3AF]">참가비·게스트비·픽업비 환불 시 사용됩니다</p>
 
         {hasExistingAccount && !bankForm.account_consent && (
@@ -387,7 +388,7 @@ export default function ProfileEditPage() {
       <button
         onClick={handleSave}
         disabled={saving}
-        className="w-full rounded-full bg-[#1B3C87] py-4 text-sm font-semibold text-white hover:bg-[#142D6B] disabled:opacity-60"
+        className="w-full rounded-[10px] bg-[#1B3C87] py-4 text-sm font-semibold text-white hover:bg-[#142D6B] disabled:opacity-60"
       >
         {saving ? "저장 중..." : "저장"}
       </button>

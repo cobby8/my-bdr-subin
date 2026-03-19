@@ -78,13 +78,13 @@ export function QuickMenu() {
     return (
       <section className="rounded-[20px] border border-[#E8ECF0] bg-[#FFFFFF] p-4">
         <div className="mb-3 flex items-center justify-between">
-          <span className="text-sm font-semibold text-[#111827]">
+          <span className="text-sm font-bold text-[#111827]" style={{ fontFamily: "var(--font-heading)" }}>
             메뉴 편집 ({pending.length}/{MAX_ITEMS}개 선택)
           </span>
           <button
             onClick={saveEdit}
             disabled={saving || pending.length === 0}
-            className="rounded-full bg-[#1B3C87] px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-60"
+            className="rounded-[10px] bg-[#111827] px-4 py-1.5 text-xs font-bold text-white disabled:opacity-60 hover:bg-[#1F2937]"
           >
             완료
           </button>
@@ -96,7 +96,7 @@ export function QuickMenu() {
             <button
               key={m.id}
               onClick={() => toggleItem(m.id)}
-              className="flex items-center gap-1 rounded-full bg-[rgba(27,60,135,0.12)] px-3 py-1.5 text-xs font-medium text-[#1B3C87]"
+              className="flex items-center gap-1 rounded-[6px] bg-[rgba(27,60,135,0.12)] px-3 py-1.5 text-xs font-bold text-[#1B3C87]"
             >
               {m.icon} {m.label} ✕
             </button>
@@ -127,7 +127,7 @@ export function QuickMenu() {
   return (
     <section>
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-sm font-semibold text-[#111827]">자주 쓰는 메뉴</span>
+        <span className="text-sm font-bold text-[#111827]" style={{ fontFamily: "var(--font-heading)" }}>자주 쓰는 메뉴</span>
         {isLoggedIn && (
           <button
             onClick={openEdit}
@@ -140,9 +140,9 @@ export function QuickMenu() {
       <div className="grid grid-cols-4 gap-2">
         {menuItems.map((m) => (
           <Link key={m.id} href={m.href}>
-            <div className="flex flex-col items-center gap-1 rounded-[16px] border border-[#E8ECF0] bg-[#FFFFFF] py-3 text-center transition-colors hover:bg-[#EEF2FF]">
+            <div className="flex flex-col items-center gap-1.5 rounded-[16px] border border-[#E8ECF0] bg-[#FFFFFF] py-3 text-center transition-all duration-200 hover:-translate-y-1 hover:shadow-md hover:border-[#1B3C87]">
               <span className="text-xl">{m.icon}</span>
-              <span className="text-xs font-medium text-[#B0B8C1]">{m.label}</span>
+              <span className="text-xs font-bold text-[#374151]">{m.label}</span>
             </div>
           </Link>
         ))}

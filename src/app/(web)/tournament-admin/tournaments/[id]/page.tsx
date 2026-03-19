@@ -68,31 +68,31 @@ export default async function TournamentAdminDetailPage({
     {
       href: `/tournament-admin/tournaments/${id}/wizard`,
       label: "대회 설정",
-      icon: "⚙️",
+      icon: "SET",
       desc: "기본 정보, 규칙, 일정 수정",
     },
     {
       href: `/tournament-admin/tournaments/${id}/teams`,
       label: "참가팀 관리",
-      icon: "🏀",
+      icon: "TM",
       desc: `${tournament._count.tournamentTeams}팀 등록됨`,
     },
     {
       href: `/tournament-admin/tournaments/${id}/bracket`,
       label: "대진표 생성",
-      icon: "🏆",
+      icon: "BR",
       desc: "자동 생성 · 팀 배치 편집 · 버전 관리",
     },
     {
       href: `/tournament-admin/tournaments/${id}/matches`,
       label: "경기 관리",
-      icon: "📋",
+      icon: "MT",
       desc: `${tournament._count.tournamentMatches}경기 · 스코어 입력`,
     },
     {
       href: `/tournament-admin/tournaments/${id}/site`,
       label: "사이트 관리",
-      icon: "🌐",
+      icon: "WEB",
       desc: tournament.tournamentSite[0]
         ? `${tournament.tournamentSite[0].subdomain}.mybdr.kr`
         : "사이트 미설정",
@@ -100,13 +100,13 @@ export default async function TournamentAdminDetailPage({
     {
       href: `/tournament-admin/tournaments/${id}/admins`,
       label: "관리자",
-      icon: "👥",
+      icon: "ADM",
       desc: "스태프 권한 관리",
     },
     {
       href: `/tournament-admin/tournaments/${id}/recorders`,
       label: "기록원",
-      icon: "📋",
+      icon: "REC",
       desc: "스탯 기록원 지정",
     },
   ];
@@ -122,7 +122,7 @@ export default async function TournamentAdminDetailPage({
                 ← 대회 목록
               </Link>
             </div>
-            <h1 className="text-xl font-bold sm:text-2xl">{tournament.name}</h1>
+            <h1 className="text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>{tournament.name}</h1>
             <div className="mt-1 flex flex-wrap items-center gap-3 text-sm">
               <span className={STATUS_COLOR[status] ?? "text-[#6B7280]"}>
                 ● {STATUS_LABEL[status] ?? status}
@@ -133,7 +133,7 @@ export default async function TournamentAdminDetailPage({
                     {tournament.startDate.toLocaleDateString("ko-KR")}
                     {tournament.endDate && ` ~ ${tournament.endDate.toLocaleDateString("ko-KR")}`}
                   </span>
-                  <span className="rounded-full bg-[rgba(244,162,97,0.12)] px-2 py-0.5 text-xs font-semibold text-[#E31B23]">
+                  <span className="rounded-[10px] bg-[rgba(244,162,97,0.12)] px-2 py-0.5 text-xs font-semibold text-[#E31B23]">
                     {getDDay(tournament.startDate)}
                   </span>
                 </>
@@ -167,7 +167,7 @@ export default async function TournamentAdminDetailPage({
         {actions.map((a) => (
           <Link key={a.href} href={a.href}>
             <Card className="cursor-pointer transition-colors hover:bg-[#EEF2FF]">
-              <div className="mb-2 text-2xl">{a.icon}</div>
+              <div className="mb-2 text-sm font-bold text-[#1B3C87]">{a.icon}</div>
               <h3 className="font-semibold">{a.label}</h3>
               <p className="mt-1 text-sm text-[#6B7280]">{a.desc}</p>
             </Card>

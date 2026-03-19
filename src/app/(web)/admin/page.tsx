@@ -15,13 +15,13 @@ export default async function AdminDashboard() {
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-bold sm:text-2xl">대시보드</h1>
+      <h1 className="mb-6 text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>대시보드</h1>
 
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="전체 유저" value={userCount} icon={<span className="text-xl">👥</span>} />
-        <StatCard label="토너먼트" value={tournamentCount} icon={<span className="text-xl">🏆</span>} />
-        <StatCard label="진행 중 경기" value={matchCount} icon={<span className="text-xl">🏀</span>} />
-        <StatCard label="등록 팀" value={teamCount} icon={<span className="text-xl">👕</span>} />
+        <StatCard label="전체 유저" value={userCount} icon={<span className="text-xl font-bold text-[#1B3C87]">U</span>} />
+        <StatCard label="토너먼트" value={tournamentCount} icon={<span className="text-xl font-bold text-[#1B3C87]">T</span>} />
+        <StatCard label="진행 중 경기" value={matchCount} icon={<span className="text-xl font-bold text-[#E31B23]">L</span>} />
+        <StatCard label="등록 팀" value={teamCount} icon={<span className="text-xl font-bold text-[#1B3C87]">TM</span>} />
       </div>
 
       <Card>

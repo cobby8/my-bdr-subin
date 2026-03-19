@@ -93,12 +93,11 @@ export default function VerifyPage() {
     <div className="flex min-h-[80vh] flex-col items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="mb-6 text-center">
-          <div className="mb-2 text-4xl">🔐</div>
-          <h1 className="text-xl font-bold text-[#111827]">추가 인증이 필요해요</h1>
+          <h1 className="text-2xl font-extrabold uppercase tracking-wide sm:text-3xl text-[#111827]" style={{ fontFamily: "var(--font-heading)" }}>추가 인증이 필요해요</h1>
           <p className="mt-1 text-sm text-[#6B7280]">서비스 이용을 위해 아래 정보를 인증해주세요.</p>
         </div>
 
-        <div className="rounded-[20px] border border-[#E8ECF0] bg-[#FFFFFF] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.07)]">
+        <div className="rounded-[16px] border border-[#E8ECF0] bg-[#FFFFFF] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.07)]">
           {error && (
             <div className="mb-4 rounded-[10px] bg-red-500/10 px-3 py-2 text-sm text-red-500">{error}</div>
           )}

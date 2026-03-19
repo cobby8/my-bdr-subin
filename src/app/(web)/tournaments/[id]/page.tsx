@@ -102,7 +102,7 @@ function parseDescription(text: string): Section[] {
 
 // -- 섹션 렌더러 --
 
-const PRIZE_EMOJI: Record<string, string> = { 우승: "🥇", 준우승: "🥈", MVP: "⭐" };
+const PRIZE_ICON: Record<string, string> = { 우승: "1st", 준우승: "2nd", MVP: "MVP" };
 
 function DescriptionSections({ text }: { text: string }) {
   const sections = parseDescription(text);
@@ -176,7 +176,7 @@ function DescriptionSections({ text }: { text: string }) {
                     {sec.items.map((prize, j) => (
                       <tr key={j} className="border-t border-[#E8ECF0]">
                         <td className="px-4 py-2.5 font-medium">
-                          {PRIZE_EMOJI[prize.rank] ?? ""} {prize.rank}
+                          {PRIZE_ICON[prize.rank] ? <span className="mr-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#1B3C87]/10 text-[10px] font-bold text-[#E31B23]">{PRIZE_ICON[prize.rank]}</span> : null} {prize.rank}
                         </td>
                         <td className="px-4 py-2.5 text-[#6B7280]">
                           {prize.items.join(" + ")}
@@ -327,7 +327,7 @@ async function MatchesAndStandings({ tournamentId }: { tournamentId: string }) {
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <div>
-        <h2 className="mb-3 font-semibold">최근 경기</h2>
+        <h2 className="mb-3 font-semibold uppercase tracking-wide" style={{ fontFamily: "var(--font-heading)" }}>최근 경기</h2>
         <div className="space-y-2">
           {matches.map((m) => (
             <Card key={m.id.toString()} className="flex items-center justify-between py-3">
@@ -345,7 +345,7 @@ async function MatchesAndStandings({ tournamentId }: { tournamentId: string }) {
       </div>
 
       <div>
-        <h2 className="mb-3 font-semibold">순위</h2>
+        <h2 className="mb-3 font-semibold uppercase tracking-wide" style={{ fontFamily: "var(--font-heading)" }}>순위</h2>
         <Card className="overflow-hidden p-0">
           <table className="w-full text-sm">
             <thead className="border-b border-[#E8ECF0] text-[#6B7280]">
@@ -420,9 +420,9 @@ export default async function TournamentDetailPage({ params }: { params: Promise
   return (
     <div>
       {/* 헤더 -- 즉시 렌더링 */}
-      <Card className="mb-6">
+      <Card className="mb-6 rounded-[16px] border border-[#E8ECF0] overflow-hidden">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <h1 className="text-xl font-bold sm:text-2xl">{tournament.name}</h1>
+          <h1 className="text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>{tournament.name}</h1>
           <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
         </div>
         <p className="mt-2 text-sm text-[#6B7280]">
@@ -434,13 +434,14 @@ export default async function TournamentDetailPage({ params }: { params: Promise
         </p>
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm">
           {tournament.venue_name && (
-            <span className="text-[#6B7280]">
-              📍 {[tournament.city, tournament.venue_name].filter(Boolean).join(" ")}
+            <span className="flex items-center gap-1 text-[#6B7280]">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              {[tournament.city, tournament.venue_name].filter(Boolean).join(" ")}
             </span>
           )}
           {tournament.entry_fee && Number(tournament.entry_fee) > 0 && (
             <span className="text-[#6B7280]">
-              💰 참가비 {Number(tournament.entry_fee).toLocaleString()}원
+              참가비 {Number(tournament.entry_fee).toLocaleString()}원
             </span>
           )}
         </div>

@@ -6,23 +6,23 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4">
         <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-lg font-bold text-[#E31B23]">BDR</span>
-            <span className="text-xs text-[#6B7280]">© {new Date().getFullYear()-1}</span>
+            <span className="text-lg font-bold text-[#E31B23]" style={{ fontFamily: "var(--font-heading)" }}>BDR</span>
+            <span className="text-xs text-[#6B7280]">© {new Date().getFullYear()}</span>
           </div>
 
-          <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-[#6B7280]">
-            <Link href="/pricing" className="transition-colors hover:text-[#E31B23]">
+          <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-[#374151]">
+            <Link href="/pricing" className="transition-colors hover:text-[#E31B23] hover:underline">
               요금제
             </Link>
-            <Link href="/terms" className="transition-colors hover:text-[#111827]">
+            <Link href="/terms" className="transition-colors hover:text-[#111827] hover:underline">
               이용약관
             </Link>
-            <Link href="/privacy" className="transition-colors hover:text-[#111827]">
+            <Link href="/privacy" className="transition-colors hover:text-[#111827] hover:underline">
               개인정보처리방침
             </Link>
             <a
               href="mailto:bdr.wonyoung@gmail.com"
-              className="transition-colors hover:text-[#111827]"
+              className="transition-colors hover:text-[#111827] hover:underline"
             >
               광고 문의
             </a>
