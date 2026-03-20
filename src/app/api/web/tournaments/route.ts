@@ -1,6 +1,47 @@
+import { NextRequest } from "next/server";
 import { withWebAuth, type WebAuthContext } from "@/lib/auth/web-session";
 import { apiSuccess, apiError } from "@/lib/api/response";
-import { createTournament, hasCreatePermission } from "@/lib/services/tournament";
+import { createTournament, hasCreatePermission, listTournaments } from "@/lib/services/tournament";
+
+/**
+ * GET /api/web/tournaments
+ *
+ * 대회 목록을 반환하는 공개 API
+ * - 인증 불필요 (공개 목록)
+ * - 쿼리 파라미터: status (대회 상태 필터)
+ * - Date/Decimal 필드를 JSON 직렬화 가능한 형태로 변환
+ */
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = request.nextUrl;
+
+    // 쿼리 파라미터 추출
+    const status = searchParams.get("status") || undefined;
+
+    // 서비스 함수로 DB 조회
+    const rows = await listTournaments({ status, take: 60 }).catch(() => []);
+
+    // Date, Decimal 필드를 JSON 직렬화 가능하도록 변환
+    const tournaments = rows.map((t) => ({
+      id: t.id,
+      name: t.name,
+      format: t.format,
+      status: t.status,
+      startDate: t.startDate?.toISOString() ?? null,   // Date -> ISO string
+      endDate: t.endDate?.toISOString() ?? null,        // Date -> ISO string
+      entryFee: t.entry_fee?.toString() ?? null,        // Decimal -> string
+      city: t.city,
+      venueName: t.venue_name,
+      maxTeams: t.maxTeams,
+      teamCount: t._count.tournamentTeams,              // 참가팀 수
+    }));
+
+    return apiSuccess({ tournaments });
+  } catch (error) {
+    console.error("[GET /api/web/tournaments] Error:", error);
+    return apiError("대회 목록을 불러올 수 없습니다.", 500, "INTERNAL_ERROR");
+  }
+}
 
 const FORMAT_MAP: Record<string, string> = {
   "싱글 엘리미네이션": "single_elimination",
