@@ -2,6 +2,8 @@ import { type NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db/prisma";
 import { getWebUser } from "@/lib/auth/tournament-auth";
+import { createNotification } from "@/lib/notifications/create";
+import { NOTIFICATION_TYPES } from "@/lib/notifications/types";
 import { apiSuccess, apiError } from "@/lib/api/response";
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -150,6 +152,8 @@ export async function POST(req: NextRequest, { params }: Ctx) {
     where: { id },
     select: {
       id: true,
+      name: true,            // 알림 메시지에 대회명 표시용
+      organizerId: true,     // 주최자에게 알림 발송용
       status: true,
       registration_start_at: true,
       registration_end_at: true,
@@ -313,6 +317,53 @@ export async function POST(req: NextRequest, { params }: Ctx) {
 
     return tournamentTeam;
   });
+
+  // --- 알림 발송 (fire-and-forget: 알림 실패가 참가신청을 실패시키지 않음) ---
+
+  // (a) 신청자에게: 참가신청 완료 알림
+  createNotification({
+    userId: user.userId,
+    notificationType: NOTIFICATION_TYPES.TOURNAMENT_JOIN_SUBMITTED,
+    title: "대회 참가 신청 완료",
+    content: `"${tournament.name}" 대회에 참가 신청이 완료되었습니다.${isWaiting ? ` (대기 ${waitingNumber}번)` : ""}`,
+    actionUrl: `/tournaments/${tournament.id}`,
+    notifiableType: "tournament",
+    notifiableId: result.id,
+    metadata: {
+      tournament: {
+        id: tournament.id,
+        name: tournament.name,
+      },
+      team: {
+        id: team.id.toString(),
+        name: team.name,
+      },
+    },
+  }).catch(() => {});
+
+  // (b) 대회 주최자에게: 새 참가신청 접수 알림
+  createNotification({
+    userId: tournament.organizerId,
+    notificationType: NOTIFICATION_TYPES.TOURNAMENT_JOIN_RECEIVED,
+    title: "새 팀 참가 신청",
+    content: `"${team.name}" 팀이 "${tournament.name}" 대회에 참가 신청했습니다.`,
+    actionUrl: `/tournaments/${tournament.id}`,
+    notifiableType: "tournament",
+    notifiableId: result.id,
+    metadata: {
+      tournament: {
+        id: tournament.id,
+        name: tournament.name,
+      },
+      team: {
+        id: team.id.toString(),
+        name: team.name,
+      },
+      applicant: {
+        id: user.userId.toString(),
+      },
+    },
+  }).catch(() => {});
 
   return apiSuccess({
     id: result.id,
