@@ -79,6 +79,7 @@ export const PATCH = withWebAuth(async (req: Request, ctx: WebAuthContext) => {
         preferred_divisions: true,
         preferred_cities: true,
         preferred_board_categories: true,
+        preferred_game_types: true, // GET 응답과 동일하게 경기 유형도 포함
       },
     });
 

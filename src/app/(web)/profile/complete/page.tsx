@@ -165,7 +165,8 @@ export default function ProfileCompletePage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "저장 실패");
-      router.push("/");
+      // 프로필 저장 후 선호 설정 페이지로 이동 (온보딩 2단계)
+      router.push("/profile/complete/preferences");
     } catch (e) {
       setError(e instanceof Error ? e.message : "오류가 발생했습니다.");
     } finally {
