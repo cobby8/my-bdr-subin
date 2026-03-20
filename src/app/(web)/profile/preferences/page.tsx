@@ -11,11 +11,11 @@ import { PreferenceForm } from "@/components/shared/preference-form";
  */
 export default function PreferencesPage() {
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="min-h-screen bg-(--color-background) text-(--color-text-primary)">
       <div className="max-w-2xl mx-auto px-4 py-8">
         {/* 페이지 헤더 */}
         <h1 className="text-2xl font-bold mb-2">선호 설정</h1>
-        <p className="text-zinc-400 mb-8">
+        <p className="text-(--color-text-secondary) mb-8">
           관심 있는 종별, 지역, 게시판을 선택하면 맞춤 콘텐츠를 보여드립니다.
         </p>
 

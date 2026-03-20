@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { CATEGORIES, getDivisionsForCategory, DIVISIONS } from "@/lib/constants/divisions";
 import type { CategoryCode, GenderCode } from "@/lib/constants/divisions";
+import { usePreferFilter } from "@/contexts/prefer-filter-context";
 
 // 경기 유형 목록 (game_type 숫자값과 매핑)
 const GAME_TYPES = [
@@ -19,6 +20,11 @@ const BOARD_CATEGORIES = [
   { code: "marketplace", label: "장터게시판" },
 ] as const;
 
+// --- 미선택 버튼의 공통 스타일 (CSS 변수로 라이트/다크 자동 대응) ---
+const unselectedBtn = "bg-(--color-elevated) border-(--color-border) text-(--color-text-secondary) hover:border-(--color-text-secondary)";
+// --- 선택된 버튼 스타일 (오렌지 계열 - 테마 무관하게 고정) ---
+const selectedChip = "bg-[#F4A261]/20 border-[#F4A261] text-[#F4A261]";
+
 // --- Props 타입 정의 ---
 // mode: "onboarding"은 온보딩 흐름 (스킵 가능), "settings"는 프로필 설정 페이지용
 export interface PreferenceFormProps {
@@ -28,6 +34,9 @@ export interface PreferenceFormProps {
 }
 
 export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps) {
+  // 전역 선호 필터 상태 (헤더의 "선호하는 정보만 보기" 토글과 동기화)
+  const { preferFilter, togglePreferFilter } = usePreferFilter();
+
   // 선호 디비전 선택 상태
   const [selectedDivisions, setSelectedDivisions] = useState<string[]>([]);
   // 선호 게시판 카테고리 선택 상태
@@ -135,14 +144,50 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
     <div>
       {/* 온보딩 모드일 때만 안내 문구 표시 */}
       {mode === "onboarding" && (
-        <p className="text-zinc-400 mb-6 text-sm">
+        <p className="text-(--color-text-secondary) mb-6 text-sm">
           이 설정을 바탕으로 맞춤 경기와 게시글을 보여드릴게요!
         </p>
       )}
 
+      {/* "선호하는 정보만 보기" 토글 - 온보딩에서는 숨김 (아직 설정이 없으므로 의미 없음) */}
+      {mode !== "onboarding" && (
+        <section className="mb-8 rounded-2xl border border-(--color-border) bg-(--color-card) p-5">
+          <div className="flex items-center justify-between">
+            <div>
+              {/* 토글 라벨 */}
+              <h3 className="text-base font-semibold text-(--color-text-primary)">
+                선호하는 정보만 보기
+              </h3>
+              {/* 토글 설명 */}
+              <p className="text-sm text-(--color-text-secondary) mt-1">
+                켜면 경기, 대회, 게시판에서 내 선호에 맞는 정보만 표시됩니다
+              </p>
+            </div>
+            {/* 토글 스위치 - 클릭 시 전역 preferFilter 상태 즉시 변경 */}
+            <button
+              type="button"
+              onClick={togglePreferFilter}
+              className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ${
+                preferFilter ? "bg-[#F4A261]" : "bg-(--color-surface)"
+              }`}
+              role="switch"
+              aria-checked={preferFilter}
+              aria-label="선호하는 정보만 보기"
+            >
+              {/* 토글 동그라미 (ON: 오른쪽, OFF: 왼쪽) */}
+              <span
+                className={`inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                  preferFilter ? "translate-x-6" : "translate-x-1"
+                }`}
+              />
+            </button>
+          </div>
+        </section>
+      )}
+
       {/* 섹션 1: 선호 종별/디비전 */}
       <section className="mb-10">
-        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-(--color-text-primary)">
           선호 종별 / 디비전
         </h2>
 
@@ -155,7 +200,7 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
               className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
                 activeGender === gender
                   ? "bg-[#F4A261] text-black"
-                  : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+                  : unselectedBtn
               }`}
             >
               {gender === "male" ? "남성부" : "여성부"}
@@ -171,8 +216,8 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
               onClick={() => setActiveCategory(code as CategoryCode)}
               className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
                 activeCategory === code
-                  ? "bg-zinc-700 text-white"
-                  : "bg-zinc-800/50 text-zinc-500 hover:bg-zinc-800"
+                  ? "bg-(--color-surface) text-(--color-text-primary)"
+                  : "bg-(--color-elevated) text-(--color-text-secondary) hover:bg-(--color-surface)"
               }`}
             >
               {cat.label}
@@ -190,9 +235,7 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
                 key={code}
                 onClick={() => toggleDivision(code)}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
-                  isSelected
-                    ? "bg-[#F4A261]/20 border-[#F4A261] text-[#F4A261]"
-                    : "bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500"
+                  isSelected ? selectedChip : unselectedBtn
                 }`}
               >
                 <span>{info?.label ?? code}</span>
@@ -206,7 +249,7 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
 
         {/* 선택된 디비전 요약 */}
         {selectedDivisions.length > 0 && (
-          <div className="mt-3 text-sm text-zinc-500">
+          <div className="mt-3 text-sm text-(--color-text-secondary)">
             선택됨: {selectedDivisions.join(", ")}
           </div>
         )}
@@ -214,7 +257,7 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
 
       {/* 섹션 2: 선호 경기 유형 */}
       <section className="mb-10">
-        <h2 className="text-lg font-semibold mb-4">선호 경기 유형</h2>
+        <h2 className="text-lg font-semibold mb-4 text-(--color-text-primary)">선호 경기 유형</h2>
         <div className="flex flex-wrap gap-2">
           {GAME_TYPES.map(({ code, label, description }) => {
             const isSelected = selectedGameTypes.includes(code);
@@ -223,9 +266,7 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
                 key={code}
                 onClick={() => toggleGameType(code)}
                 className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all border ${
-                  isSelected
-                    ? "bg-[#F4A261]/20 border-[#F4A261] text-[#F4A261]"
-                    : "bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500"
+                  isSelected ? selectedChip : unselectedBtn
                 }`}
               >
                 <span>{label}</span>
@@ -235,7 +276,7 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
           })}
         </div>
         {selectedGameTypes.length > 0 && (
-          <div className="mt-3 text-sm text-zinc-500">
+          <div className="mt-3 text-sm text-(--color-text-secondary)">
             선택됨: {selectedGameTypes.map((c) => GAME_TYPES.find((g) => g.code === c)?.label ?? c).join(", ")}
           </div>
         )}
@@ -243,7 +284,7 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
 
       {/* 섹션 3: 선호 게시판 카테고리 */}
       <section className="mb-10">
-        <h2 className="text-lg font-semibold mb-4">선호 게시판</h2>
+        <h2 className="text-lg font-semibold mb-4 text-(--color-text-primary)">선호 게시판</h2>
         <div className="flex flex-wrap gap-2">
           {BOARD_CATEGORIES.map(({ code, label }) => {
             const isSelected = selectedBoardCategories.includes(code);
@@ -252,9 +293,7 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
                 key={code}
                 onClick={() => toggleBoardCategory(code)}
                 className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all border ${
-                  isSelected
-                    ? "bg-[#F4A261]/20 border-[#F4A261] text-[#F4A261]"
-                    : "bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500"
+                  isSelected ? selectedChip : unselectedBtn
                 }`}
               >
                 {label}
@@ -263,7 +302,7 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
           })}
         </div>
         {selectedBoardCategories.length > 0 && (
-          <div className="mt-3 text-sm text-zinc-500">
+          <div className="mt-3 text-sm text-(--color-text-secondary)">
             선택됨: {selectedBoardCategories.map((c) => BOARD_CATEGORIES.find((b) => b.code === c)?.label ?? c).join(", ")}
           </div>
         )}
@@ -275,8 +314,8 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
           <div
             className={`mb-3 px-4 py-2 rounded-lg text-sm ${
               message.type === "success"
-                ? "bg-green-900/50 text-green-300 border border-green-700"
-                : "bg-red-900/50 text-red-300 border border-red-700"
+                ? "bg-green-100 text-green-800 border border-green-300 dark:bg-green-900/50 dark:text-green-300 dark:border-green-700"
+                : "bg-red-100 text-red-800 border border-red-300 dark:bg-red-900/50 dark:text-red-300 dark:border-red-700"
             }`}
           >
             {message.text}
@@ -294,7 +333,7 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
         {mode === "onboarding" && onSkip && (
           <button
             onClick={onSkip}
-            className="w-full mt-3 py-3 rounded-xl border border-zinc-700 text-zinc-400 font-medium text-sm hover:bg-zinc-800 transition-colors"
+            className="w-full mt-3 py-3 rounded-xl border border-(--color-border) text-(--color-text-secondary) font-medium text-sm hover:bg-(--color-elevated) transition-colors"
           >
             나중에 할게요
           </button>

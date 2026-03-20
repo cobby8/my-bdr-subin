@@ -30,7 +30,9 @@ export const GET = withWebAuth(async (ctx: WebAuthContext) => {
       preferred_board_categories: user.preferred_board_categories ?? [],
       preferred_game_types: user.preferred_game_types ?? [],
     });
-  } catch {
+  } catch (e) {
+    // 에러 원인 추적을 위해 서버 로그에 기록
+    console.error("[preferences:GET]", e);
     return apiError("Internal error", 500);
   }
 });
@@ -78,7 +80,9 @@ export const PATCH = withWebAuth(async (req: Request, ctx: WebAuthContext) => {
     });
 
     return apiSuccess(updated);
-  } catch {
+  } catch (e) {
+    // 에러 원인 추적을 위해 서버 로그에 기록
+    console.error("[preferences:PATCH]", e);
     return apiError("Internal error", 500);
   }
 });
