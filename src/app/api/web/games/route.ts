@@ -24,21 +24,30 @@ export async function GET(request: NextRequest) {
     const date = searchParams.get("date") || undefined;
     const prefer = searchParams.get("prefer") === "true";
 
-    // prefer=true일 때 로그인 유저의 city(쉼표 구분)를 분할하여 선호 지역으로 사용
+    // prefer=true일 때 로그인 유저의 city(쉼표 구분)와 preferred_game_types를 필터로 사용
     // 명시적 city 파라미터가 있으면 그것을 우선하므로 preferredCities는 적용하지 않음
     let preferredCities: string[] | undefined;
+    // 선호 경기 유형 (0=PICKUP, 1=GUEST, 2=PRACTICE) — 빈 배열이면 필터 미적용
+    let preferredGameTypes: number[] | undefined;
     if (prefer && !city) {
       const session = await getWebSession();
       if (session) {
         const user = await prisma.user.findUnique({
           where: { id: BigInt(session.sub) },
-          select: { city: true },
+          select: { city: true, preferred_game_types: true },
         });
         // user.city는 "서울,경기" 같이 쉼표로 구분된 문자열
         if (user?.city) {
           const cities = user.city.split(",").map((c) => c.trim()).filter(Boolean);
           if (cities.length > 0) {
             preferredCities = cities;
+          }
+        }
+        // preferred_game_types: JSON 필드이므로 배열로 캐스팅 후 유효한 값만 사용
+        if (user?.preferred_game_types) {
+          const gameTypes = user.preferred_game_types as number[];
+          if (Array.isArray(gameTypes) && gameTypes.length > 0) {
+            preferredGameTypes = gameTypes;
           }
         }
       }
@@ -72,7 +81,7 @@ export async function GET(request: NextRequest) {
     // 서비스 함수로 DB 조회 (병렬 실행으로 성능 최적화)
     // prefer=true이고 선호 지역이 있으면 cities 파라미터로 전달
     const [games, cities] = await Promise.all([
-      listGames({ q, type, city, cities: preferredCities, scheduledAt, take: 60 }).catch(() => []),
+      listGames({ q, type, city, cities: preferredCities, gameTypes: preferredGameTypes, scheduledAt, take: 60 }).catch(() => []),
       listGameCities(30).catch(() => []),
     ]);
 

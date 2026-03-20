@@ -69,6 +69,17 @@ export const PATCH = withWebAuth(async (req: Request, ctx: WebAuthContext) => {
       return apiSuccess(user);
     }
 
+    // 현재 유저의 onboarding_step 확인 — 선호 설정 완료 시 step 2로 진행시키기 위함
+    const currentUser = await prisma.user.findUnique({
+      where: { id: ctx.userId },
+      select: { onboarding_step: true },
+    });
+
+    // onboarding_step이 2보다 작으면 2로 업데이트 (이미 2 이상이면 건드리지 않음)
+    if (currentUser && currentUser.onboarding_step < 2) {
+      updateData.onboarding_step = 2;
+    }
+
     const updated = await prisma.user.update({
       where: { id: ctx.userId },
       data: updateData,

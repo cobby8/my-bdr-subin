@@ -162,6 +162,9 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
               <p className="text-sm text-(--color-text-secondary) mt-1">
                 켜면 경기, 대회, 게시판에서 내 선호에 맞는 정보만 표시됩니다
               </p>
+              <p className="text-xs text-(--color-text-secondary) mt-1 opacity-70">
+                켜두면 항상 기본으로 내가 선호하는 정보만 볼 수 있습니다. 상단 아이콘을 통해 언제든지 전체 정보를 볼 수 있습니다.
+              </p>
             </div>
             {/* 토글 스위치 - 클릭 시 전역 preferFilter 상태 즉시 변경 */}
             <button
