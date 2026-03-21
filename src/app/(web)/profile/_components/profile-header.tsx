@@ -13,10 +13,12 @@ export function ProfileHeader({ nickname, email, profileImageUrl }: ProfileHeade
   const initial = displayName.trim()[0]?.toUpperCase() || "U";
 
   return (
-    <div className="relative rounded-[20px] border border-[#E8ECF0] bg-[#FFFFFF] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+    /* 카드 외형: 하드코딩 -> CSS 변수 (다크모드 자동 대응) */
+    <div className="relative rounded-[20px] border p-5" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-card)', boxShadow: 'var(--shadow-card)' }}>
       <Link
         href="/profile/edit"
-        className="absolute right-4 top-4 rounded-full p-1.5 text-[#9CA3AF] transition-colors hover:bg-[#F9FAFB] hover:text-[#1B3C87]"
+        className="absolute right-4 top-4 rounded-full p-1.5 transition-colors"
+        style={{ color: 'var(--color-text-muted)' }}
       >
         <Settings size={18} />
       </Link>
@@ -36,12 +38,13 @@ export function ProfileHeader({ nickname, email, profileImageUrl }: ProfileHeade
         )}
         <div className="min-w-0 flex-1 pr-6">
           <h1
-            className="truncate text-2xl font-extrabold uppercase tracking-wide text-[#111827] sm:text-3xl"
-            style={{ fontFamily: "var(--font-heading)" }}
+            className="truncate text-2xl font-extrabold uppercase tracking-wide sm:text-3xl"
+            style={{ fontFamily: "var(--font-heading)", color: 'var(--color-text-primary)' }}
           >
             {displayName}
           </h1>
-          <p className="truncate text-sm text-[#6B7280]">{email}</p>
+          {/* 이메일: 보조 텍스트 색상 */}
+          <p className="truncate text-sm" style={{ color: 'var(--color-text-secondary)' }}>{email}</p>
         </div>
       </div>
     </div>

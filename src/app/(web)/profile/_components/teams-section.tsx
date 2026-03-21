@@ -20,13 +20,15 @@ export function TeamsSection({ teams }: { teams: Team[] }) {
     >
       <div className="space-y-2">
         {items.map((t) => (
+          /* 리스트 아이템: 테두리/배경 CSS 변수 */
           <Link
             key={t.id}
             href={`/teams/${t.id}`}
-            className="flex items-center gap-3 rounded-[12px] border border-[#E8ECF0] bg-[#F9FAFB] px-3 py-2.5 transition-colors hover:bg-[#EEF2FF]"
+            className="flex items-center gap-3 rounded-[12px] border px-3 py-2.5 transition-colors"
+            style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-elevated)' }}
           >
-            <Users size={14} className="flex-shrink-0 text-[#1B3C87]" />
-            <span className="flex-1 truncate text-sm font-medium text-[#111827]">{t.name}</span>
+            <Users size={14} className="flex-shrink-0" style={{ color: 'var(--color-primary)' }} />
+            <span className="flex-1 truncate text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>{t.name}</span>
             <Badge>{t.role === "captain" ? "주장" : "멤버"}</Badge>
           </Link>
         ))}

@@ -26,13 +26,13 @@ interface TeamsApiResponse {
   cities: string[];
 }
 
-// -- 스켈레톤 UI (로딩 중 표시) --
+// -- 스켈레톤 UI: CSS 변수 적용 --
 function TeamsGridSkeleton() {
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="rounded-[16px] border border-[#E8ECF0] bg-white overflow-hidden">
-          <div className="h-1 bg-[#E8ECF0]" />
+        <div key={i} className="rounded-[16px] border overflow-hidden" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-card)' }}>
+          <div className="h-1" style={{ backgroundColor: 'var(--color-surface)' }} />
           <div className="px-4 pb-4 pt-3 space-y-3">
             <div className="flex items-start justify-between">
               <Skeleton className="h-11 w-11 rounded-[12px]" />
@@ -58,7 +58,7 @@ function resolveAccent(primary: string | null, secondary?: string | null): strin
   return primary;
 }
 
-// -- 팀 카드 (API 응답 타입에 맞춤) --
+// -- 팀 카드: CSS 변수 적용 --
 function TeamCardFromApi({ team }: { team: TeamFromApi }) {
   const accent = resolveAccent(team.primary_color, team.secondary_color);
   const wins = team.wins ?? 0;
@@ -67,8 +67,9 @@ function TeamCardFromApi({ team }: { team: TeamFromApi }) {
 
   return (
     <Link href={`/teams/${team.id}`}>
-      <div className="group flex flex-col gap-3 rounded-[16px] border border-[#E8ECF0] bg-white overflow-hidden transition-all hover:-translate-y-1 hover:shadow-lg hover:border-[#1B3C87]/30">
-        {/* 상단 컬러 바 */}
+      {/* 카드 외형: 테두리/배경 CSS 변수, WHOOP 스타일 호버 */}
+      <div className="group flex flex-col gap-3 rounded-[16px] border overflow-hidden transition-all hover:-translate-y-1 hover:shadow-lg" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-card)' }}>
+        {/* 상단 컬러 바: 팀 고유색 유지 */}
         <div className="h-1" style={{ backgroundColor: accent }} />
 
         <div className="px-4 pb-4 flex flex-col gap-3">
@@ -87,9 +88,9 @@ function TeamCardFromApi({ team }: { team: TeamFromApi }) {
 
           {/* 팀명 + 지역 */}
           <div className="min-w-0">
-            <p className="truncate font-bold text-[#111827] group-hover:text-[#1B3C87] transition-colors">{team.name}</p>
+            <p className="truncate font-bold transition-colors" style={{ color: 'var(--color-text-primary)' }}>{team.name}</p>
             {location && (
-              <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-[#6B7280]">
+              <p className="mt-0.5 flex items-center gap-1 truncate text-xs" style={{ color: 'var(--color-text-secondary)' }}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 opacity-50"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
                 {location}
               </p>
@@ -98,12 +99,12 @@ function TeamCardFromApi({ team }: { team: TeamFromApi }) {
 
           {/* 전적 + 멤버 수 */}
           <div className="flex items-center justify-between text-xs">
-            <span className="text-[#9CA3AF]">
+            <span style={{ color: 'var(--color-text-muted)' }}>
               {wins + losses > 0
-                ? <span><span className="font-bold text-[#111827]">{wins}</span>W <span className="font-bold text-[#6B7280]">{losses}</span>L</span>
+                ? <span><span className="font-bold" style={{ color: 'var(--color-text-primary)' }}>{wins}</span>W <span className="font-bold" style={{ color: 'var(--color-text-secondary)' }}>{losses}</span>L</span>
                 : "전적 없음"}
             </span>
-            <span className="flex items-center gap-1 text-[#6B7280]">
+            <span className="flex items-center gap-1" style={{ color: 'var(--color-text-secondary)' }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="opacity-50"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
               {team.member_count}
             </span>
@@ -116,15 +117,10 @@ function TeamCardFromApi({ team }: { team: TeamFromApi }) {
 
 /**
  * TeamsContent - 팀 목록 클라이언트 컴포넌트
- *
- * URL의 searchParams가 바뀔 때마다 /api/web/teams를 호출하여
- * 팀 목록과 도시 목록을 가져온다.
- * TeamsFilter에 도시 목록을 전달하고, 팀 카드를 렌더링한다.
  */
 export function TeamsContent({
   TeamsFilterComponent,
 }: {
-  // TeamsFilter 컴포넌트를 외부에서 주입받음 (cities 데이터를 동적으로 전달하기 위해)
   TeamsFilterComponent: React.ComponentType<{ cities: string[] }>;
 }) {
   const searchParams = useSearchParams();
@@ -137,7 +133,6 @@ export function TeamsContent({
   useEffect(() => {
     setLoading(true);
 
-    // 현재 URL의 쿼리 파라미터를 그대로 API에 전달
     const params = new URLSearchParams(searchParams.toString());
     const url = `/api/web/teams?${params.toString()}`;
 
@@ -174,9 +169,11 @@ export function TeamsContent({
         >
           TEAMS
         </h1>
+        {/* 팀 만들기 버튼: primary 색상 */}
         <Link
           href="/teams/new"
-          className="rounded-full bg-[#1B3C87] px-4 py-2 text-sm font-semibold text-white hover:bg-[#142D6B] transition-colors"
+          className="rounded-full px-4 py-2 text-sm font-semibold text-white transition-colors"
+          style={{ backgroundColor: 'var(--color-primary)' }}
         >
           팀 만들기
         </Link>
@@ -192,8 +189,8 @@ export function TeamsContent({
         <>
           {/* 필터 활성 시 결과 카운트 */}
           {hasFilters && (
-            <p className="mb-3 text-sm text-[#9CA3AF]">
-              검색 결과 <span className="text-[#111827]">{teams.length}개</span>
+            <p className="mb-3 text-sm" style={{ color: 'var(--color-text-muted)' }}>
+              검색 결과 <span style={{ color: 'var(--color-text-primary)' }}>{teams.length}개</span>
             </p>
           )}
 
@@ -207,7 +204,7 @@ export function TeamsContent({
             {teams.length === 0 && (
               <div className="col-span-full py-20 text-center">
                 <div className="mb-3 text-4xl">&#127941;</div>
-                <p className="text-[#6B7280]">
+                <p style={{ color: 'var(--color-text-secondary)' }}>
                   {hasFilters ? "조건에 맞는 팀이 없습니다." : "등록된 팀이 없습니다."}
                 </p>
               </div>
@@ -216,7 +213,7 @@ export function TeamsContent({
 
           {/* 총 팀 수 */}
           {teams.length > 0 && (
-            <p className="mt-3 text-right text-xs text-[#94A3B8]">총 {teams.length}개 팀</p>
+            <p className="mt-3 text-right text-xs" style={{ color: 'var(--color-text-muted)' }}>총 {teams.length}개 팀</p>
           )}
         </>
       )}

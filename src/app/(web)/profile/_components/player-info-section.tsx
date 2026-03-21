@@ -13,23 +13,26 @@ export function PlayerInfoSection({ position, height, city, bio }: PlayerInfoPro
   ].filter((r) => r.value);
 
   return (
-    <div className="rounded-[20px] border border-[#E8ECF0] bg-[#FFFFFF] p-4 sm:p-5 shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+    /* 카드 외형: CSS 변수 */
+    <div className="rounded-[20px] border p-4 sm:p-5" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-card)', boxShadow: 'var(--shadow-card)' }}>
       <h2
-        className="mb-3 text-base font-bold uppercase tracking-wide text-[#111827]"
-        style={{ fontFamily: "var(--font-heading)" }}
+        className="mb-3 text-base font-bold uppercase tracking-wide"
+        style={{ fontFamily: "var(--font-heading)", color: 'var(--color-text-primary)' }}
       >
         선수 정보
       </h2>
       <div className="space-y-2.5">
         {rows.map((r) => (
           <div key={r.label} className="flex justify-between text-sm">
-            <span className="text-[#9CA3AF]">{r.label}</span>
-            <span className="text-[#111827]">{r.value}</span>
+            {/* 라벨: muted 색상 */}
+            <span style={{ color: 'var(--color-text-muted)' }}>{r.label}</span>
+            <span style={{ color: 'var(--color-text-primary)' }}>{r.value}</span>
           </div>
         ))}
       </div>
       {bio && (
-        <div className="mt-3 rounded-[12px] bg-[#F9FAFB] px-4 py-3 text-sm leading-relaxed text-[#374151]">
+        /* 자기소개 배경: elevated 색상 */
+        <div className="mt-3 rounded-[12px] px-4 py-3 text-sm leading-relaxed" style={{ backgroundColor: 'var(--color-elevated)', color: 'var(--color-text-primary)' }}>
           {bio}
         </div>
       )}

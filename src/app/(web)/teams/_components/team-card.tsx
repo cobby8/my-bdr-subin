@@ -31,8 +31,9 @@ export function TeamCard({ team }: { team: TeamCardData }) {
 
   return (
     <Link href={`/teams/${team.id}`}>
-      <div className="group flex flex-col gap-3 rounded-[16px] border border-[#E8ECF0] bg-white overflow-hidden transition-all hover:-translate-y-1 hover:shadow-lg hover:border-[#1B3C87]/30">
-        {/* 상단 컬러 바 */}
+      {/* 카드 외형: CSS 변수, WHOOP 스타일 호버 */}
+      <div className="group flex flex-col gap-3 rounded-[16px] border overflow-hidden transition-all hover:-translate-y-1 hover:shadow-lg" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-card)' }}>
+        {/* 상단 컬러 바: 팀 고유색 유지 */}
         <div className="h-1" style={{ backgroundColor: accent }} />
 
         <div className="px-4 pb-4 flex flex-col gap-3">
@@ -51,9 +52,9 @@ export function TeamCard({ team }: { team: TeamCardData }) {
 
           {/* 팀명 + 지역 */}
           <div className="min-w-0">
-            <p className="truncate font-bold text-[#111827] group-hover:text-[#1B3C87] transition-colors">{team.name}</p>
+            <p className="truncate font-bold transition-colors" style={{ color: 'var(--color-text-primary)' }}>{team.name}</p>
             {location && (
-              <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-[#6B7280]">
+              <p className="mt-0.5 flex items-center gap-1 truncate text-xs" style={{ color: 'var(--color-text-secondary)' }}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 opacity-50"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
                 {location}
               </p>
@@ -62,12 +63,12 @@ export function TeamCard({ team }: { team: TeamCardData }) {
 
           {/* 전적 + 멤버 */}
           <div className="flex items-center justify-between text-xs">
-            <span className="text-[#9CA3AF]">
+            <span style={{ color: 'var(--color-text-muted)' }}>
               {wins + losses > 0
-                ? <span><span className="font-bold text-[#111827]">{wins}</span>W <span className="font-bold text-[#6B7280]">{losses}</span>L</span>
+                ? <span><span className="font-bold" style={{ color: 'var(--color-text-primary)' }}>{wins}</span>W <span className="font-bold" style={{ color: 'var(--color-text-secondary)' }}>{losses}</span>L</span>
                 : "전적 없음"}
             </span>
-            <span className="flex items-center gap-1 text-[#6B7280]">
+            <span className="flex items-center gap-1" style={{ color: 'var(--color-text-secondary)' }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="opacity-50"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
               {memberCount}
             </span>

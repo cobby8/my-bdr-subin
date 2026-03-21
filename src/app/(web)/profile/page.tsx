@@ -79,10 +79,11 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center text-[#6B7280]">
+      <div className="flex min-h-[60vh] items-center justify-center" style={{ color: 'var(--color-text-secondary)' }}>
         <div className="text-center">
           <div className="mb-2">
-            <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-8 w-8 animate-spin text-[#1B3C87]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+            {/* 로딩 스피너: primary 색상 */}
+            <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-8 w-8 animate-spin" style={{ color: 'var(--color-primary)' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
           </div>
           <p>로딩 중...</p>
         </div>
@@ -94,8 +95,9 @@ export default function ProfilePage() {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="text-center">
-          <p className="mb-4 text-[#6B7280]">로그인이 필요합니다.</p>
-          <Link href="/login" className="rounded-[10px] bg-[#1B3C87] px-6 py-2 text-sm font-semibold text-white">
+          <p className="mb-4" style={{ color: 'var(--color-text-secondary)' }}>로그인이 필요합니다.</p>
+          {/* 로그인 버튼: accent 색상 */}
+          <Link href="/login" className="rounded-[10px] px-6 py-2 text-sm font-semibold text-white" style={{ backgroundColor: 'var(--color-accent)' }}>
             로그인
           </Link>
         </div>

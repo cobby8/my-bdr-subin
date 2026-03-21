@@ -113,11 +113,13 @@ function DescriptionSections({ text }: { text: string }) {
         if (sec.type === "keyvalue") {
           return (
             <Card key={i} className="space-y-3">
-              <h3 className="text-sm font-semibold text-[#E31B23]">경기 정보</h3>
+              {/* 섹션 제목: 웜 오렌지 accent */}
+              <h3 className="text-sm font-semibold" style={{ color: 'var(--color-accent)' }}>경기 정보</h3>
               <dl className="space-y-2">
                 {sec.items.map(([k, v]) => (
                   <div key={k} className="flex justify-between gap-4 text-sm">
-                    <dt className="text-[#6B7280]">{k}</dt>
+                    {/* 라벨: CSS 변수로 보조 텍스트 색상 적용 */}
+                    <dt style={{ color: 'var(--color-text-secondary)' }}>{k}</dt>
                     <dd className="text-right font-medium">{v}</dd>
                   </div>
                 ))}
@@ -129,11 +131,13 @@ function DescriptionSections({ text }: { text: string }) {
         if (sec.type === "numbered") {
           return (
             <Card key={i}>
-              <h3 className="mb-3 text-sm font-semibold text-[#E31B23]">{sec.title}</h3>
+              {/* 섹션 제목: 웜 오렌지 accent */}
+              <h3 className="mb-3 text-sm font-semibold" style={{ color: 'var(--color-accent)' }}>{sec.title}</h3>
               <ol className="space-y-2">
                 {sec.items.map((item, j) => (
                   <li key={j} className="flex gap-3 text-sm">
-                    <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#1B3C87]/20 text-xs font-bold text-[#E31B23]">
+                    {/* 넘버링 원: primary 배경 + accent 텍스트 */}
+                    <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold" style={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-accent)' }}>
                       {j + 1}
                     </span>
                     <span>{item}</span>
@@ -147,11 +151,13 @@ function DescriptionSections({ text }: { text: string }) {
         if (sec.type === "bullets") {
           return (
             <Card key={i}>
-              <h3 className="mb-3 text-sm font-semibold text-[#E31B23]">{sec.title}</h3>
+              {/* 섹션 제목: 웜 오렌지 accent */}
+              <h3 className="mb-3 text-sm font-semibold" style={{ color: 'var(--color-accent)' }}>{sec.title}</h3>
               <ul className="space-y-2">
                 {sec.items.map((item, j) => (
                   <li key={j} className="flex gap-2 text-sm">
-                    <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#1B3C87]" />
+                    {/* 불릿 점: primary 색상 */}
+                    <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full" style={{ backgroundColor: 'var(--color-primary)' }} />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -163,22 +169,26 @@ function DescriptionSections({ text }: { text: string }) {
         if (sec.type === "prizes") {
           return (
             <Card key={i}>
-              <h3 className="mb-3 text-sm font-semibold text-[#E31B23]">{sec.title}</h3>
-              <div className="overflow-hidden rounded-[12px] border border-[#E8ECF0]">
+              {/* 섹션 제목: 웜 오렌지 accent */}
+              <h3 className="mb-3 text-sm font-semibold" style={{ color: 'var(--color-accent)' }}>{sec.title}</h3>
+              {/* 테이블 테두리: CSS 변수 */}
+              <div className="overflow-hidden rounded-[12px] border" style={{ borderColor: 'var(--color-border)' }}>
                 <table className="w-full text-sm">
-                  <thead className="bg-[#EEF2FF]">
+                  {/* ESPN 스타일 테이블 헤더: elevated 배경 */}
+                  <thead style={{ backgroundColor: 'var(--color-elevated)' }}>
                     <tr>
-                      <th className="px-4 py-2 text-left text-[#6B7280]">순위</th>
-                      <th className="px-4 py-2 text-left text-[#6B7280]">시상</th>
+                      <th className="px-4 py-2 text-left" style={{ color: 'var(--color-text-secondary)' }}>순위</th>
+                      <th className="px-4 py-2 text-left" style={{ color: 'var(--color-text-secondary)' }}>시상</th>
                     </tr>
                   </thead>
                   <tbody>
                     {sec.items.map((prize, j) => (
-                      <tr key={j} className="border-t border-[#E8ECF0]">
+                      <tr key={j} className="border-t" style={{ borderColor: 'var(--color-border)' }}>
                         <td className="px-4 py-2.5 font-medium">
-                          {PRIZE_ICON[prize.rank] ? <span className="mr-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#1B3C87]/10 text-xs font-bold text-[#E31B23]">{PRIZE_ICON[prize.rank]}</span> : null} {prize.rank}
+                          {/* 순위 아이콘: primary 배경 + accent 텍스트 */}
+                          {PRIZE_ICON[prize.rank] ? <span className="mr-1 inline-flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold" style={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-accent)' }}>{PRIZE_ICON[prize.rank]}</span> : null} {prize.rank}
                         </td>
-                        <td className="px-4 py-2.5 text-[#6B7280]">
+                        <td className="px-4 py-2.5" style={{ color: 'var(--color-text-secondary)' }}>
                           {prize.items.join(" + ")}
                         </td>
                       </tr>
@@ -200,13 +210,15 @@ function DescriptionSections({ text }: { text: string }) {
                   return (
                     <div key={j} className="text-sm">
                       {item.label && (
-                        <span className="mr-1 text-[#6B7280]">{item.label}:</span>
+                        <span className="mr-1" style={{ color: 'var(--color-text-secondary)' }}>{item.label}:</span>
                       )}
+                      {/* 링크 색상: 웜 오렌지 accent */}
                       <a
                         href={item.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[#E31B23] underline underline-offset-2"
+                        className="underline underline-offset-2"
+                        style={{ color: 'var(--color-accent)' }}
                       >
                         {displayValue || item.url}
                       </a>
@@ -218,11 +230,11 @@ function DescriptionSections({ text }: { text: string }) {
                   <div key={j} className="text-sm">
                     {item.label ? (
                       <>
-                        <span className="text-[#6B7280]">{item.label}: </span>
+                        <span style={{ color: 'var(--color-text-secondary)' }}>{item.label}: </span>
                         <span>{item.value.replace(`${item.label}: `, "")}</span>
                       </>
                     ) : (
-                      <span className="text-[#6B7280]">{item.value}</span>
+                      <span style={{ color: 'var(--color-text-secondary)' }}>{item.value}</span>
                     )}
                   </div>
                 );
@@ -234,12 +246,13 @@ function DescriptionSections({ text }: { text: string }) {
         if (sec.type === "sponsors") {
           return (
             <Card key={i}>
-              <p className="mb-2 text-xs text-[#6B7280]">Sponsored By</p>
+              <p className="mb-2 text-xs" style={{ color: 'var(--color-text-secondary)' }}>Sponsored By</p>
               <div className="flex flex-wrap gap-2">
                 {sec.sponsors.map((s) => (
                   <span
                     key={s}
-                    className="rounded-full bg-[#EEF2FF] px-3 py-1 text-sm font-medium"
+                    className="rounded-full px-3 py-1 text-sm font-medium"
+                    style={{ backgroundColor: 'var(--color-elevated)' }}
                   >
                     {s}
                   </span>
@@ -332,14 +345,15 @@ async function MatchesAndStandings({ tournamentId }: { tournamentId: string }) {
           {matches.map((m) => (
             <Card key={m.id.toString()} className="flex items-center justify-between py-3">
               <span className="text-sm font-medium">{m.homeTeam?.team.name ?? "TBD"}</span>
-              <span className="rounded-full bg-[#EEF2FF] px-3 py-1 text-sm font-bold">
+              {/* 스코어 배경: elevated 색상 (다크모드 자동 대응) */}
+              <span className="rounded-full px-3 py-1 text-sm font-bold" style={{ backgroundColor: 'var(--color-elevated)' }}>
                 {m.homeScore}:{m.awayScore}
               </span>
               <span className="text-sm font-medium">{m.awayTeam?.team.name ?? "TBD"}</span>
             </Card>
           ))}
           {matches.length === 0 && (
-            <Card className="text-center text-sm text-[#6B7280]">경기가 없습니다.</Card>
+            <Card className="text-center text-sm text-[var(--color-text-secondary)]">경기가 없습니다.</Card>
           )}
         </div>
       </div>
@@ -348,7 +362,8 @@ async function MatchesAndStandings({ tournamentId }: { tournamentId: string }) {
         <h2 className="mb-3 font-semibold uppercase tracking-wide" style={{ fontFamily: "var(--font-heading)" }}>순위</h2>
         <Card className="overflow-hidden p-0">
           <table className="w-full text-sm">
-            <thead className="border-b border-[#E8ECF0] text-[#6B7280]">
+            {/* ESPN 스타일 테이블 헤더: 진한 헤더 + 보조 텍스트 */}
+            <thead className="border-b" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}>
               <tr>
                 <th className="px-4 py-2 text-left">#</th>
                 <th className="px-4 py-2 text-left">팀</th>
@@ -358,8 +373,9 @@ async function MatchesAndStandings({ tournamentId }: { tournamentId: string }) {
             </thead>
             <tbody>
               {teams.map((t, i) => (
-                <tr key={t.id.toString()} className="border-b border-[#F1F5F9]">
-                  <td className="px-4 py-2 font-bold text-[#E31B23]">{i + 1}</td>
+                <tr key={t.id.toString()} className="border-b" style={{ borderColor: 'var(--color-border-subtle)' }}>
+                  {/* 순위 번호: 웜 오렌지 accent */}
+                  <td className="px-4 py-2 font-bold" style={{ color: 'var(--color-accent)' }}>{i + 1}</td>
                   <td className="px-4 py-2">{t.team.name}</td>
                   <td className="px-4 py-2 text-center">{t.wins ?? 0}</td>
                   <td className="px-4 py-2 text-center">{t.losses ?? 0}</td>
@@ -367,7 +383,7 @@ async function MatchesAndStandings({ tournamentId }: { tournamentId: string }) {
               ))}
               {teams.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-4 py-4 text-center text-[#6B7280]">
+                  <td colSpan={4} className="px-4 py-4 text-center" style={{ color: 'var(--color-text-secondary)' }}>
                     팀이 없습니다.
                   </td>
                 </tr>
@@ -454,13 +470,14 @@ export default async function TournamentDetailPage({ params }: { params: Promise
 
   return (
     <div>
-      {/* 헤더 -- 즉시 렌더링 */}
-      <Card className="mb-6 rounded-[16px] border border-[#E8ECF0] overflow-hidden">
+      {/* 헤더 카드: 테두리 CSS 변수 적용 */}
+      <Card className="mb-6 rounded-[16px] overflow-hidden border-[var(--color-border)]">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <h1 className="text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>{tournament.name}</h1>
           <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
         </div>
-        <p className="mt-2 text-sm text-[#6B7280]">
+        {/* 부가 정보: 보조 텍스트 색상 */}
+        <p className="mt-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
           {FORMAT_LABEL[tournament.format ?? ""] ?? tournament.format ?? ""}
           {" · "}
           {tournament._count.tournamentTeams}팀
@@ -469,13 +486,13 @@ export default async function TournamentDetailPage({ params }: { params: Promise
         </p>
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm">
           {tournament.venue_name && (
-            <span className="flex items-center gap-1 text-[#6B7280]">
+            <span className="flex items-center gap-1" style={{ color: 'var(--color-text-secondary)' }}>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
               {[tournament.city, tournament.venue_name].filter(Boolean).join(" ")}
             </span>
           )}
           {tournament.entry_fee && Number(tournament.entry_fee) > 0 && (
-            <span className="text-[#6B7280]">
+            <span style={{ color: 'var(--color-text-secondary)' }}>
               참가비 {Number(tournament.entry_fee).toLocaleString()}원
             </span>
           )}
@@ -494,7 +511,7 @@ export default async function TournamentDetailPage({ params }: { params: Promise
                 </Badge>
               </div>
               {regOpen && regClose && (
-                <p className="mt-1 text-xs text-[#6B7280]">
+                <p className="mt-1 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
                   {regOpen.toLocaleDateString("ko-KR")} ~ {regClose.toLocaleDateString("ko-KR")}
                 </p>
               )}
@@ -504,10 +521,14 @@ export default async function TournamentDetailPage({ params }: { params: Promise
                 </p>
               )}
             </div>
+            {/* 참가신청 CTA: 빨강 -> 웜 오렌지(accent) */}
             {isRegistrationOpen && (
               <Link
                 href={`/tournaments/${id}/join`}
-                className="inline-flex items-center gap-2 rounded-[10px] bg-[#E31B23] px-6 py-3 text-sm font-bold text-white transition-all hover:bg-[#C8101E] active:scale-[0.97]"
+                className="inline-flex items-center gap-2 rounded-[10px] px-6 py-3 text-sm font-bold text-white transition-all active:scale-[0.97]"
+                style={{ backgroundColor: 'var(--color-accent)' }}
+                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)')}
+                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-accent)')}
               >
                 참가신청
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
@@ -528,10 +549,11 @@ export default async function TournamentDetailPage({ params }: { params: Promise
                   return (
                     <div
                       key={`${cat}-${div}`}
-                      className="rounded-[10px] border border-[#E8ECF0] p-3"
+                      className="rounded-[10px] border p-3"
+                      style={{ borderColor: 'var(--color-border)' }}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-[#6B7280]">{cat}</span>
+                        <span className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>{cat}</span>
                         {remaining !== null && remaining <= 0 && (
                           <Badge variant={tournament.allow_waiting_list ? "warning" : "error"}>
                             {tournament.allow_waiting_list ? "대기" : "마감"}
@@ -541,14 +563,15 @@ export default async function TournamentDetailPage({ params }: { params: Promise
                       <p className="text-sm font-bold">{div}</p>
                       {cap && (
                         <div className="mt-1">
-                          <div className="flex justify-between text-xs text-[#6B7280]">
+                          <div className="flex justify-between text-xs" style={{ color: 'var(--color-text-secondary)' }}>
                             <span>{count}/{cap}팀</span>
                             {fee && <span>{Number(fee).toLocaleString()}원</span>}
                           </div>
-                          <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[#E8ECF0]">
+                          {/* 프로그레스바: 배경/바 색상 CSS 변수 */}
+                          <div className="mt-1 h-1.5 overflow-hidden rounded-full" style={{ backgroundColor: 'var(--color-surface)' }}>
                             <div
-                              className="h-full rounded-full bg-[#1B3C87] transition-all"
-                              style={{ width: `${Math.min((count / cap) * 100, 100)}%` }}
+                              className="h-full rounded-full transition-all"
+                              style={{ width: `${Math.min((count / cap) * 100, 100)}%`, backgroundColor: 'var(--color-primary)' }}
                             />
                           </div>
                         </div>
@@ -562,7 +585,7 @@ export default async function TournamentDetailPage({ params }: { params: Promise
         </Card>
       )}
 
-      {/* 서브 탭 -- 즉시 렌더링 */}
+      {/* 서브 탭: 활성/비활성 색상 CSS 변수 */}
       <div className="mb-6 flex gap-1 overflow-x-auto">
         {tabs.map((t) => {
           const isActiveTab = t.href === `/tournaments/${id}`;
@@ -573,9 +596,13 @@ export default async function TournamentDetailPage({ params }: { params: Promise
               prefetch={true}
               className={`whitespace-nowrap rounded-full px-4 py-2 text-sm transition-colors ${
                 isActiveTab
-                  ? "bg-[#1B3C87] text-white font-semibold"
-                  : "border border-[#E8ECF0] text-[#6B7280] hover:bg-[#EEF2FF] hover:text-[#111827]"
+                  ? "font-semibold text-white"
+                  : "border"
               }`}
+              style={isActiveTab
+                ? { backgroundColor: 'var(--color-primary)' }
+                : { borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }
+              }
             >
               {t.label}
             </Link>

@@ -35,16 +35,19 @@ function Bar({ label, value, max, color }: { label: string; value: number; max: 
 
   return (
     <div className="flex items-center gap-3">
-      <span className="w-10 text-right text-xs text-[#9CA3AF]">{label}</span>
+      {/* 라벨: muted 색상 */}
+      <span className="w-10 text-right text-xs" style={{ color: 'var(--color-text-muted)' }}>{label}</span>
       <div className="flex-1">
-        <div className="h-5 overflow-hidden rounded-full bg-[#E8ECF0]">
+        {/* 바 트랙: surface 색상 (다크모드 자동 대응) */}
+        <div className="h-5 overflow-hidden rounded-full" style={{ backgroundColor: 'var(--color-surface)' }}>
           <div
             className="h-full rounded-full transition-all duration-700 ease-out"
             style={{ width: `${width}%`, backgroundColor: color }}
           />
         </div>
       </div>
-      <span className="w-10 text-right text-sm font-bold text-[#111827]">{value}</span>
+      {/* 수치: 메인 텍스트 색상 */}
+      <span className="w-10 text-right text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>{value}</span>
     </div>
   );
 }
@@ -52,20 +55,23 @@ function Bar({ label, value, max, color }: { label: string; value: number; max: 
 export function StatBars({ careerAverages, seasonHighs }: StatBarsProps) {
   if (!careerAverages) {
     return (
-      <div className="rounded-[20px] border border-[#E8ECF0] bg-[#FFFFFF] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+      /* 빈 상태 카드: CSS 변수 */
+      <div className="rounded-[20px] border p-5" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-card)', boxShadow: 'var(--shadow-card)' }}>
         <h2
-          className="mb-3 text-base font-bold uppercase tracking-wide text-[#111827]"
-          style={{ fontFamily: "var(--font-heading)" }}
+          className="mb-3 text-base font-bold uppercase tracking-wide"
+          style={{ fontFamily: "var(--font-heading)", color: 'var(--color-text-primary)' }}
         >
           내 기록
         </h2>
         <div className="flex flex-col items-center gap-3 py-6">
-          <TrendingUp size={32} className="text-[#F4A261]" />
-          <p className="text-sm font-bold text-[#111827]">아직 기록이 없어요</p>
-          <p className="text-xs text-[#6B7280]">대회에 참가하면 스탯이 기록됩니다</p>
+          <TrendingUp size={32} style={{ color: 'var(--color-accent)' }} />
+          <p className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>아직 기록이 없어요</p>
+          <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>대회에 참가하면 스탯이 기록됩니다</p>
+          {/* CTA 버튼: 웜 오렌지 accent */}
           <Link
             href="/tournaments"
-            className="mt-1 rounded-[10px] bg-[#E31B23] px-4 py-2 text-xs font-bold text-white hover:bg-[#C8101E]"
+            className="mt-1 rounded-[10px] px-4 py-2 text-xs font-bold text-white"
+            style={{ backgroundColor: 'var(--color-accent)' }}
           >
             대회 둘러보기
           </Link>
@@ -83,6 +89,7 @@ export function StatBars({ careerAverages, seasonHighs }: StatBarsProps) {
     1,
   );
 
+  // 각 스탯의 색상은 의미론적 색상이므로 유지 (득점=빨강, 리바운드=오렌지 등)
   const stats = [
     { label: "득점", value: careerAverages.avgPoints, color: "#E31B23" },
     { label: "리바운드", value: careerAverages.avgRebounds, color: "#F4A261" },
@@ -92,34 +99,36 @@ export function StatBars({ careerAverages, seasonHighs }: StatBarsProps) {
   ];
 
   return (
-    <div className="rounded-[20px] border border-[#E8ECF0] bg-[#FFFFFF] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+    /* 카드 외형: CSS 변수 */
+    <div className="rounded-[20px] border p-5" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-card)', boxShadow: 'var(--shadow-card)' }}>
       <div className="mb-1 flex items-center justify-between">
         <h2
-          className="text-base font-bold uppercase tracking-wide text-[#111827]"
-          style={{ fontFamily: "var(--font-heading)" }}
+          className="text-base font-bold uppercase tracking-wide"
+          style={{ fontFamily: "var(--font-heading)", color: 'var(--color-text-primary)' }}
         >
           내 기록
         </h2>
-        <span className="text-xs text-[#9CA3AF]">{careerAverages.gamesPlayed}경기 평균</span>
+        <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{careerAverages.gamesPlayed}경기 평균</span>
       </div>
 
+      {/* 시즌 하이라이트: 배경색은 각 스탯 고유색의 투명 버전 유지 */}
       {seasonHighs && (seasonHighs.maxPoints > 0 || seasonHighs.maxRebounds > 0) && (
         <div className="mb-4 flex gap-3">
           {seasonHighs.maxPoints > 0 && (
             <div className="rounded-xl bg-[#E31B23]/10 px-3 py-1.5">
-              <p className="text-xs text-[#9CA3AF]">최고 득점</p>
+              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>최고 득점</p>
               <p className="text-lg font-black text-[#E31B23]">{seasonHighs.maxPoints}</p>
             </div>
           )}
           {seasonHighs.maxRebounds > 0 && (
             <div className="rounded-xl bg-[#F4A261]/10 px-3 py-1.5">
-              <p className="text-xs text-[#9CA3AF]">최고 리바운드</p>
+              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>최고 리바운드</p>
               <p className="text-lg font-black text-[#F4A261]">{seasonHighs.maxRebounds}</p>
             </div>
           )}
           {seasonHighs.maxAssists > 0 && (
             <div className="rounded-xl bg-[#1B3C87]/20 px-3 py-1.5">
-              <p className="text-xs text-[#9CA3AF]">최고 어시스트</p>
+              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>최고 어시스트</p>
               <p className="text-lg font-black text-[#1B3C87]">{seasonHighs.maxAssists}</p>
             </div>
           )}

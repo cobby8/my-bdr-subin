@@ -12,18 +12,21 @@ interface SectionWrapperProps {
 
 export function SectionWrapper({ title, href, children, emptyText, isEmpty }: SectionWrapperProps) {
   return (
-    <div className="rounded-[20px] border border-[#E8ECF0] bg-[#FFFFFF] p-4 sm:p-5 shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+    /* 카드 외형: CSS 변수 (다크모드 자동 대응) */
+    <div className="rounded-[20px] border p-4 sm:p-5" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-card)', boxShadow: 'var(--shadow-card)' }}>
       <div className="mb-3 flex items-center justify-between">
         <h2
-          className="text-base font-bold uppercase tracking-wide text-[#111827]"
-          style={{ fontFamily: "var(--font-heading)" }}
+          className="text-base font-bold uppercase tracking-wide"
+          style={{ fontFamily: "var(--font-heading)", color: 'var(--color-text-primary)' }}
         >
           {title}
         </h2>
         {href && !isEmpty && (
+          /* "자세히 보기" 링크: accent 색상 */
           <Link
             href={href}
-            className="flex items-center gap-0.5 text-xs font-medium text-[#F4A261] transition-colors hover:text-[#E8914F]"
+            className="flex items-center gap-0.5 text-xs font-medium transition-colors"
+            style={{ color: 'var(--color-accent)' }}
           >
             자세히 보기
             <ChevronRight size={14} />
@@ -31,7 +34,7 @@ export function SectionWrapper({ title, href, children, emptyText, isEmpty }: Se
         )}
       </div>
       {isEmpty ? (
-        <p className="py-4 text-center text-sm text-[#6B7280]">{emptyText ?? "데이터가 없습니다."}</p>
+        <p className="py-4 text-center text-sm" style={{ color: 'var(--color-text-secondary)' }}>{emptyText ?? "데이터가 없습니다."}</p>
       ) : (
         children
       )}

@@ -33,12 +33,12 @@ const categoryMap: Record<string, { label: string; variant: "default" | "success
   marketplace: { label: "장터", variant: "warning" },
 };
 
-// -- 스켈레톤 UI (로딩 중 표시) --
+// -- 스켈레톤 UI (로딩 중 표시): CSS 변수 적용 --
 function CommunityGridSkeleton() {
   return (
     <div className="space-y-3">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="rounded-[16px] border border-[#E8ECF0] bg-white p-4">
+        <div key={i} className="rounded-[16px] border p-4" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-card)' }}>
           <div className="flex items-center gap-2">
             <Skeleton className="h-5 w-12 rounded" />
             <Skeleton className="h-5 w-3/4 rounded" />
@@ -173,28 +173,31 @@ export function CommunityContent() {
           COMMUNITY
         </h1>
         <div className="flex items-center gap-2">
+          {/* 글쓰기 버튼: accent 색상 */}
           <Link
             href="/community/new"
-            className="rounded-[10px] bg-[#111827] px-5 py-2 text-sm font-bold text-white hover:bg-[#1F2937] transition-colors"
-            style={{ fontFamily: "var(--font-heading)" }}
+            className="rounded-[10px] px-5 py-2 text-sm font-bold text-white transition-colors"
+            style={{ backgroundColor: 'var(--color-accent)', fontFamily: "var(--font-heading)" }}
           >
             글쓰기
           </Link>
         </div>
       </div>
 
-      {/* 검색 폼 (기존 form method="GET" -> 클라이언트 state 기반으로 전환) */}
+      {/* 검색 폼: 테두리/배경 CSS 변수 */}
       <form onSubmit={handleSearch} className="mb-4">
         <div className="flex gap-2">
           <input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="제목 또는 내용 검색"
-            className="flex-1 rounded-full border border-[#E8ECF0] bg-[#FFFFFF] px-4 py-2 text-sm text-[#111827] placeholder-[#9CA3AF] outline-none focus:border-[#1B3C87]"
+            className="flex-1 rounded-full border px-4 py-2 text-sm outline-none"
+            style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-card)', color: 'var(--color-text-primary)' }}
           />
           <button
             type="submit"
-            className="rounded-full bg-[#1B3C87] px-4 py-2 text-sm font-semibold text-white"
+            className="rounded-full px-4 py-2 text-sm font-semibold text-white"
+            style={{ backgroundColor: 'var(--color-primary)' }}
           >
             검색
           </button>
@@ -202,7 +205,8 @@ export function CommunityContent() {
             <button
               type="button"
               onClick={handleClearSearch}
-              className="rounded-full border border-[#E8ECF0] px-4 py-2 text-sm text-[#6B7280] hover:bg-[#EEF2FF]"
+              className="rounded-full border px-4 py-2 text-sm"
+              style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}
             >
               초기화
             </button>
@@ -210,16 +214,20 @@ export function CommunityContent() {
         </div>
       </form>
 
-      {/* 카테고리 필터 (클릭 시 URL searchParams 변경 -> API 재호출) */}
+      {/* 카테고리 필터: CSS 변수 */}
       <div className="mb-4 flex gap-2 overflow-x-auto pb-1">
         <button
           type="button"
           onClick={() => handleCategoryChange(null)}
           className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium ${
             !category
-              ? "bg-[rgba(27,60,135,0.12)] text-[#1B3C87]"
-              : "border border-[#E8ECF0] text-[#6B7280] hover:text-[#111827]"
+              ? ""
+              : "border"
           }`}
+          style={!category
+            ? { backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary)' }
+            : { borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }
+          }
         >
           전체
         </button>
@@ -233,16 +241,22 @@ export function CommunityContent() {
               onClick={() => handleCategoryChange(key)}
               className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-sm ${
                 category === key
-                  ? "bg-[rgba(27,60,135,0.12)] font-medium text-[#1B3C87]"
+                  ? "font-medium"
                   : isPreferred
-                    ? "border-2 border-[#1B3C87]/30 font-medium text-[#1B3C87] hover:bg-[#EEF2FF]"  // 선호 카테고리: 파란 테두리로 하이라이트
-                    : "border border-[#E8ECF0] text-[#6B7280] hover:text-[#111827]"
+                    ? "border-2 font-medium"
+                    : "border"
               }`}
+              style={category === key
+                ? { backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary)' }
+                : isPreferred
+                  ? { borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }
+                  : { borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }
+              }
             >
               {val.label}
               {/* 선호 카테고리에 작은 별 표시 */}
               {isPreferred && (
-                <span className="ml-1 text-[10px] text-[#1B3C87]" title="관심 카테고리">*</span>
+                <span className="ml-1 text-[10px]" style={{ color: 'var(--color-primary)' }} title="관심 카테고리">*</span>
               )}
             </button>
           );
@@ -251,11 +265,11 @@ export function CommunityContent() {
 
       {/* 검색 결과 / 필터 결과 안내 */}
       {hasFilters && !loading && (
-        <p className="mb-3 text-sm text-[#6B7280]">
+        <p className="mb-3 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
           {appliedQuery && (
-            <><span className="font-medium text-[#111827]">&ldquo;{appliedQuery}&rdquo;</span> 검색 결과 </>
+            <><span className="font-medium" style={{ color: 'var(--color-text-primary)' }}>&ldquo;{appliedQuery}&rdquo;</span> 검색 결과 </>
           )}
-          <span className="font-medium text-[#1B3C87]">{posts.length}건</span>
+          <span className="font-medium" style={{ color: 'var(--color-primary)' }}>{posts.length}건</span>
         </p>
       )}
 
@@ -271,15 +285,15 @@ export function CommunityContent() {
             };
             return (
               <Link key={p.id} href={`/community/${p.public_id}`}>
-                <Card className="group hover:border-[#1B3C87]/30 hover:shadow-md transition-all cursor-pointer">
+                <Card className="group hover:shadow-md transition-all cursor-pointer">
                   <div className="flex items-center gap-2">
                     <Badge variant={cat.variant}>{cat.label}</Badge>
-                    <h3 className="font-bold text-[#111827] group-hover:text-[#1B3C87] transition-colors">
+                    <h3 className="font-bold transition-colors" style={{ color: 'var(--color-text-primary)' }}>
                       {p.title}
                     </h3>
                   </div>
-                  <div className="mt-2 flex items-center gap-3 text-xs text-[#9CA3AF]">
-                    <span className="font-medium text-[#6B7280]">{p.author_nickname}</span>
+                  <div className="mt-2 flex items-center gap-3 text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                    <span className="font-medium" style={{ color: 'var(--color-text-secondary)' }}>{p.author_nickname}</span>
                     <span>{formatDate(p.created_at)}</span>
                     <span className="flex items-center gap-0.5">
                       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="opacity-50">
@@ -302,7 +316,7 @@ export function CommunityContent() {
 
           {/* 빈 상태 */}
           {posts.length === 0 && (
-            <Card className="text-center text-[#6B7280] py-12">
+            <Card className="text-center py-12 text-[var(--color-text-secondary)]">
               {hasFilters ? "조건에 맞는 게시글이 없습니다." : "게시글이 없습니다."}
             </Card>
           )}
