@@ -79,13 +79,13 @@ export function Header() {
 
   return (
     <>
-      {/* Top Navbar -- 테두리 CSS 변수, 배경은 bg-white/95 유지 (다크모드는 globals.css backdrop-blur 오버라이드가 처리) */}
+      {/* Top Navbar -- Kinetic Pulse 글래스모피즘: 반투명 배경 + backdrop-blur-xl + 하단 보더(글래스 경계 예외) */}
       <header
-        className="sticky top-0 z-50 bg-[#FFFFFF]/95 backdrop-blur-md"
-        style={{ borderBottom: '1px solid var(--color-border)' }}
+        className="fixed top-0 z-50 w-full backdrop-blur-xl border-b border-white/10"
+        style={{ backgroundColor: 'rgba(19, 19, 19, 0.80)' }}
       >
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-          {/* Logo */}
+          {/* Logo -- Kinetic Pulse: Electric Red + Space Grotesk italic bold */}
           <Link href="/" prefetch={true} className="flex items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -95,21 +95,22 @@ export function Header() {
             />
           </Link>
 
-          {/* Desktop Nav */}
+          {/* Desktop Nav -- Kinetic Pulse: 활성=text-primary, 비활성=text-muted opacity-70, 활성 하단 바=primary(Electric Red) */}
           <nav className="hidden items-center lg:flex" style={{ fontFamily: "var(--font-heading)" }}>
             {desktopNavItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 prefetch={true}
-                className="relative px-5 py-4 text-[17px] font-semibold uppercase tracking-wide transition-colors"
-                /* inline style의 CSS 변수가 우선 적용되므로, className에서 하드코딩 색상 제거 */
-                style={isActive(item.href) ? { color: 'var(--color-text-primary)' } : { color: 'var(--color-text-muted)' }}
+                className={`relative px-5 py-4 text-[17px] font-semibold uppercase tracking-wide transition-colors ${
+                  isActive(item.href) ? '' : 'opacity-70 hover:opacity-100'
+                }`}
+                style={isActive(item.href) ? { color: 'var(--color-text-primary)' } : { color: 'var(--color-text-primary)' }}
               >
                 {item.label}
-                {/* 활성 탭 하단 바: 빨강(#E31B23) -> 웜 오렌지(--color-accent) */}
+                {/* 활성 탭 하단 바: primary(Electric Red) 그라디언트 */}
                 {isActive(item.href) && (
-                  <span className="absolute bottom-1 left-1/2 h-[2.5px] w-6 -translate-x-1/2 rounded-full" style={{ backgroundColor: 'var(--color-accent)' }} />
+                  <span className="absolute bottom-1 left-1/2 h-[2.5px] w-6 -translate-x-1/2 rounded-full" style={{ backgroundColor: 'var(--color-primary)' }} />
                 )}
               </Link>
             ))}
@@ -125,8 +126,8 @@ export function Header() {
                 className="flex h-9 w-9 items-center justify-center rounded-full transition-colors"
                 title={preferFilter ? "전체 보기" : "내 선호만 보기"}
                 style={{
-                  color: preferFilter ? 'var(--color-accent)' : 'var(--color-text-muted)',
-                  backgroundColor: preferFilter ? 'var(--color-accent-light)' : 'transparent',
+                  color: preferFilter ? 'var(--color-primary)' : 'var(--color-text-muted)',
+                  backgroundColor: preferFilter ? 'var(--color-primary-light)' : 'transparent',
                 }}
               >
                 <Sparkles size={20} />
@@ -141,10 +142,11 @@ export function Header() {
             ) : (
               <Link
                 href="/login"
-                className="rounded-[10px] px-5 py-2 text-sm font-bold text-white transition-colors"
+                className="px-5 py-2 text-sm font-bold text-white transition-colors"
                 style={{
                   fontFamily: "var(--font-heading)",
-                  backgroundColor: 'var(--color-accent)',
+                  backgroundColor: 'var(--color-primary)',
+                  borderRadius: 'var(--radius-button)',
                 }}
               >
                 로그인
@@ -154,13 +156,12 @@ export function Header() {
         </div>
       </header>
 
-      {/* Mobile Bottom Nav -- 배경/테두리 CSS 변수, 활성 색상 웜 오렌지 */}
+      {/* Mobile Bottom Nav -- Kinetic Pulse: 글래스모피즘 배경 + 상단 보더(글래스 경계 예외), 활성 색상 primary(Red) */}
       <nav
-        className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
+        className="fixed bottom-0 left-0 right-0 z-50 lg:hidden backdrop-blur-xl border-t border-white/10"
         style={{
           paddingBottom: "env(safe-area-inset-bottom, 0px)",
-          borderTop: '1px solid var(--color-border)',
-          backgroundColor: 'var(--color-bg-primary)',
+          backgroundColor: 'rgba(19, 19, 19, 0.80)',
         }}
       >
         <div className="grid grid-cols-5">
@@ -172,10 +173,10 @@ export function Header() {
                 href={item.href}
                 prefetch={true}
                 className="relative flex min-h-[52px] flex-col items-center justify-center gap-0.5 text-[11px] transition-colors active:opacity-70"
-                style={{ color: active ? 'var(--color-accent)' : 'var(--color-text-muted)', fontWeight: active ? 600 : 400 }}
+                style={{ color: active ? 'var(--color-primary)' : 'var(--color-text-muted)', fontWeight: active ? 600 : 400 }}
               >
                 {active && (
-                  <span className="absolute top-0 left-1/2 h-[2px] w-6 -translate-x-1/2 rounded-full" style={{ backgroundColor: 'var(--color-accent)' }} />
+                  <span className="absolute top-0 left-1/2 h-[2px] w-6 -translate-x-1/2 rounded-full" style={{ backgroundColor: 'var(--color-primary)' }} />
                 )}
                 <item.Icon size={24} strokeWidth={active ? 2.5 : 1.5} />
                 {item.label}
@@ -185,10 +186,10 @@ export function Header() {
           <button
             onClick={() => setMenuOpen(true)}
             className="relative flex min-h-[52px] flex-col items-center justify-center gap-0.5 text-[11px] active:opacity-70"
-            style={{ color: menuOpen ? 'var(--color-accent)' : 'var(--color-text-muted)', fontWeight: menuOpen ? 600 : 400 }}
+            style={{ color: menuOpen ? 'var(--color-primary)' : 'var(--color-text-muted)', fontWeight: menuOpen ? 600 : 400 }}
           >
             {menuOpen && (
-              <span className="absolute top-0 left-1/2 h-[2px] w-6 -translate-x-1/2 rounded-full" style={{ backgroundColor: 'var(--color-accent)' }} />
+              <span className="absolute top-0 left-1/2 h-[2px] w-6 -translate-x-1/2 rounded-full" style={{ backgroundColor: 'var(--color-primary)' }} />
             )}
             <Menu size={24} strokeWidth={menuOpen ? 2.5 : 1.5} />
             전체

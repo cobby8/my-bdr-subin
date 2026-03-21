@@ -47,7 +47,7 @@ export function SlideMenu({
         />
       )}
 
-      {/* Panel */}
+      {/* Panel -- Kinetic Pulse: surface-low 배경 (#1C1B1B) */}
       <div
         role="dialog"
         aria-modal="true"
@@ -55,11 +55,11 @@ export function SlideMenu({
         className={`fixed right-0 top-0 z-[70] h-full w-[300px] transform transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
-        style={{ backgroundColor: 'var(--color-bg-primary)' }}
+        style={{ backgroundColor: 'var(--color-surface-low)' }}
       >
-        {/* Header -- 테두리/포인트컬러 CSS 변수 */}
+        {/* Header -- Kinetic Pulse: No-Line 규칙이지만 패널 구분용 ghost border 유지, 타이틀=primary(Red) */}
         <div className="flex items-center justify-between p-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
-          <span className="font-bold" style={{ fontFamily: "var(--font-heading)", color: 'var(--color-accent)' }}>메뉴</span>
+          <span className="font-bold" style={{ fontFamily: "var(--font-heading)", color: 'var(--color-primary)' }}>메뉴</span>
           <button
             onClick={onClose}
             aria-label="메뉴 닫기"
@@ -73,13 +73,12 @@ export function SlideMenu({
         <div className="overflow-y-auto p-4" style={{ height: "calc(100% - 57px)" }}>
           {isLoggedIn ? (
             <>
-              {/* User Info — /profile 링크 */}
-              {/* 유저 카드: 배경/텍스트 CSS 변수 */}
+              {/* User Info -- Kinetic Pulse: surface-high 카드, 최소 라운딩 */}
               <Link
                 href="/profile"
                 onClick={onClose}
-                className="mb-6 flex items-center gap-3 rounded-[16px] p-4 transition-colors active:opacity-80"
-                style={{ backgroundColor: 'var(--color-elevated)' }}
+                className="mb-6 flex items-center gap-3 p-4 transition-colors active:opacity-80"
+                style={{ backgroundColor: 'var(--color-surface-high)', borderRadius: 'var(--radius-card)' }}
               >
                 <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white" style={{ backgroundColor: 'var(--color-primary)' }}>
                   {name?.trim() ? name.trim()[0].toUpperCase() : "U"}
@@ -91,7 +90,7 @@ export function SlideMenu({
                 <span className="flex-shrink-0 text-xs" style={{ color: 'var(--color-text-muted)' }}>›</span>
               </Link>
 
-              {/* 게시판 -- 섹션제목/링크 CSS 변수 */}
+              {/* 게시판 -- Kinetic Pulse: 비활성 메뉴 opacity-70, hover 시 bg-white/5 + opacity-100 */}
               <div className="mb-6">
                 <p className="mb-2 text-xs font-bold uppercase tracking-wider" style={{ fontFamily: "var(--font-heading)", color: 'var(--color-text-muted)' }}>게시판</p>
                 {menuSections.boards.map((item) => (
@@ -99,15 +98,15 @@ export function SlideMenu({
                     key={item.href}
                     href={item.href}
                     onClick={onClose}
-                    className="flex items-center rounded-[12px] px-3 py-2.5 text-sm transition-colors"
-                    style={{ color: 'var(--color-text-primary)' }}
+                    className="flex items-center px-3 py-2.5 text-sm opacity-70 transition-all hover:bg-white/5 hover:opacity-100"
+                    style={{ color: 'var(--color-text-primary)', borderRadius: 'var(--radius-card)' }}
                   >
                     {item.label}
                   </Link>
                 ))}
               </div>
 
-              {/* 기타 -- 섹션제목/링크 CSS 변수 */}
+              {/* 기타 -- Kinetic Pulse: 동일한 hover 스타일 적용 */}
               <div className="mb-6">
                 <p className="mb-2 text-xs font-bold uppercase tracking-wider" style={{ fontFamily: "var(--font-heading)", color: 'var(--color-text-muted)' }}>기타</p>
                 {menuSections.etc
@@ -121,8 +120,8 @@ export function SlideMenu({
                       key={item.href}
                       href={item.href}
                       onClick={onClose}
-                      className="flex items-center gap-2 rounded-[12px] px-3 py-2.5 text-sm transition-colors"
-                      style={{ color: 'var(--color-text-primary)' }}
+                      className="flex items-center gap-2 px-3 py-2.5 text-sm opacity-70 transition-all hover:bg-white/5 hover:opacity-100"
+                      style={{ color: 'var(--color-text-primary)', borderRadius: 'var(--radius-card)' }}
                     >
                       {item.icon && <span>{item.icon}</span>}
                       {item.label}
@@ -133,18 +132,18 @@ export function SlideMenu({
               {/* 로그아웃 */}
               <a
                 href="/api/auth/logout"
-                /* 로그아웃 버튼: 위험 동작이므로 빨간 계열 유지, CSS 변수로 다크 모드 대응 */
-                className="block w-full rounded-[12px] px-3 py-2.5 text-left text-sm hover:bg-[rgba(239,68,68,0.1)]"
-                style={{ color: 'var(--color-error)' }}
+                /* 로그아웃 버튼: 위험 동작이므로 에러 색상 유지, hover 시 반투명 배경 */
+                className="block w-full px-3 py-2.5 text-left text-sm hover:bg-white/5"
+                style={{ color: 'var(--color-error)', borderRadius: 'var(--radius-card)' }}
               >
                 로그아웃
               </a>
             </>
           ) : (
             <div className="flex flex-col">
-              {/* 브랜드 -- 웜 오렌지 포인트 */}
-              <div className="mb-6 rounded-[16px] px-5 py-6 text-center" style={{ backgroundColor: 'var(--color-elevated)' }}>
-                <p className="text-xl font-bold sm:text-2xl" style={{ fontFamily: "var(--font-heading)", color: 'var(--color-accent)' }}>BDR</p>
+              {/* 브랜드 -- Kinetic Pulse: primary(Electric Red) 포인트, 최소 라운딩 */}
+              <div className="mb-6 px-5 py-6 text-center" style={{ backgroundColor: 'var(--color-surface-high)', borderRadius: 'var(--radius-card)' }}>
+                <p className="text-xl font-bold sm:text-2xl" style={{ fontFamily: "var(--font-heading)", color: 'var(--color-primary)' }}>BDR</p>
                 <p className="mt-1 text-xs" style={{ color: 'var(--color-text-secondary)' }}>농구인을 위한 농구 플랫폼</p>
               </div>
 
@@ -155,7 +154,7 @@ export function SlideMenu({
                   { icon: "👕", title: "팀 관리", desc: "팀원 모집 · 매니지먼트" },
                   { icon: "🏆", title: "토너먼트", desc: "대회 참가 · 전적 관리" },
                 ].map((f) => (
-                  <div key={f.title} className="flex items-center gap-3 rounded-[12px] px-3 py-2">
+                  <div key={f.title} className="flex items-center gap-3 px-3 py-2" style={{ borderRadius: 'var(--radius-card)' }}>
                     <span className="text-xl">{f.icon}</span>
                     <div>
                       <p className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>{f.title}</p>
@@ -165,22 +164,23 @@ export function SlideMenu({
                 ))}
               </div>
 
-              {/* CTA 버튼 -- 로그인 웜 오렌지, 회원가입 테두리 */}
+              {/* CTA 버튼 -- Kinetic Pulse: 로그인=primary(Red), 회원가입=ghost border, 최소 라운딩 */}
               <Link
                 href="/login"
                 onClick={onClose}
-                className="mb-2 w-full rounded-[10px] py-3 text-center text-sm font-bold text-white"
-                style={{ backgroundColor: 'var(--color-accent)' }}
+                className="mb-2 w-full py-3 text-center text-sm font-bold text-white"
+                style={{ backgroundColor: 'var(--color-primary)', borderRadius: 'var(--radius-button)' }}
               >
                 로그인
               </Link>
               <Link
                 href="/signup"
                 onClick={onClose}
-                className="w-full rounded-[10px] py-3 text-center text-sm font-bold"
+                className="w-full py-3 text-center text-sm font-bold"
                 style={{
-                  border: '2px solid var(--color-border)',
+                  border: '1px solid var(--color-border)',
                   color: 'var(--color-text-primary)',
+                  borderRadius: 'var(--radius-button)',
                 }}
               >
                 회원가입
