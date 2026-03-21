@@ -20,14 +20,15 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get("status") || undefined;
     const prefer = searchParams.get("prefer") === "true";
 
-    // prefer=true일 때 로그인 유저의 city(쉼표 구분)를 분할하여 선호 지역으로 사용
+    // prefer=true일 때 로그인 유저의 city(쉼표 구분)와 preferred_divisions를 조회
     let preferredCities: string[] | undefined;
+    let preferredDivisions: string[] | undefined;
     if (prefer) {
       const session = await getWebSession();
       if (session) {
         const user = await prisma.user.findUnique({
           where: { id: BigInt(session.sub) },
-          select: { city: true },
+          select: { city: true, preferred_divisions: true },  // 종별도 함께 조회
         });
         // user.city는 "서울,경기" 같이 쉼표로 구분된 문자열
         if (user?.city) {
@@ -36,11 +37,18 @@ export async function GET(request: NextRequest) {
             preferredCities = cities;
           }
         }
+        // preferred_divisions는 Json 배열 -- Array.isArray()로 안전하게 검증
+        if (user?.preferred_divisions && Array.isArray(user.preferred_divisions)) {
+          const divs = user.preferred_divisions as string[];
+          if (divs.length > 0) {
+            preferredDivisions = divs;
+          }
+        }
       }
     }
 
-    // 서비스 함수로 DB 조회 (prefer=true이면 cities 파라미터 전달)
-    const rows = await listTournaments({ status, cities: preferredCities, take: 60 }).catch(() => []);
+    // 서비스 함수로 DB 조회 (prefer=true이면 cities + divisions 파라미터 전달)
+    const rows = await listTournaments({ status, cities: preferredCities, divisions: preferredDivisions, take: 60 }).catch(() => []);
 
     // Date, Decimal 필드를 JSON 직렬화 가능하도록 변환
     const tournaments = rows.map((t) => ({
@@ -54,6 +62,7 @@ export async function GET(request: NextRequest) {
       city: t.city,
       venueName: t.venue_name,
       maxTeams: t.maxTeams,
+      divisions: t.divisions ?? [],                      // 종별 목록 (Json 배열)
       teamCount: t._count.tournamentTeams,              // 참가팀 수
     }));
 
