@@ -2,13 +2,17 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Footer } from "@/components/layout/Footer";
 import { SWRProvider } from "@/components/providers/swr-provider";
 import { PreferFilterProvider, usePreferFilter } from "@/contexts/prefer-filter-context";
+import { BellIcon } from "@/components/shared/bell-icon";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { TextSizeToggle } from "@/components/shared/text-size-toggle";
 import {
   Home, Dribbble, Trophy, MapPin, Users, BarChart3,
-  Settings, LogOut, Bell, User, LayoutGrid
+  Settings, LogOut, User, LayoutGrid, Sparkles
 } from "lucide-react";
 
 /* ============================================================
@@ -39,19 +43,38 @@ const bottomNavItems = [
  * ============================================================ */
 function WebLayoutInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { setLoggedIn } = usePreferFilter();
+  const { preferFilter, togglePreferFilter, setLoggedIn } = usePreferFilter();
   const [user, setUser] = useState<{ name: string; role: string } | null>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
 
-  /* 마운트 시 로그인 상태 확인 */
+  /* 마운트 시 로그인 + 알림 병렬 fetch (waterfall 방지) */
   useEffect(() => {
-    fetch("/api/web/me", { credentials: "include" })
-      .then(async (r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        setUser(data);
-        setLoggedIn(!!data);
-      })
-      .catch(() => null);
+    Promise.all([
+      fetch("/api/web/me", { credentials: "include" })
+        .then(async (r) => (r.ok ? r.json() : null))
+        .catch(() => null),
+      fetch("/api/web/notifications", { credentials: "include" })
+        .then(async (r) => (r.ok ? (r.json() as Promise<{ unreadCount: number }>) : null))
+        .catch(() => null),
+    ]).then(([userData, notifData]) => {
+      setUser(userData);
+      setLoggedIn(!!userData);
+      if (userData && notifData) setUnreadCount(notifData.unreadCount ?? 0);
+    });
   }, [setLoggedIn]);
+
+  /* 페이지 이동 시 알림 카운트만 갱신 */
+  useEffect(() => {
+    if (!user) return;
+    fetch("/api/web/notifications", { credentials: "include" })
+      .then(async (r) => {
+        if (r.ok) {
+          const data = (await r.json()) as { unreadCount: number };
+          setUnreadCount(data.unreadCount ?? 0);
+        }
+      })
+      .catch(() => {});
+  }, [user, pathname]);
 
   /* 현재 경로가 활성 메뉴인지 판별 */
   const isActive = (href: string) =>
@@ -76,20 +99,18 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
           boxShadow: "48px 0 48px rgba(0,0,0,0.3)",
         }}
       >
-        {/* BDR Performance 로고 */}
+        {/* BDR 로고 이미지 — 사이드바 상단 */}
         <div className="mb-8 px-4">
-          <div
-            className="text-xl font-bold"
-            style={{ fontFamily: "var(--font-heading)", color: "var(--color-primary)" }}
-          >
-            BDR Performance
-          </div>
-          <div
-            className="text-xs opacity-70"
-            style={{ color: "var(--color-text-secondary)" }}
-          >
-            Elite Level
-          </div>
+          <Link href="/" prefetch={true}>
+            <Image
+              src="/images/logo.png"
+              alt="BDR"
+              width={140}
+              height={42}
+              className="h-[42px] w-auto"
+              priority
+            />
+          </Link>
         </div>
 
         {/* 메인 네비게이션 메뉴 */}
@@ -155,36 +176,45 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
         className="fixed top-0 z-50 flex w-full items-center justify-between border-b border-white/10 px-6 py-4 backdrop-blur-xl md:pl-[calc(16rem+1.5rem)]"
         style={{ backgroundColor: "rgba(19, 19, 19, 0.80)" }}
       >
-        {/* 모바일: BDR 로고 표시, 데스크탑: 지역명 표시 */}
-        <div>
-          <span
-            className="text-2xl font-black italic tracking-tight md:hidden"
-            style={{ fontFamily: "var(--font-heading)", color: "var(--color-primary)" }}
-          >
-            BDR
-          </span>
-          <Link
-            href="#"
-            className="hidden text-sm font-bold transition-colors hover:text-white md:block"
-            style={{ color: "var(--color-primary)" }}
-          >
-            강남구
-          </Link>
-        </div>
+        {/* BDR 로고 이미지 — 모바일+데스크탑 공통 */}
+        <Link href="/" prefetch={true} className="flex items-center">
+          <Image
+            src="/images/logo.png"
+            alt="BDR"
+            width={120}
+            height={36}
+            className="h-[36px] w-auto"
+            priority
+          />
+        </Link>
 
-        {/* 우측: 알림 + 프로필 아이콘 */}
-        <div className="flex items-center gap-4">
-          <Link
-            href="/notifications"
-            className="transition-colors hover:text-white"
-            style={{ color: "var(--color-text-secondary)" }}
-          >
-            <Bell size={22} />
-          </Link>
+        {/* 우측: 선호모드 + 큰글씨 + 다크모드 + 벨 + 프로필/로그인 */}
+        <div className="flex items-center gap-1.5">
+          {/* 선호 필터 토글 — 로그인 유저에게만 표시 */}
+          {user && (
+            <button
+              onClick={togglePreferFilter}
+              className="flex h-9 w-9 items-center justify-center rounded-full transition-colors"
+              title={preferFilter ? "전체 보기" : "내 선호만 보기"}
+              style={{
+                color: preferFilter ? "var(--color-primary)" : "var(--color-text-muted)",
+                backgroundColor: preferFilter ? "var(--color-primary-light)" : "transparent",
+              }}
+            >
+              <Sparkles size={20} />
+            </button>
+          )}
+          {/* 큰글씨 토글 */}
+          <TextSizeToggle />
+          {/* 다크모드 토글 */}
+          <ThemeToggle />
+          {/* 알림 벨 — 로그인 유저에게만 표시 */}
+          {user && <BellIcon unreadCount={unreadCount} />}
+          {/* 프로필 / 로그인 버튼 */}
           {user ? (
             <Link
               href="/profile"
-              className="transition-colors hover:text-white"
+              className="flex h-9 w-9 items-center justify-center rounded-full transition-colors"
               style={{ color: "var(--color-text-secondary)" }}
             >
               <User size={22} />
