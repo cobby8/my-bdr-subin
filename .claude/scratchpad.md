@@ -1207,6 +1207,18 @@ reviewer 참고:
 - `.claude/scratchpad.md`
 🔄 push 여부: 미완료
 
+### Phase 4-2 커밋 (2026-03-21)
+
+📦 커밋: `2f20efe` feat: redesign common UI components (Card, Button, Badge, Skeleton) with CSS variables
+🌿 브랜치: master
+📁 포함 파일:
+- `src/components/ui/card.tsx`
+- `src/components/ui/button.tsx`
+- `src/components/ui/badge.tsx`
+- `src/components/ui/skeleton.tsx`
+- `.claude/scratchpad.md`
+🔄 push 여부: 미완료
+
 ## 문서 기록 (doc-writer)
 (아직 없음)
 
@@ -1240,3 +1252,4 @@ reviewer 참고:
 | 2026-03-21 | developer | Phase 4-1 구현 - 디자인 토큰 시스템 구축 (globals.css 컬러/타이포/간격 변수 정의) | 완료 |
 | 2026-03-21 | tester | Phase 4-1 검증 - tsc + CSS변수정의 + 다크모드 + 기존코드영향 + 빌드 | 통과 - 19/19 항목 통과 |
 | 2026-03-21 | git-manager | Phase 4-1 커밋 - feat: add ESPN+WHOOP design token system | 완료 - 8acb3cf (push 미완료) |
+| 2026-03-21 | git-manager | Phase 4-2 커밋 - feat: redesign common UI components (Card, Button, Badge, Skeleton) | 완료 - 2f20efe (push 미완료) |
