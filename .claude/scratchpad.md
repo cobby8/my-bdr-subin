@@ -365,6 +365,45 @@ reviewer 참고:
 - @theme 블록 안에 정의되므로 Tailwind CSS 4에서 자동으로 유틸리티로 사용 가능 (예: `bg-[var(--color-bg-primary)]` 또는 `text-[length:var(--font-size-body)]`)
 - elevated, surface 변수는 Phase 4-7에서 정리 예정이므로 이번에는 기존값 유지
 
+### Phase 4-2: 공통 UI 컴포넌트 리디자인 (Card, Button, Badge, Skeleton)
+
+구현한 기능: 공통 UI 컴포넌트 4개의 하드코딩 색상(#FFFFFF, #E8ECF0, #E31B23 등)을 Phase 4-1에서 정의한 CSS 변수로 전환하고, WHOOP 스타일의 호버 효과를 적용했다.
+
+| 파일 경로 | 변경 내용 | 신규/수정 |
+|----------|----------|----------|
+| `src/components/ui/card.tsx` | 배경 bg-[#FFFFFF]->var(--color-card), 테두리 border-[#E8ECF0]->var(--color-border), 그림자->var(--shadow-card), 호버 translate-y 제거하고 배경색/테두리 변화로 대체, StatCard 아이콘 배경/텍스트도 CSS 변수로 전환 | 수정 |
+| `src/components/ui/button.tsx` | cta variant #E31B23->var(--color-accent), primary #111827->var(--color-text-primary), secondary 배경/테두리->CSS 변수, ghost->var(--color-primary), danger->var(--color-error), focus-visible 링->var(--color-primary) | 수정 |
+| `src/components/ui/badge.tsx` | default bg rgba(27,60,135,0.12)->var(--color-primary-light), success/error/warning/info 각각 해당 CSS 변수의 12% 투명도로 전환 | 수정 |
+| `src/components/ui/skeleton.tsx` | 배경 bg-[#E8ECF0]->var(--color-border), 다크 모드에서 자동으로 어두운 색 적용 | 수정 |
+
+주요 변경 사항:
+- Card 호버: hover:-translate-y-1 hover:shadow-lg (떠오르기) -> hover:bg-[var(--color-card-hover)] hover:border-[var(--color-border-subtle)] (미세한 밝기 변화)
+- Card 그림자: shadow-[0_2px_8px_rgba(0,0,0,0.06)] -> var(--shadow-card) -- 다크 모드에서 자동으로 더 진한 그림자 적용
+- Card 라운드: rounded-[16px] -> var(--radius-card) -- 일관된 디자인 토큰 사용
+- Button cta: 빨간색(#E31B23) -> 웜 오렌지(--color-accent, #F4A261)
+- Button primary 호버: hover:bg-[#1F2937] -> hover:opacity-85 (CSS 변수 기반 자동 대응)
+- Badge: 모든 variant가 CSS 변수 기반으로 다크 모드 자동 대응
+- Skeleton: 다크 모드에서 --color-border가 #2A2A2A로 적용되어 자연스러운 어두운 톤
+
+tester 참고:
+- 테스트 방법: tsc --noEmit 통과 확인 (완료), 개발 서버에서 다음 확인 필요
+- 정상 동작:
+  - Card: 호버 시 떠오르지 않고 배경색이 미세하게 밝아져야 함 (라이트: #FFFFFF -> #F9F9FB)
+  - Button cta: 빨간색이 아닌 웜 오렌지(#F4A261) 배경이어야 함
+  - Badge: 라이트/다크 모드 전환 시 배경과 텍스트 색상이 자연스럽게 바뀌어야 함
+  - Skeleton: 다크 모드에서 로딩 플레이스홀더가 어두운 회색(#2A2A2A)이어야 함
+- 주의할 점:
+  - Card를 사용하는 페이지(프로필, 대회 상세 등)에서 레이아웃이 깨지지 않는지 확인
+  - Button의 className으로 색상을 덮어쓰는 곳이 있다면 그 부분은 영향 없음
+  - 대회/경기 목록 카드는 Card 컴포넌트를 사용하지 않고 자체 스타일을 쓰므로 이번 변경에 영향 없음
+
+reviewer 참고:
+- props 인터페이스 변경 없음 -- 기존 사용처 100% 호환
+- CSS 변수는 모두 Phase 4-1에서 정의된 것만 사용 (새 변수 추가 없음)
+- danger variant의 투명도 처리: Tailwind의 /20, /30 문법으로 CSS 변수와 결합 (bg-[var(--color-error)]/20)
+- badge의 success/error/warning/info도 /12 투명도 문법 사용 -- default만 --color-primary-light(별도 rgba 변수) 사용
+- 주석은 한국어로 추가하여 바이브코더 이해도 향상
+
 ## 테스트 결과 (tester)
 
 ### Phase 2: 선호 종별(divisions) 대회 필터 검증 (2026-03-21)
@@ -704,6 +743,102 @@ reviewer 참고:
 - 새 변수(bg-primary, bg-secondary, card-hover, text-tertiary, 타이포 6개, 간격 3개)는 추가만 되었고, 기존 변수를 대체하지 않음 -- Phase 4-2 이후 점진적 전환에 적합한 구조
 - 기존 html.dark attribute selector 오버라이드 블록이 그대로 유지되어, 현재 하드코딩된 색상을 사용하는 컴포넌트들의 다크 모드가 계속 동작함
 - 라이트 모드 배경이 #F5F6FA -> #F5F5F7로 미세 변경됨. 시각적 차이 거의 없음
+
+### Phase 4-2: 공통 UI 컴포넌트 리디자인 검증 (2026-03-21)
+
+**1. TypeScript 컴파일 체크**
+
+| 번호 | 점검 항목 | 결과 | 비고 |
+|------|----------|------|------|
+| P4-2-1 | `npx tsc --noEmit` | 통과 | 에러/경고 0건. 출력 없이 정상 종료 (종료코드 0) |
+
+**2. card.tsx 변경사항 검증**
+
+| 번호 | 점검 항목 | 결과 | 비고 |
+|------|----------|------|------|
+| P4-2-2 | 하드코딩 색상 제거 | 통과 | #FFFFFF, #E8ECF0 등 하드코딩 색상 0건. 주석에만 참조용으로 남아있음 |
+| P4-2-3 | 배경 CSS 변수 전환 | 통과 | `bg-[var(--color-card)]` 적용 (14행) |
+| P4-2-4 | 테두리 CSS 변수 전환 | 통과 | `border-[var(--color-border)]` 적용 (14행) |
+| P4-2-5 | 그림자 CSS 변수 전환 | 통과 | `shadow-[var(--shadow-card)]` 적용 (14행) |
+| P4-2-6 | 라운드 CSS 변수 전환 | 통과 | `rounded-[var(--radius-card)]` 적용 (14행) |
+| P4-2-7 | 호버 효과 변경 | 통과 | translate-y 제거, `hover:bg-[var(--color-card-hover)] hover:border-[var(--color-border-subtle)]` 적용 |
+| P4-2-8 | StatCard 아이콘 CSS 변수 | 통과 | `bg-[var(--color-primary-light)] text-[var(--color-primary)]` 적용 (34행) |
+| P4-2-9 | StatCard 라벨 CSS 변수 | 통과 | `text-[var(--color-text-secondary)]` 적용 (39행) |
+| P4-2-10 | props 인터페이스 유지 | 통과 | Card: `{ children, className? }`, StatCard: `{ label, value, icon? }` -- 변경 없음 |
+
+**3. button.tsx 변경사항 검증**
+
+| 번호 | 점검 항목 | 결과 | 비고 |
+|------|----------|------|------|
+| P4-2-11 | cta variant 웜 오렌지 적용 | 통과 | `bg-[var(--color-accent)]` + `hover:bg-[var(--color-accent-hover)]` (14행). globals.css에서 --color-accent=#F4A261 확인 |
+| P4-2-12 | primary variant CSS 변수 | 통과 | `bg-[var(--color-text-primary)] text-[var(--color-text-on-primary)]` (11행) |
+| P4-2-13 | secondary variant CSS 변수 | 통과 | `bg-[var(--color-card)] text-[var(--color-text-primary)] border-[var(--color-text-primary)]` + `hover:bg-[var(--color-card-hover)]` (17행) |
+| P4-2-14 | ghost variant CSS 변수 | 통과 | `text-[var(--color-primary)]` + `hover:bg-[var(--color-primary-light)]` (20행) |
+| P4-2-15 | danger variant CSS 변수 | 통과 | `bg-[var(--color-error)]/20 text-[var(--color-error)]` + `hover:bg-[var(--color-error)]/30` (23행) |
+| P4-2-16 | focus-visible 링 CSS 변수 | 통과 | `focus-visible:ring-[var(--color-primary)]` (42행) |
+| P4-2-17 | 하드코딩 색상 제거 | 통과 | 코드 내 하드코딩 색상 0건. 주석에만 #F4A261, #E31B23 참조 |
+| P4-2-18 | props 인터페이스 유지 | 통과 | `{ children, variant?, className?, loading? }` + ButtonHTMLAttributes -- 변경 없음 |
+
+**4. badge.tsx 변경사항 검증**
+
+| 번호 | 점검 항목 | 결과 | 비고 |
+|------|----------|------|------|
+| P4-2-19 | default variant CSS 변수 | 통과 | `bg-[var(--color-primary-light)] text-[var(--color-primary)]` (7행) |
+| P4-2-20 | success variant CSS 변수 | 통과 | `bg-[var(--color-success)]/12 text-[var(--color-success)]` (8행) |
+| P4-2-21 | error variant CSS 변수 | 통과 | `bg-[var(--color-error)]/12 text-[var(--color-error)]` (9행) |
+| P4-2-22 | warning variant CSS 변수 | 통과 | `bg-[var(--color-warning)]/12 text-[var(--color-warning)]` (10행) |
+| P4-2-23 | info variant CSS 변수 | 통과 | `bg-[var(--color-info)]/12 text-[var(--color-info)]` (11행) |
+| P4-2-24 | 하드코딩 색상 제거 | 통과 | 코드 내 하드코딩 색상 0건 |
+| P4-2-25 | props 인터페이스 유지 | 통과 | `{ children, variant? }` -- 변경 없음 |
+
+**5. skeleton.tsx 변경사항 검증**
+
+| 번호 | 점검 항목 | 결과 | 비고 |
+|------|----------|------|------|
+| P4-2-26 | 배경 CSS 변수 전환 | 통과 | `bg-[var(--color-border)]` 적용 (7행). 다크 모드에서 --color-border=#2A2A2A로 자동 적용 |
+| P4-2-27 | 하드코딩 색상 제거 | 통과 | 코드 내 하드코딩 색상(#E8ECF0) 0건. 주석에만 참조 |
+| P4-2-28 | props 인터페이스 유지 | 통과 | `{ className? }` -- 변경 없음 |
+
+**6. CSS 변수 매칭 확인 (globals.css 대조)**
+
+| 번호 | CSS 변수명 | 라이트 모드 값 | 다크 모드 값 | 사용 컴포넌트 | 결과 |
+|------|-----------|--------------|-------------|-------------|------|
+| P4-2-29 | --color-card | #FFFFFF | #1A1A1A | card, button | 통과 |
+| P4-2-30 | --color-border | #E5E7EB | #2A2A2A | card, skeleton | 통과 |
+| P4-2-31 | --color-border-subtle | #F0F0F0 | #1F1F1F | card (hover) | 통과 |
+| P4-2-32 | --color-card-hover | #F9F9FB | #222222 | card, button | 통과 |
+| P4-2-33 | --color-accent | #F4A261 | #F4A261 | button (cta) | 통과 |
+| P4-2-34 | --color-accent-hover | #E8934F | #FABD82 | button (cta hover) | 통과 |
+| P4-2-35 | --color-text-primary | #111827 | #F5F5F5 | button, card | 통과 |
+| P4-2-36 | --color-text-secondary | #6B7280 | #A0A0A0 | card (StatCard) | 통과 |
+| P4-2-37 | --color-text-on-primary | #FFFFFF | #FFFFFF | button | 통과 |
+| P4-2-38 | --color-primary | #1B3C87 | #5B7FD6 | button, badge, card | 통과 |
+| P4-2-39 | --color-primary-light | rgba(27,60,135,0.08) | rgba(91,127,214,0.15) | button, badge, card | 통과 |
+| P4-2-40 | --color-success | #10B981 | #4ADE80 | badge | 통과 |
+| P4-2-41 | --color-error | #EF4444 | #F87171 | button, badge | 통과 |
+| P4-2-42 | --color-warning | #F59E0B | #FBBF24 | badge | 통과 |
+| P4-2-43 | --color-info | #3B82F6 | #60A5FA | badge | 통과 |
+| P4-2-44 | --shadow-card | 0 4px 24px rgba(0,0,0,0.08) | 0 4px 24px rgba(0,0,0,0.4) | card | 통과 |
+| P4-2-45 | --radius-card | 16px | (라이트와 동일) | card | 통과 |
+
+**7. 기존 사용처 호환성 확인**
+
+| 번호 | 점검 항목 | 결과 | 비고 |
+|------|----------|------|------|
+| P4-2-46 | Card 사용처 (26개 파일) | 통과 | tsc --noEmit 에러 0건. props 변경 없어 기존 코드 100% 호환 |
+| P4-2-47 | Button 사용처 (14개 파일) | 통과 | tsc --noEmit 에러 0건. variant 타입/props 변경 없음 |
+| P4-2-48 | Badge 사용처 (19개 파일) | 통과 | tsc --noEmit 에러 0건. variant 타입/props 변경 없음 |
+| P4-2-49 | Skeleton 사용처 (14개 파일) | 통과 | tsc --noEmit 에러 0건. props 변경 없음 |
+| P4-2-50 | StatCard 사용처 (3개 파일) | 통과 | admin, tournament-admin 페이지에서 사용. 에러 없음 |
+
+종합: 50개 중 50개 통과 / 0개 실패
+
+참고 사항:
+- 4개 컴포넌트 모두 하드코딩 색상이 코드에서 완전히 제거됨. 주석에만 참조용으로 남아있어 가독성에 도움됨
+- 모든 CSS 변수가 globals.css의 라이트/다크 모드 양쪽에 정의되어 있어, 다크 모드 자동 전환이 보장됨
+- props 인터페이스 변경이 전혀 없어 기존 사용처 73개 파일(중복 포함)에서 호환성 문제 없음
+- Button danger variant의 `/20`, `/30` 투명도 문법과 Badge의 `/12` 투명도 문법은 Tailwind CSS 4에서 지원되는 정상 문법
+- Card 호버 효과가 translate-y(떠오르기)에서 배경색 변화(WHOOP 스타일)로 변경되어, 모바일에서 터치 시 어색한 움직임이 사라짐
 
 ### Phase 4: UI/UX 전체 개선 (ESPN + WHOOP 믹스 스타일)
 
@@ -1065,7 +1200,7 @@ reviewer 참고:
 
 ### Phase 4-1 커밋 (2026-03-21)
 
-📦 커밋: feat: add ESPN+WHOOP design token system with CSS variables for colors, typography, and spacing
+📦 커밋: `8acb3cf` feat: add ESPN+WHOOP design token system with CSS variables for colors, typography, and spacing
 🌿 브랜치: master
 📁 포함 파일:
 - `src/app/globals.css`
@@ -1104,3 +1239,4 @@ reviewer 참고:
 | 2026-03-21 | planner | Phase 4 계획 수립 - UI/UX 전체 개선 (ESPN+WHOOP 믹스, 7개 서브 Phase, 약 208분) | 완료 |
 | 2026-03-21 | developer | Phase 4-1 구현 - 디자인 토큰 시스템 구축 (globals.css 컬러/타이포/간격 변수 정의) | 완료 |
 | 2026-03-21 | tester | Phase 4-1 검증 - tsc + CSS변수정의 + 다크모드 + 기존코드영향 + 빌드 | 통과 - 19/19 항목 통과 |
+| 2026-03-21 | git-manager | Phase 4-1 커밋 - feat: add ESPN+WHOOP design token system | 완료 - 8acb3cf (push 미완료) |

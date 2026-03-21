@@ -2,17 +2,25 @@ import { type ButtonHTMLAttributes, type ReactNode } from "react";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger" | "cta";
 
+// 각 variant별 스타일 정의
+// Phase 4-2: 하드코딩 색상 -> CSS 변수로 전환
+// cta: 웜 오렌지(#F4A261)로 변경 (기존 빨간색 #E31B23에서)
 const variants: Record<Variant, string> = {
+  // primary: 진한 텍스트색 배경 + 흰 텍스트
   primary:
-    "bg-[#111827] text-white font-bold hover:bg-[#1F2937]",
+    "bg-[var(--color-text-primary)] text-[var(--color-text-on-primary)] font-bold hover:opacity-85",
+  // cta(주요 액션): 웜 오렌지 배경 + 흰 텍스트
   cta:
-    "bg-[#E31B23] text-white font-bold hover:bg-[#C8101E]",
+    "bg-[var(--color-accent)] text-[var(--color-text-on-primary)] font-bold hover:bg-[var(--color-accent-hover)]",
+  // secondary: 카드 배경 + 테두리 스타일
   secondary:
-    "bg-[#FFFFFF] text-[#111827] border-2 border-[#111827] font-bold hover:bg-[#F5F7FA]",
+    "bg-[var(--color-card)] text-[var(--color-text-primary)] border-2 border-[var(--color-text-primary)] font-bold hover:bg-[var(--color-card-hover)]",
+  // ghost: 텍스트만 보이는 버튼 (배경 없음)
   ghost:
-    "text-[#1B3C87] font-bold hover:bg-[rgba(27,60,135,0.08)]",
+    "text-[var(--color-primary)] font-bold hover:bg-[var(--color-primary-light)]",
+  // danger: 위험 동작용 (삭제, 탈퇴 등)
   danger:
-    "bg-[rgba(239,68,68,0.2)] text-[#EF4444] font-bold hover:bg-[rgba(239,68,68,0.3)]",
+    "bg-[var(--color-error)]/20 text-[var(--color-error)] font-bold hover:bg-[var(--color-error)]/30",
 };
 
 export function Button({
@@ -29,12 +37,15 @@ export function Button({
 } & ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
-      className={`rounded-[10px] px-6 py-3 text-sm min-h-[44px] transition-all active:scale-[0.97] disabled:opacity-50 disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1B3C87] focus-visible:ring-offset-2 ${variants[variant]} ${className}`}
+      // 공통 스타일 + variant별 스타일 + 커스텀 className
+      // focus-visible: 키보드 접근성 (Tab 키로 포커스 시 링 표시)
+      className={`rounded-[10px] px-6 py-3 text-sm min-h-[44px] transition-all active:scale-[0.97] disabled:opacity-50 disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 ${variants[variant]} ${className}`}
       disabled={loading || props.disabled}
       {...props}
     >
       {loading ? (
         <span className="inline-flex items-center gap-2">
+          {/* 로딩 스피너 애니메이션 */}
           <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
