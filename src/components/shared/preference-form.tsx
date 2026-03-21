@@ -34,7 +34,7 @@ export interface PreferenceFormProps {
 }
 
 export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps) {
-  // 전역 선호 필터 상태 (헤더의 "선호하는 정보만 보기" 토글과 동기화)
+  // 전역 선호 필터 상태 (헤더의 "원하는 정보만 보기" 토글과 동기화)
   const { preferFilter, togglePreferFilter, updatePreferDefault } = usePreferFilter();
 
   // 선호 디비전 선택 상태
@@ -110,6 +110,8 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
           preferred_divisions: selectedDivisions,
           preferred_board_categories: selectedBoardCategories,
           preferred_game_types: selectedGameTypes,
+          // 토글 ON/OFF 상태를 API에 전달 (맞춤 보기 활성화 여부)
+          prefer_filter_enabled: preferFilter,
         }),
       });
 
@@ -120,7 +122,7 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
       const hasPrefs = selectedDivisions.length > 0;
       updatePreferDefault(hasPrefs);
 
-      setMessage({ type: "success", text: "선호 설정이 저장되었습니다." });
+      setMessage({ type: "success", text: "맞춤 설정이 저장되었습니다." });
       // 3초 후 메시지 자동 제거
       setTimeout(() => setMessage(null), 3000);
 
@@ -154,49 +156,55 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
         </p>
       )}
 
-      {/* "선호하는 정보만 보기" 토글 - 온보딩에서는 숨김 (아직 설정이 없으므로 의미 없음) */}
-      {mode !== "onboarding" && (
-        <section className="mb-8 rounded-2xl border border-(--color-border) bg-(--color-card) p-5">
-          <div className="flex items-center justify-between">
-            <div>
-              {/* 토글 라벨 */}
-              <h3 className="text-base font-semibold text-(--color-text-primary)">
-                선호하는 정보만 보기
-              </h3>
-              {/* 토글 설명 */}
+      {/* "원하는 정보만 보기" 토글 - settings와 onboarding 모두 표시 */}
+      <section className="mb-8 rounded-2xl border border-(--color-border) bg-(--color-card) p-5">
+        <div className="flex items-center justify-between">
+          <div>
+            {/* 토글 라벨 */}
+            <h3 className="text-base font-semibold text-(--color-text-primary)">
+              원하는 정보만 보기
+            </h3>
+            {/* 토글 설명 - 온보딩과 설정 모드에 따라 다른 안내 문구 */}
+            {mode === "onboarding" ? (
               <p className="text-sm text-(--color-text-secondary) mt-1">
-                켜면 경기, 대회, 게시판에서 내 선호에 맞는 정보만 표시됩니다
+                켜면 경기, 대회, 게시판에서 내가 원하는 정보만 표시됩니다. 나중에 프로필에서 변경할 수 있습니다.
               </p>
-              <p className="text-xs text-(--color-text-secondary) mt-1 opacity-70">
-                켜두면 항상 기본으로 내가 선호하는 정보만 볼 수 있습니다. 상단 아이콘을 통해 언제든지 전체 정보를 볼 수 있습니다.
-              </p>
-            </div>
-            {/* 토글 스위치 - 클릭 시 전역 preferFilter 상태 즉시 변경 */}
-            <button
-              type="button"
-              onClick={togglePreferFilter}
-              className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ${
-                preferFilter ? "bg-[#F4A261]" : "bg-(--color-surface)"
-              }`}
-              role="switch"
-              aria-checked={preferFilter}
-              aria-label="선호하는 정보만 보기"
-            >
-              {/* 토글 동그라미 (ON: 오른쪽, OFF: 왼쪽) */}
-              <span
-                className={`inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
-                  preferFilter ? "translate-x-6" : "translate-x-1"
-                }`}
-              />
-            </button>
+            ) : (
+              <>
+                <p className="text-sm text-(--color-text-secondary) mt-1">
+                  켜면 경기, 대회, 게시판에서 원하는 정보만 표시됩니다
+                </p>
+                <p className="text-xs text-(--color-text-secondary) mt-1 opacity-70">
+                  켜두면 항상 기본으로 내가 원하는 정보만 볼 수 있습니다. 상단 아이콘을 통해 언제든지 전체 정보를 볼 수 있습니다.
+                </p>
+              </>
+            )}
           </div>
-        </section>
-      )}
+          {/* 토글 스위치 - 클릭 시 전역 preferFilter 상태 즉시 변경 */}
+          <button
+            type="button"
+            onClick={togglePreferFilter}
+            className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ${
+              preferFilter ? "bg-[#F4A261]" : "bg-(--color-surface)"
+            }`}
+            role="switch"
+            aria-checked={preferFilter}
+            aria-label="원하는 정보만 보기"
+          >
+            {/* 토글 동그라미 (ON: 오른쪽, OFF: 왼쪽) */}
+            <span
+              className={`inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                preferFilter ? "translate-x-6" : "translate-x-1"
+              }`}
+            />
+          </button>
+        </div>
+      </section>
 
-      {/* 섹션 1: 선호 종별/디비전 */}
+      {/* 섹션 1: 관심 종별/디비전 */}
       <section className="mb-10">
         <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-(--color-text-primary)">
-          선호 종별 / 디비전
+          관심 종별 / 디비전
         </h2>
 
         {/* 성별 토글 (남성부/여성부) */}
@@ -263,9 +271,9 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
         )}
       </section>
 
-      {/* 섹션 2: 선호 경기 유형 */}
+      {/* 섹션 2: 관심 경기 유형 */}
       <section className="mb-10">
-        <h2 className="text-lg font-semibold mb-4 text-(--color-text-primary)">선호 경기 유형</h2>
+        <h2 className="text-lg font-semibold mb-4 text-(--color-text-primary)">관심 경기 유형</h2>
         <div className="flex flex-wrap gap-2">
           {GAME_TYPES.map(({ code, label, description }) => {
             const isSelected = selectedGameTypes.includes(code);
@@ -290,9 +298,9 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
         )}
       </section>
 
-      {/* 섹션 3: 선호 게시판 카테고리 */}
+      {/* 섹션 3: 관심 게시판 카테고리 */}
       <section className="mb-10">
-        <h2 className="text-lg font-semibold mb-4 text-(--color-text-primary)">선호 게시판</h2>
+        <h2 className="text-lg font-semibold mb-4 text-(--color-text-primary)">관심 게시판</h2>
         <div className="flex flex-wrap gap-2">
           {BOARD_CATEGORIES.map(({ code, label }) => {
             const isSelected = selectedBoardCategories.includes(code);
@@ -343,7 +351,7 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
             onClick={onSkip}
             className="w-full mt-3 py-3 rounded-xl border border-(--color-border) text-(--color-text-secondary) font-medium text-sm hover:bg-(--color-elevated) transition-colors"
           >
-            나중에 할게요
+            기본 설정으로 시작
           </button>
         )}
       </div>

@@ -124,7 +124,7 @@ export function Header() {
               <button
                 onClick={togglePreferFilter}
                 className="flex h-9 w-9 items-center justify-center rounded-full transition-colors"
-                title={preferFilter ? "전체 보기" : "내 선호만 보기"}
+                title={preferFilter ? "전체 보기" : "맞춤 보기"}
                 style={{
                   color: preferFilter ? 'var(--color-primary)' : 'var(--color-text-muted)',
                   backgroundColor: preferFilter ? 'var(--color-primary-light)' : 'transparent',
