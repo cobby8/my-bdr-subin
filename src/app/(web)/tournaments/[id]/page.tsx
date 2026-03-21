@@ -353,7 +353,7 @@ async function MatchesAndStandings({ tournamentId }: { tournamentId: string }) {
             </Card>
           ))}
           {matches.length === 0 && (
-            <Card className="text-center text-sm text-[var(--color-text-secondary)]">경기가 없습니다.</Card>
+            <Card className="text-center text-sm text-color-text-secondary">경기가 없습니다.</Card>
           )}
         </div>
       </div>
@@ -471,7 +471,7 @@ export default async function TournamentDetailPage({ params }: { params: Promise
   return (
     <div>
       {/* 헤더 카드: 테두리 CSS 변수 적용 */}
-      <Card className="mb-6 rounded-[16px] overflow-hidden border-[var(--color-border)]">
+      <Card className="mb-6 rounded-[16px] overflow-hidden border-color-border">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <h1 className="text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>{tournament.name}</h1>
           <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>

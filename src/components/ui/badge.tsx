@@ -4,11 +4,11 @@ type BadgeVariant = "default" | "success" | "error" | "warning" | "info";
 // Phase 4-2: 하드코딩 색상 -> CSS 변수로 전환
 // 배경은 각 색상의 12% 투명도, 텍스트는 해당 색상 그대로
 const variants: Record<BadgeVariant, string> = {
-  default: "bg-[var(--color-primary-light)] text-[var(--color-primary)]",
-  success: "bg-[var(--color-success)]/12 text-[var(--color-success)]",
-  error:   "bg-[var(--color-error)]/12 text-[var(--color-error)]",
-  warning: "bg-[var(--color-warning)]/12 text-[var(--color-warning)]",
-  info:    "bg-[var(--color-info)]/12 text-[var(--color-info)]",
+  default: "bg-color-primary-light text-color-primary",
+  success: "bg-color-success/12 text-color-success",
+  error:   "bg-color-error/12 text-color-error",
+  warning: "bg-color-warning/12 text-color-warning",
+  info:    "bg-color-info/12 text-color-info",
 };
 
 export function Badge({

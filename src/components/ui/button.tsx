@@ -8,19 +8,19 @@ type Variant = "primary" | "secondary" | "ghost" | "danger" | "cta";
 const variants: Record<Variant, string> = {
   // primary: 진한 텍스트색 배경 + 흰 텍스트
   primary:
-    "bg-[var(--color-text-primary)] text-[var(--color-text-on-primary)] font-bold hover:opacity-85",
+    "bg-color-text-primary text-color-text-on-primary font-bold hover:opacity-85",
   // cta(주요 액션): 웜 오렌지 배경 + 흰 텍스트
   cta:
-    "bg-[var(--color-accent)] text-[var(--color-text-on-primary)] font-bold hover:bg-[var(--color-accent-hover)]",
+    "bg-color-accent text-color-text-on-primary font-bold hover:bg-color-accent-hover",
   // secondary: 카드 배경 + 테두리 스타일
   secondary:
-    "bg-[var(--color-card)] text-[var(--color-text-primary)] border-2 border-[var(--color-text-primary)] font-bold hover:bg-[var(--color-card-hover)]",
+    "bg-color-card text-color-text-primary border-2 border-color-text-primary font-bold hover:bg-color-card-hover",
   // ghost: 텍스트만 보이는 버튼 (배경 없음)
   ghost:
-    "text-[var(--color-primary)] font-bold hover:bg-[var(--color-primary-light)]",
+    "text-color-primary font-bold hover:bg-color-primary-light",
   // danger: 위험 동작용 (삭제, 탈퇴 등)
   danger:
-    "bg-[var(--color-error)]/20 text-[var(--color-error)] font-bold hover:bg-[var(--color-error)]/30",
+    "bg-color-error/20 text-color-error font-bold hover:bg-color-error/30",
 };
 
 export function Button({
@@ -39,7 +39,7 @@ export function Button({
     <button
       // 공통 스타일 + variant별 스타일 + 커스텀 className
       // focus-visible: 키보드 접근성 (Tab 키로 포커스 시 링 표시)
-      className={`rounded-[10px] px-6 py-3 text-sm min-h-[44px] transition-all active:scale-[0.97] disabled:opacity-50 disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 ${variants[variant]} ${className}`}
+      className={`rounded-[10px] px-6 py-3 text-sm min-h-[44px] transition-all active:scale-[0.97] disabled:opacity-50 disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-color-primary focus-visible:ring-offset-2 ${variants[variant]} ${className}`}
       disabled={loading || props.disabled}
       {...props}
     >

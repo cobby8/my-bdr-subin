@@ -11,7 +11,7 @@ export function Card({
   className?: string;
 }) {
   return (
-    <div className={`rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-card)] p-4 sm:p-5 shadow-[var(--shadow-card)] transition-all duration-200 hover:bg-[var(--color-card-hover)] hover:border-[var(--color-border-subtle)] ${className}`}>
+    <div className={`rounded-radius-card border border-color-border bg-color-card p-4 sm:p-5 shadow-shadow-card transition-all duration-200 hover:bg-color-card-hover hover:border-color-border-subtle ${className}`}>
       {children}
     </div>
   );
@@ -31,12 +31,12 @@ export function StatCard({
   return (
     <Card className="flex items-center gap-4">
       {icon && (
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-primary-light)] text-[var(--color-primary)]">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-color-primary-light text-color-primary">
           {icon}
         </div>
       )}
       <div>
-        <p className="text-sm text-[var(--color-text-secondary)]">{label}</p>
+        <p className="text-sm text-color-text-secondary">{label}</p>
         <p className="text-xl font-bold">{value}</p>
       </div>
     </Card>
