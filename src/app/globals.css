@@ -1,30 +1,37 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #F5F6FA;
-  --color-card: #FFFFFF;
-  --color-elevated: #EDF0F8;
-  --color-surface: #E8ECF0;
+  /* ========================================
+   * Phase 4-1: ESPN + WHOOP 믹스 디자인 토큰
+   * - 기존 변수명은 유지하고 값만 변경 (하위 호환)
+   * - 새 변수를 추가하여 Phase 4-2 이후 컴포넌트 전환에 사용
+   * ======================================== */
 
-  --color-primary: #1B3C87;
+  /* --- 기존 변수 (값 변경, 하위 호환 유지) --- */
+  --color-background: #F5F5F7;       /* 페이지 배경: 살짝 회색 톤 */
+  --color-card: #FFFFFF;             /* 카드 배경: 순백 유지 */
+  --color-elevated: #EDF0F8;         /* 기존 유지 (Phase 4-7에서 정리) */
+  --color-surface: #E8ECF0;          /* 기존 유지 (Phase 4-7에서 정리) */
+
+  --color-primary: #1B3C87;          /* 기본 브랜드 색상 유지 */
   --color-primary-hover: #142D6B;
   --color-primary-light: rgba(27, 60, 135, 0.08);
-  --color-accent: #E31B23;
-  --color-accent-hover: #C8101E;
-  --color-accent-light: rgba(227, 27, 35, 0.08);
+  --color-accent: #F4A261;           /* 포인트 컬러: 빨강 -> 웜 오렌지로 변경 */
+  --color-accent-hover: #E8934F;     /* 약간 어두운 오렌지 */
+  --color-accent-light: rgba(244, 162, 97, 0.1); /* 오렌지 배경용 */
 
   --color-text-primary: #111827;
   --color-text-secondary: #6B7280;
   --color-text-muted: #9CA3AF;
   --color-text-on-primary: #FFFFFF;
 
-  --color-success: #16A34A;
-  --color-error: #DC2626;
-  --color-warning: #D97706;
-  --color-info: #2563EB;
+  --color-success: #10B981;          /* 성공/진행중 (초록 톤 변경) */
+  --color-error: #EF4444;            /* 위험/마감 (톤 변경) */
+  --color-warning: #F59E0B;          /* 경고/대기 (톤 변경) */
+  --color-info: #3B82F6;             /* 정보 (톤 변경) */
 
-  --color-border: #E8ECF0;
-  --color-border-subtle: #F1F5F9;
+  --color-border: #E5E7EB;           /* 기본 테두리 (톤 변경) */
+  --color-border-subtle: #F0F0F0;    /* 미세한 구분선 (톤 변경) */
 
   --radius-card: 16px;
   --radius-card-lg: 24px;
@@ -35,25 +42,45 @@
 
   --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-heading: 'Barlow Condensed', 'Pretendard', sans-serif;
+
+  /* --- 새 컬러 변수 (Phase 4-2 이후 컴포넌트 전환용) --- */
+  --color-bg-primary: #FFFFFF;       /* 페이지 배경 (라이트) */
+  --color-bg-secondary: #F5F5F7;     /* 섹션 배경 */
+  --color-card-hover: #F9F9FB;       /* 카드 호버 배경 */
+  --color-text-tertiary: #9CA3AF;    /* 약한 텍스트 (text-muted와 동일값이지만 의미 분리) */
+
+  /* --- 타이포그래피 변수 (WHOOP 스타일 크기 스케일) --- */
+  --font-size-display: 2rem;         /* 32px: 대형 제목 (히어로, 페이지 타이틀) */
+  --font-size-heading: 1.25rem;      /* 20px: 섹션 제목 */
+  --font-size-subheading: 1rem;      /* 16px: 소제목 */
+  --font-size-body: 0.875rem;        /* 14px: 본문 */
+  --font-size-caption: 0.75rem;      /* 12px: 캡션, 보조 텍스트 */
+  --font-size-micro: 0.6875rem;      /* 11px: 아주 작은 텍스트 (뱃지 등) */
+
+  /* --- 간격 변수 (카드/섹션 일관된 여백) --- */
+  --spacing-card-padding: 0.875rem;  /* 14px: 카드 내부 패딩 */
+  --spacing-card-gap: 0.75rem;       /* 12px: 카드 사이 간격 */
+  --spacing-section-gap: 1.5rem;     /* 24px: 섹션 사이 간격 */
 }
 
-/* ---- Dark Mode Variables ---- */
+/* ---- Dark Mode Variables (WHOOP 스타일 다크 팔레트) ---- */
 html.dark {
-  --color-background: #0F1117;
-  --color-card: #1A1D27;
-  --color-elevated: #22252F;
-  --color-surface: #2A2D37;
+  /* --- 기존 변수 (WHOOP 다크 팔레트로 값 변경) --- */
+  --color-background: #0D0D0D;      /* 깊은 어둠 (WHOOP 스타일) */
+  --color-card: #1A1A1A;            /* 카드 배경 */
+  --color-elevated: #222222;        /* 떠있는 요소 배경 */
+  --color-surface: #1F1F1F;         /* 표면 배경 */
 
-  --color-primary: #5B7FD6;
+  --color-primary: #5B7FD6;         /* 기본 브랜드 (다크용, 유지) */
   --color-primary-hover: #7B9AE8;
   --color-primary-light: rgba(91, 127, 214, 0.15);
-  --color-accent: #F04E54;
-  --color-accent-hover: #FF6B6F;
-  --color-accent-light: rgba(240, 78, 84, 0.15);
+  --color-accent: #F4A261;          /* 웜 오렌지 (다크에서도 동일) */
+  --color-accent-hover: #FABD82;    /* 약간 밝은 오렌지 (다크에서 호버 시 더 밝게) */
+  --color-accent-light: rgba(244, 162, 97, 0.15);
 
-  --color-text-primary: #F1F3F5;
-  --color-text-secondary: #CBD5E1;
-  --color-text-muted: #94A3B8;
+  --color-text-primary: #F5F5F5;    /* 메인 텍스트 */
+  --color-text-secondary: #A0A0A0;  /* 보조 텍스트 */
+  --color-text-muted: #666666;      /* 약한 텍스트 */
   --color-text-on-primary: #FFFFFF;
 
   --color-success: #4ADE80;
@@ -61,11 +88,17 @@ html.dark {
   --color-warning: #FBBF24;
   --color-info: #60A5FA;
 
-  --color-border: #2A2D37;
-  --color-border-subtle: #22252F;
+  --color-border: #2A2A2A;          /* 테두리 */
+  --color-border-subtle: #1F1F1F;   /* 미세한 구분선 */
 
   --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
   --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.5);
+
+  /* --- 새 컬러 변수 (다크 모드 오버라이드) --- */
+  --color-bg-primary: #0D0D0D;      /* 페이지 배경 */
+  --color-bg-secondary: #141414;    /* 섹션 배경 */
+  --color-card-hover: #222222;      /* 카드 호버 배경 */
+  --color-text-tertiary: #666666;   /* 약한 텍스트 */
 
   color-scheme: dark;
 }

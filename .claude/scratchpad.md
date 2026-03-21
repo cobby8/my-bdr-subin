@@ -1,9 +1,10 @@
 # 📋 작업 스크래치패드
 
 ## 현재 작업
-- **요청**: 대회탭 UI를 경기탭 UI와 동일하게 변경 + 종별 태그 표시
-- **상태**: 진행 중 - 구현
-- **현재 담당**: developer
+- **요청**: UI/UX 전체 개선 - ESPN 박스형 카드 + WHOOP 정보 디테일 스타일 믹스
+- **상태**: 진행 중 - 계획 수립
+- **현재 담당**: planner
+- **디자인 방향**: ESPN(박스형 레이아웃, 스코어 카드 구조) + WHOOP(다크 테마, 포인트 컬러, 미니멀 정보 표시)
 
 ## 작업 계획 (planner)
 
@@ -337,6 +338,33 @@ reviewer 참고:
 - Prisma Json 필터: `{ path: [], array_contains: div }` 방식으로 GIN 인덱스 활용
 - preferred_divisions는 Array.isArray()로 검증 후 사용 (방어 코딩)
 
+### Phase 4-1: 디자인 토큰 시스템 구축 (컬러/타이포/간격 변수 통합)
+
+구현한 기능: globals.css에 ESPN+WHOOP 믹스 디자인 토큰(CSS 변수)을 정의. 기존 변수의 값을 새 팔레트로 변경하고, 타이포그래피/간격/추가 컬러 변수를 새로 추가했다. 기존 컴포넌트는 전혀 수정하지 않았다.
+
+| 파일 경로 | 변경 내용 | 신규/수정 |
+|----------|----------|----------|
+| `src/app/globals.css` | @theme 블록: 기존 컬러 변수 값 변경 (accent #E31B23->#F4A261, success/error/warning/info/border 톤 변경) + 새 변수 추가 (bg-primary, bg-secondary, card-hover, text-tertiary, font-size 6종, spacing 3종) | 수정 |
+| `src/app/globals.css` | html.dark 블록: WHOOP 다크 팔레트로 값 변경 (background #0F1117->#0D0D0D, card/elevated/surface 순수 그레이톤, accent 웜 오렌지, text-secondary/muted 조정) + 새 다크 변수 추가 | 수정 |
+
+주요 변경 사항:
+- 포인트 컬러(--color-accent): #E31B23(빨강) -> #F4A261(웜 오렌지) -- 가장 큰 시각적 변화
+- 다크 모드 배경: #0F1117(파란 기운) -> #0D0D0D(순수 어둠, WHOOP 스타일)
+- 다크 모드 카드/표면: 파란 틴트(#1A1D27) -> 순수 그레이(#1A1A1A)
+- 새 타이포 변수 6종: display(32px) ~ micro(11px)
+- 새 간격 변수 3종: card-padding(14px), card-gap(12px), section-gap(24px)
+
+tester 참고:
+- 테스트 방법: tsc --noEmit 통과 확인 (완료), 개발 서버에서 라이트/다크 모드 전환 시 색상 변화 확인
+- 정상 동작: 포인트 컬러가 빨강에서 오렌지로 바뀌어 보여야 함 (--color-accent 사용처), 다크 모드 배경이 더 짙은 순수 검정 톤으로 바뀌어야 함
+- 주의: 하드코딩 색상(bg-[#FFFFFF] 등)을 쓰는 컴포넌트는 아직 CSS 변수를 참조하지 않으므로, 변수 변경의 영향을 받지 않는 곳이 있을 수 있음 (이것은 정상 -- Phase 4-2 이후에 전환 예정)
+- 기존 html.dark attribute selector 오버라이드는 그대로 유지되어 있으므로 다크 모드도 기존대로 동작
+
+reviewer 참고:
+- 기존 변수명은 100% 유지 (하위 호환), 값만 변경
+- @theme 블록 안에 정의되므로 Tailwind CSS 4에서 자동으로 유틸리티로 사용 가능 (예: `bg-[var(--color-bg-primary)]` 또는 `text-[length:var(--font-size-body)]`)
+- elevated, surface 변수는 Phase 4-7에서 정리 예정이므로 이번에는 기존값 유지
+
 ## 테스트 결과 (tester)
 
 ### Phase 2: 선호 종별(divisions) 대회 필터 검증 (2026-03-21)
@@ -623,6 +651,392 @@ reviewer 참고:
 - STATUS_STYLE의 color 값이 모두 "#FFFFFF"(흰색)으로 통일되어 있어, 뱃지 텍스트 가독성 양호
 - FORMAT_LABEL 매핑(45-50행)이 유지되어 형식 뱃지에 한글 라벨 표시 정상
 
+### Phase 4-1: 디자인 토큰 시스템 구축 검증 (2026-03-21)
+
+**1. TypeScript 컴파일 체크**
+
+| 번호 | 점검 항목 | 결과 | 비고 |
+|------|----------|------|------|
+| P4-1-1 | `npx tsc --noEmit` | 통과 | 에러/경고 0건. 출력 없이 정상 종료 |
+
+**2. CSS 변수 정의 확인 (@theme 블록)**
+
+| 번호 | 점검 항목 | 결과 | 비고 |
+|------|----------|------|------|
+| P4-1-2 | @theme 블록에 컬러 변수 정의 | 통과 | 3-64행. Phase 4-1 주석 헤더 포함, 기존 변수명 유지 + 값 변경 방식 |
+| P4-1-3 | 포인트 컬러 #F4A261 적용 | 통과 | 19행 `--color-accent: #F4A261` 확인. 호버(#E8934F), 라이트(rgba 0.1) 변수도 정의 |
+| P4-1-4 | 타이포그래피 변수 6개 추가 | 통과 | 53-58행: display(2rem), heading(1.25rem), subheading(1rem), body(0.875rem), caption(0.75rem), micro(0.6875rem) |
+| P4-1-5 | 간격 변수 3개 추가 | 통과 | 61-63행: card-padding(0.875rem), card-gap(0.75rem), section-gap(1.5rem) |
+| P4-1-6 | 새 컬러 변수 4개 추가 | 통과 | 47-50행: bg-primary, bg-secondary, card-hover, text-tertiary -- Phase 4-2 이후 전환용 |
+| P4-1-7 | 배경색 값 변경 | 통과 | 11행 `--color-background: #F5F5F7` (기존 #F5F6FA에서 변경) |
+
+**3. 다크 모드 변수 확인 (html.dark 블록)**
+
+| 번호 | 점검 항목 | 결과 | 비고 |
+|------|----------|------|------|
+| P4-1-8 | html.dark 블록 존재 | 통과 | 67-104행. WHOOP 스타일 다크 팔레트 주석 포함 |
+| P4-1-9 | 다크 배경 #0D0D0D | 통과 | 69행 `--color-background: #0D0D0D` 확인 (기존 #0F1117에서 변경) |
+| P4-1-10 | 카드 배경 #1A1A1A | 통과 | 70행 `--color-card: #1A1A1A` 확인 (기존 #1A1D27에서 변경) |
+| P4-1-11 | 다크 포인트 컬러 #F4A261 | 통과 | 77행 `--color-accent: #F4A261` 확인. 다크에서도 동일한 웜 오렌지 |
+| P4-1-12 | 다크 새 컬러 변수 4개 | 통과 | 98-101행: bg-primary(#0D0D0D), bg-secondary(#141414), card-hover(#222222), text-tertiary(#666666) |
+| P4-1-13 | 다크 보더 색상 WHOOP 스타일 | 통과 | 91행 `--color-border: #2A2A2A` (기존 #2A2D37에서 변경), 92행 `--color-border-subtle: #1F1F1F` (기존 #22252F에서 변경) |
+
+**4. 기존 코드 영향 확인**
+
+| 번호 | 점검 항목 | 결과 | 비고 |
+|------|----------|------|------|
+| P4-1-14 | 변경 파일 범위 | 통과 | git diff --name-only: globals.css, scratchpad.md, settings.local.json만 변경. 컴포넌트 파일 변경 없음 |
+| P4-1-15 | html.dark attribute selector 오버라이드 유지 | 통과 | 113-201행: bg, border, text, gradient, shadow, backdrop-blur 등 기존 오버라이드 블록 전체 유지 |
+| P4-1-16 | body 스타일 유지 | 통과 | 106-111행: background-color, color, font-family, transition 유지 |
+| P4-1-17 | 큰글씨 모드(large-text) 유지 | 통과 | 204-236행: html.large-text 블록 변경 없음 |
+| P4-1-18 | 기존 기능 코드 미변경 | 통과 | tournaments-content.tsx는 staged 상태가 아닌 working tree 변경 (Phase 3 관련, Phase 4-1과 무관) |
+
+**5. 빌드 테스트**
+
+| 번호 | 점검 항목 | 결과 | 비고 |
+|------|----------|------|------|
+| P4-1-19 | `npx next build` | 통과 | Next.js 16.1.6 (Turbopack). 컴파일 4.2초, 정적 페이지 79개 생성 2.1초. 에러 없음 |
+
+종합: 19개 중 19개 통과 / 0개 실패
+
+참고 사항:
+- planner 계획서의 "기존 변수명 유지 + 값만 변경" 원칙이 정확히 지켜졌음. 변수명은 동일하고 값만 WHOOP 팔레트로 변경됨
+- 새 변수(bg-primary, bg-secondary, card-hover, text-tertiary, 타이포 6개, 간격 3개)는 추가만 되었고, 기존 변수를 대체하지 않음 -- Phase 4-2 이후 점진적 전환에 적합한 구조
+- 기존 html.dark attribute selector 오버라이드 블록이 그대로 유지되어, 현재 하드코딩된 색상을 사용하는 컴포넌트들의 다크 모드가 계속 동작함
+- 라이트 모드 배경이 #F5F6FA -> #F5F5F7로 미세 변경됨. 시각적 차이 거의 없음
+
+### Phase 4: UI/UX 전체 개선 (ESPN + WHOOP 믹스 스타일)
+
+---
+
+#### 현재 상태 분석
+
+**1. 현재 컬러 시스템**
+
+라이트 모드 기본:
+- 배경: `#F5F7FA` (전체), `#FFFFFF` (카드)
+- 텍스트: `#111827`(제목), `#6B7280`(보조), `#9CA3AF`(약한)
+- 포인트: `#E31B23`(CTA/액센트), `#1B3C87`(프라이머리/네이비)
+- 보더: `#E8ECF0`
+- 상태색: `#16A34A`(성공), `#2563EB`(정보), `#D97706`(경고), `#EF4444`(에러)
+
+다크 모드 (globals.css의 html.dark 셀렉터):
+- 배경: `#0F1117`, 카드: `#1A1D27`, 서피스: `#2A2D37`
+- CSS attribute selector 방식으로 다크 모드 구현 (`html.dark [class*="bg-[#FFFFFF]"]`)
+- 이 방식은 유지보수가 어렵고, 하드코딩된 색상을 모두 잡아내지 못함
+
+**2. 현재 타이포그래피**
+- 본문: Pretendard (--font-sans)
+- 제목: Barlow Condensed (--font-heading) -- uppercase + tracking-wide
+- h1~h3, text-xl 이상은 자동으로 heading 폰트 적용 (globals.css 210-217행)
+
+**3. 현재 카드 구조** (경기탭/대회탭 공통)
+- 둥글기: `rounded-[16px]`
+- 보더: `border border-[#E8ECF0]`
+- 배경: `bg-[#FFFFFF]`
+- 상단 컬러바: `h-1` + 상태/유형별 색상
+- 호버: `-translate-y-1 shadow-lg border-[#1B3C87]/30`
+- 패딩: `p-3.5`
+
+**4. 현재 주요 UI 구성 요소 파일 목록**
+
+| 영역 | 파일 경로 | 설명 |
+|------|----------|------|
+| 전체 레이아웃 | `src/app/(web)/layout.tsx` | 배경 #F5F7FA, max-w-7xl |
+| 글로벌 CSS | `src/app/globals.css` | CSS 변수, 다크 모드 오버라이드, 큰글씨 모드 |
+| 헤더 (데스크탑+모바일) | `src/components/shared/header.tsx` | 상단 네비 + 하단 모바일 네비 |
+| 슬라이드 메뉴 | `src/components/shared/slide-menu.tsx` | 모바일 전체 메뉴 |
+| 풋터 | `src/components/layout/Footer.tsx` | 하단 정보 |
+| 테마 토글 | `src/components/shared/theme-toggle.tsx` | 다크/라이트 전환 |
+| 카드 컴포넌트 | `src/components/ui/card.tsx` | 공통 Card, StatCard |
+| 버튼 컴포넌트 | `src/components/ui/button.tsx` | primary/cta/secondary/ghost/danger |
+| 뱃지 컴포넌트 | `src/components/ui/badge.tsx` | 상태 뱃지 |
+| 스켈레톤 | `src/components/ui/skeleton.tsx` | 로딩 플레이스홀더 |
+| 홈 - 히어로 | `src/components/home/hero-section.tsx` | 비로그인 히어로 |
+| 홈 - 개인 히어로 | `src/components/home/personal-hero.tsx` | 로그인 시 대시보드 슬라이드 |
+| 홈 - 퀵메뉴 | `src/components/home/quick-menu.tsx` | 자주 쓰는 메뉴 (4칸 그리드) |
+| 홈 - 추천 영상 | `src/components/home/recommended-videos.tsx` | 유튜브 추천 |
+| 홈 - 추천 경기 | `src/components/home/recommended-games.tsx` | 개인화 추천 경기 카드 |
+| 경기 목록 | `src/app/(web)/games/_components/games-content.tsx` | GameCard + 그리드 |
+| 대회 목록 | `src/app/(web)/tournaments/_components/tournaments-content.tsx` | TournamentCard + 그리드 |
+| 대회 상세 | `src/app/(web)/tournaments/[id]/page.tsx` | 대회 정보 + 경기/순위 테이블 |
+| 팀 목록 | `src/app/(web)/teams/_components/teams-content.tsx` | 팀 카드 |
+| 커뮤니티 | `src/app/(web)/community/_components/community-content.tsx` | 게시판 목록 |
+| 프로필 | `src/app/(web)/profile/page.tsx` | 프로필 대시보드 |
+| 프로필 헤더 | `src/app/(web)/profile/_components/profile-header.tsx` | 아바타+이름 |
+| 활동 링 | `src/app/(web)/profile/_components/activity-ring.tsx` | 활동 시각화 |
+| 스탯 바 | `src/app/(web)/profile/_components/stat-bars.tsx` | 스탯 막대그래프 |
+| 로그인 | `src/app/(web)/login/page.tsx` | OAuth + 이메일 로그인 |
+| 선호 설정 | `src/components/shared/preference-form.tsx` | 선호 설정 폼 |
+
+---
+
+#### ESPN + WHOOP 믹스 디자인 정의
+
+**ESPN에서 가져올 것:**
+- 박스형 카드: 카드 안에서 정보를 구획화 (상단 뱃지 영역, 중앙 콘텐츠, 하단 액션)
+- 스코어보드 스타일: 숫자를 크고 굵게, 라벨을 작고 가볍게 (프로필 스탯, 대회 순위 테이블)
+- 상태별 시각적 차별화: 모집중/진행중/완료 등 상태에 따라 카드 좌측 컬러 스트라이프 or 상단 바 색상 변화
+- 탭 네비게이션: 필터 탭이 가로 스크롤, 선택된 탭은 진한 배경 + 흰 텍스트
+
+**WHOOP에서 가져올 것:**
+- 다크 테마 우선: 기본 모드를 다크로 설정하되, 라이트 모드도 유지
+- 절제된 포인트 컬러: 웜 오렌지 `#F4A261`을 CTA 버튼, 중요 숫자, 활성 상태에만 사용
+- 미니멀 정보 표시: 카드에 필수 정보만, 세부 정보는 상세 페이지에서
+- 여백: 카드 간격 넓히기, 패딩 충분히
+- 타이포: 제목은 굵고 시원하게 (font-bold~font-black), 본문은 가볍게 (font-normal)
+- 데이터 시각화: 참가 인원을 원형 또는 반원 게이지로, 승률을 프로그레스바로
+
+**새 컬러 팔레트 (다크 모드 기준, WHOOP 스타일):**
+
+| 용도 | 색상 | 설명 |
+|------|------|------|
+| 배경 (전체) | `#0D0D0D` | 거의 순수한 검정, WHOOP의 깊은 어둠 |
+| 배경 (카드) | `#1A1A1A` | 카드 배경, 배경과 살짝 분리 |
+| 배경 (서피스/호버) | `#242424` | 호버 상태, 구분 영역 |
+| 배경 (엘리베이티드) | `#2E2E2E` | 모달, 드롭다운 등 띄워진 요소 |
+| 보더 | `#2A2A2A` | 카드 보더, 구분선 (미세하게) |
+| 보더 서틀 | `#1F1F1F` | 더 미세한 구분선 |
+| 텍스트 (제목) | `#FFFFFF` | 제목, 중요 텍스트 |
+| 텍스트 (본문) | `#B0B0B0` | 일반 본문 |
+| 텍스트 (약한) | `#666666` | 라벨, 보조 텍스트 |
+| 포인트 (CTA) | `#F4A261` | 웜 오렌지 -- 버튼, 중요 숫자 |
+| 포인트 (CTA hover) | `#E8934F` | 웜 오렌지 호버 |
+| 성공 | `#4ADE80` | 모집중, 성공 상태 |
+| 에러/긴급 | `#F87171` | 마감, 취소 |
+| 경고 | `#FBBF24` | 임박, 경고 |
+| 정보 | `#60A5FA` | 진행중, 정보 |
+
+**새 컬러 팔레트 (라이트 모드, 현재 유지하되 따뜻하게 조정):**
+
+| 용도 | 색상 | 설명 |
+|------|------|------|
+| 배경 (전체) | `#FAFAFA` | 약간 따뜻한 회색 |
+| 배경 (카드) | `#FFFFFF` | 유지 |
+| 배경 (서피스) | `#F5F5F0` | 약간 크림색 |
+| 보더 | `#E5E5E0` | 따뜻한 회색 보더 |
+| 텍스트 (제목) | `#1A1A1A` | 거의 검정 |
+| 텍스트 (본문) | `#666666` | 중간 회색 |
+| 포인트 (CTA) | `#E8934F` | 웜 오렌지 (다크보다 약간 진하게) |
+
+---
+
+#### 실행 계획
+
+##### Phase 4-1: 디자인 토큰 시스템 구축 (컬러/타이포/간격 변수 통합)
+
+목표: 하드코딩된 색상값을 CSS 변수로 통합하여, 다크/라이트 전환이 한 곳에서 제어되게 만든다. WHOOP 컬러 팔레트를 적용한다.
+
+현재 문제:
+- 컴포넌트마다 `bg-[#FFFFFF]`, `text-[#111827]` 같은 하드코딩 색상이 분산되어 있음
+- globals.css에서 `html.dark [class*="bg-[#FFFFFF]"]` 방식으로 다크 모드를 처리 중인데, 이 방식은 CSS attribute selector를 사용하므로 성능이 나쁘고 놓치는 색상이 생김
+- 새 팔레트를 적용하려면 모든 파일의 하드코딩 색상을 변경해야 하는데, 변수 시스템 없이는 불가능에 가까움
+
+변경할 것:
+1. `globals.css`의 `@theme` 블록에 새 컬러 팔레트 변수 추가/수정
+2. `html.dark` 블록에 새 다크 모드 변수 추가/수정
+3. 타이포그래피 변수 추가 (제목 크기 스케일, 본문 크기 스케일)
+4. 간격(spacing) 변수 추가 (카드 패딩, 카드 간격, 섹션 간격)
+
+| 순서 | 작업 | 담당 | 예상 시간 | 선행 조건 | 수정 대상 파일 |
+|------|------|------|----------|----------|-------------|
+| 1 | globals.css @theme 블록에 새 컬러/타이포/간격 변수 정의 | developer | 10분 | 없음 | `src/app/globals.css` |
+| 2 | html.dark 블록에 새 다크 모드 변수 정의 (WHOOP 다크 팔레트) | developer | 5분 | 1 | `src/app/globals.css` |
+| 3 | Tailwind 설정에서 커스텀 색상/변수를 theme로 등록 (tailwind.config.ts or @theme 연동) | developer | 5분 | 1 | `src/app/globals.css` 또는 `tailwind.config.ts` |
+| 4 | tsc --noEmit + 빌드 테스트 | tester | 3분 | 3 | - |
+
+총 예상 시간: 23분
+
+주의사항:
+- 이 단계에서는 변수만 정의하고, 기존 컴포넌트는 건드리지 않는다. 기존 하드코딩 색상과 새 변수가 공존하는 상태가 된다.
+- @theme 블록의 기존 변수명은 유지하되 값만 변경한다 (기존 dark 오버라이드와 호환).
+- 포인트 컬러를 `#E31B23`(현재 빨강)에서 `#F4A261`(웜 오렌지)로 바꾸는 것이 가장 큰 변화. 기존 `--color-accent`를 `#F4A261`로 변경.
+
+##### Phase 4-2: 공통 UI 컴포넌트 리디자인 (Card, Button, Badge)
+
+목표: 공통 컴포넌트(Card, Button, Badge)가 CSS 변수를 사용하도록 변경하고, ESPN 박스형 구조 + WHOOP 미니멀 스타일을 적용한다.
+
+변경할 것:
+1. `card.tsx`: 하드코딩 색상을 CSS 변수로 교체 + 카드 디자인 업데이트
+   - 현재: `bg-[#FFFFFF]`, `border-[#E8ECF0]`, `shadow-[0_2px_8px_...]`
+   - 변경: CSS 변수 사용 (`bg-[var(--color-card)]`, `border-[var(--color-border)]`)
+   - 호버 효과를 WHOOP 스타일로 변경 (살짝 밝아지는 효과, translate 제거)
+2. `button.tsx`: 포인트 컬러를 웜 오렌지로 변경
+   - `cta` variant: `#E31B23` -> `#F4A261` (웜 오렌지)
+   - `primary` variant: `#111827` -> CSS 변수
+3. `badge.tsx`: CSS 변수 사용 + 둥글기 조정
+4. `skeleton.tsx`: 다크 모드 호환 배경색
+
+| 순서 | 작업 | 담당 | 예상 시간 | 선행 조건 | 수정 대상 파일 |
+|------|------|------|----------|----------|-------------|
+| 1 | card.tsx 리디자인 (CSS 변수 + WHOOP 스타일) | developer | 5분 | Phase 4-1 | `src/components/ui/card.tsx` |
+| 2 | button.tsx 리디자인 (포인트 컬러 + CSS 변수) | developer | 5분 | Phase 4-1 | `src/components/ui/button.tsx` |
+| 3 | badge.tsx 리디자인 (CSS 변수) | developer | 3분 | Phase 4-1 | `src/components/ui/badge.tsx` |
+| 4 | skeleton.tsx 다크 모드 호환 | developer | 2분 | Phase 4-1 | `src/components/ui/skeleton.tsx` |
+| 5 | 빌드 테스트 + 시각 확인 | tester | 5분 | 4 | - |
+
+총 예상 시간: 20분
+
+주의사항:
+- Card 컴포넌트는 프로필 페이지, 대회 상세 페이지 등 여러 곳에서 사용 중이므로, API 인터페이스(props)는 변경하지 않는다.
+- 호버 효과는 translate-y(-1)을 제거하고 border 또는 background 밝기 변화로 대체한다 (WHOOP은 떠오르는 효과 대신 미세한 밝기 변화를 사용).
+
+##### Phase 4-3: 헤더 + 네비게이션 + 레이아웃 리디자인
+
+목표: 헤더, 모바일 하단 네비, 슬라이드 메뉴, 풋터를 ESPN+WHOOP 스타일로 변경한다.
+
+변경할 것:
+1. `layout.tsx`: 배경색을 CSS 변수로 변경
+2. `header.tsx`:
+   - 데스크탑 헤더: 배경 투명도 + 블러 효과 유지하되 색상을 CSS 변수로
+   - 네비 텍스트: 현재 활성 탭 하단 빨간줄 `#E31B23` -> 웜 오렌지 `#F4A261`
+   - 모바일 하단 네비: 배경을 다크 테마에서 어두운 색으로
+   - 로그인 버튼: 웜 오렌지 배경으로 변경
+3. `slide-menu.tsx`: CSS 변수 적용, 다크 모드에서 어두운 배경
+4. `Footer.tsx`: CSS 변수 적용
+
+| 순서 | 작업 | 담당 | 예상 시간 | 선행 조건 | 수정 대상 파일 |
+|------|------|------|----------|----------|-------------|
+| 1 | layout.tsx 배경색 CSS 변수 적용 | developer | 2분 | Phase 4-1 | `src/app/(web)/layout.tsx` |
+| 2 | header.tsx 리디자인 (CSS 변수 + 포인트컬러 변경) | developer | 10분 | Phase 4-1 | `src/components/shared/header.tsx` |
+| 3 | slide-menu.tsx 리디자인 (CSS 변수) | developer | 5분 | Phase 4-1 | `src/components/shared/slide-menu.tsx` |
+| 4 | Footer.tsx 리디자인 (CSS 변수) | developer | 3분 | Phase 4-1 | `src/components/layout/Footer.tsx` |
+| 5 | 빌드 테스트 + 시각 확인 | tester | 5분 | 4 | - |
+
+총 예상 시간: 25분
+
+주의사항:
+- 모바일 하단 네비의 safe-area-inset-bottom 처리는 건드리지 않는다 (iOS 노치 대응).
+- 헤더의 유저 세션 로직은 건드리지 않는다 -- 스타일만 변경.
+
+##### Phase 4-4: 홈 페이지 리디자인
+
+목표: 홈 페이지의 히어로, 추천 영상, 퀵 메뉴, 추천 경기를 ESPN+WHOOP 스타일로 변경한다.
+
+변경할 것:
+1. `hero-section.tsx` (비로그인 히어로):
+   - 배경: `#111827` -> CSS 변수 (`var(--color-card)`)
+   - 포인트 컬러: `#E31B23` -> `#F4A261`
+   - 버튼: CTA 웜 오렌지
+2. `personal-hero.tsx` (로그인 대시보드):
+   - 배경: CSS 변수 사용
+   - 슬라이드 내부 색상: CSS 변수
+   - 뱃지/CTA: 웜 오렌지
+3. `quick-menu.tsx`:
+   - 카드 스타일: CSS 변수 사용
+   - 보더 호버: 웜 오렌지
+4. `recommended-videos.tsx`:
+   - 영상 카드: CSS 변수 사용
+5. `recommended-games.tsx`:
+   - 게임 카드: CSS 변수 사용, 포인트 컬러 변경
+
+| 순서 | 작업 | 담당 | 예상 시간 | 선행 조건 | 수정 대상 파일 |
+|------|------|------|----------|----------|-------------|
+| 1 | hero-section.tsx 리디자인 | developer | 5분 | Phase 4-2 | `src/components/home/hero-section.tsx` |
+| 2 | personal-hero.tsx 리디자인 | developer | 10분 | Phase 4-2 | `src/components/home/personal-hero.tsx` |
+| 3 | quick-menu.tsx 리디자인 | developer | 5분 | Phase 4-2 | `src/components/home/quick-menu.tsx` |
+| 4 | recommended-videos.tsx 리디자인 | developer | 5분 | Phase 4-2 | `src/components/home/recommended-videos.tsx` |
+| 5 | recommended-games.tsx 리디자인 | developer | 5분 | Phase 4-2 | `src/components/home/recommended-games.tsx` |
+| 6 | 빌드 테스트 + 시각 확인 | tester | 5분 | 5 | - |
+
+총 예상 시간: 35분
+
+##### Phase 4-5: 경기/대회 목록 카드 리디자인
+
+목표: 경기 카드와 대회 카드를 ESPN 스코어보드 스타일 + WHOOP 미니멀 스타일로 통합 리디자인한다.
+
+변경할 것:
+1. `games-content.tsx` GameCard:
+   - 하드코딩 색상을 CSS 변수로 교체 (20개 이상의 하드코딩 색상)
+   - 상단 컬러바: 유지하되 더 얇게 (`h-0.5`) or 좌측 스트라이프로 변경
+   - 포인트 컬러: 웜 오렌지
+   - 호버 효과: WHOOP 스타일 (밝기 변화)
+2. `tournaments-content.tsx` TournamentCard:
+   - GameCard와 동일한 변경 적용
+   - STATUS_STYLE 색상: 새 팔레트에 맞게 조정
+3. 스켈레톤 UI: CSS 변수 적용
+
+| 순서 | 작업 | 담당 | 예상 시간 | 선행 조건 | 수정 대상 파일 |
+|------|------|------|----------|----------|-------------|
+| 1 | games-content.tsx 하드코딩 색상 -> CSS 변수 + 스타일 변경 | developer | 10분 | Phase 4-2 | `src/app/(web)/games/_components/games-content.tsx` |
+| 2 | tournaments-content.tsx 하드코딩 색상 -> CSS 변수 + 스타일 변경 | developer | 10분 | 1 | `src/app/(web)/tournaments/_components/tournaments-content.tsx` |
+| 3 | 빌드 테스트 + 경기탭-대회탭 일관성 확인 | tester | 5분 | 2 | - |
+
+총 예상 시간: 25분
+
+##### Phase 4-6: 상세 페이지 + 프로필 + 로그인 리디자인
+
+목표: 대회 상세, 프로필 대시보드, 로그인 페이지를 새 디자인 시스템에 맞춘다.
+
+변경할 것:
+1. `tournaments/[id]/page.tsx`:
+   - 카드, 테이블, 뱃지 색상: CSS 변수
+   - 스코어보드(순위 테이블): ESPN 스타일 강화 (진한 헤더, 교대 행 색상)
+   - 참가 신청 버튼: 웜 오렌지
+2. `profile/page.tsx` + 하위 컴포넌트들:
+   - ActivityRing, StatBars: WHOOP 데이터 시각화 스타일 (어두운 배경 + 네온 컬러)
+   - ProfileHeader: 미니멀 스타일
+3. `login/page.tsx`:
+   - 로그인 카드: CSS 변수
+   - CTA 버튼: 웜 오렌지
+4. 선호 설정, 커뮤니티, 팀 목록 등 나머지 페이지:
+   - CSS 변수 적용 (하드코딩 색상 교체)
+
+| 순서 | 작업 | 담당 | 예상 시간 | 선행 조건 | 수정 대상 파일 |
+|------|------|------|----------|----------|-------------|
+| 1 | tournaments/[id]/page.tsx 리디자인 | developer | 10분 | Phase 4-2 | `src/app/(web)/tournaments/[id]/page.tsx` |
+| 2 | profile 관련 컴포넌트 리디자인 (8개 파일) | developer | 15분 | Phase 4-2 | `src/app/(web)/profile/_components/*.tsx`, `src/app/(web)/profile/page.tsx` |
+| 3 | login/page.tsx 리디자인 | developer | 5분 | Phase 4-2 | `src/app/(web)/login/page.tsx` |
+| 4 | 나머지 페이지 CSS 변수 적용 (커뮤니티, 팀, 선호설정 등) | developer | 10분 | Phase 4-2 | `src/app/(web)/community/_components/community-content.tsx`, `src/app/(web)/teams/_components/*.tsx`, `src/components/shared/preference-form.tsx` |
+| 5 | 전체 빌드 테스트 + 주요 페이지 시각 확인 | tester | 10분 | 4 | - |
+
+총 예상 시간: 50분
+
+##### Phase 4-7: 다크 모드 오버라이드 정리 + 최종 점검
+
+목표: globals.css의 기존 attribute selector 다크 모드 오버라이드를 정리하고, 모든 페이지가 다크/라이트 모드에서 정상 동작하는지 최종 확인한다.
+
+변경할 것:
+1. `globals.css`:
+   - Phase 4-1~4-6에서 CSS 변수로 전환 완료된 후, `html.dark [class*="..."]` 셀렉터 블록 중 불필요해진 것들을 정리/제거
+   - 새 변수 기반의 다크 모드만 남기기
+2. 전체 페이지 다크/라이트 모드 전환 테스트
+
+| 순서 | 작업 | 담당 | 예상 시간 | 선행 조건 | 수정 대상 파일 |
+|------|------|------|----------|----------|-------------|
+| 1 | globals.css 불필요한 attribute selector 정리 | developer | 10분 | Phase 4-6 | `src/app/globals.css` |
+| 2 | 전체 페이지 다크/라이트 모드 통합 테스트 | tester | 10분 | 1 | - |
+| 3 | 최종 코드 리뷰 | reviewer | 10분 | 2 | - |
+
+총 예상 시간: 30분
+
+---
+
+#### 전체 요약
+
+| Phase | 내용 | 핵심 변경 | 예상 시간 |
+|-------|------|----------|----------|
+| 4-1 | 디자인 토큰 시스템 구축 | globals.css 변수 정의 (WHOOP 팔레트) | 23분 |
+| 4-2 | 공통 UI 컴포넌트 (Card/Button/Badge) | 4개 파일 CSS 변수 전환 + 스타일 변경 | 20분 |
+| 4-3 | 헤더/네비/레이아웃 | 4개 파일 리디자인 | 25분 |
+| 4-4 | 홈 페이지 (히어로/추천/퀵메뉴) | 5개 파일 리디자인 | 35분 |
+| 4-5 | 경기/대회 목록 카드 | 2개 파일 리디자인 | 25분 |
+| 4-6 | 상세/프로필/로그인/나머지 | 12개+ 파일 리디자인 | 50분 |
+| 4-7 | 다크 모드 정리 + 최종 점검 | globals.css 정리 + 전체 테스트 | 30분 |
+
+총 예상 시간: 약 208분 (약 3.5시간)
+
+우선순위: 4-1 -> 4-2 -> 4-3 -> 4-5 -> 4-4 -> 4-6 -> 4-7
+(4-5를 4-4보다 먼저 하는 이유: 경기/대회 목록이 사용자가 가장 많이 보는 페이지이므로 효과가 큼)
+
+주의사항:
+- 기존 동작 코드(API 호출, 데이터 처리, 라우팅)는 절대 건드리지 않는다. 스타일(CSS 클래스, 색상값)만 변경한다.
+- 각 Phase는 독립적으로 커밋 가능하다. Phase 4-1만 완료해도 사이트는 정상 동작한다.
+- 포인트 컬러 변경(`#E31B23` -> `#F4A261`)은 브랜드 아이덴티티 변화이므로, PM 확인 필요.
+- 다크 모드를 "기본 모드"로 설정할지는 별도 결정 사항. 현재 계획은 라이트 모드가 기본인 상태 유지.
+
+---
+
 ## 수정 요청
 | 요청자 | 대상 파일 | 문제 설명 | 상태 |
 |--------|----------|----------|------|
@@ -646,6 +1060,15 @@ reviewer 참고:
 🌿 브랜치: master
 📁 포함 파일:
 - `src/app/(web)/tournaments/_components/tournaments-content.tsx`
+- `.claude/scratchpad.md`
+🔄 push 여부: 미완료
+
+### Phase 4-1 커밋 (2026-03-21)
+
+📦 커밋: feat: add ESPN+WHOOP design token system with CSS variables for colors, typography, and spacing
+🌿 브랜치: master
+📁 포함 파일:
+- `src/app/globals.css`
 - `.claude/scratchpad.md`
 🔄 push 여부: 미완료
 
@@ -678,3 +1101,6 @@ reviewer 참고:
 | 2026-03-21 | tester | Phase 3 검증 - tsc 컴파일 + 코드 변경 8항목 + 추가 확인 6항목 + 경기탭 일관성 10항목 | 통과 - 25/25 항목 통과 |
 | 2026-03-21 | reviewer | Phase 3 코드 리뷰 - 설계준수/경기탭일관성/코드품질/보안성능/종별태그UI 5개 관점 | 통과 - 필수/권장 수정 없음 |
 | 2026-03-21 | git-manager | Phase 3 커밋 - feat: unify tournament card UI with game card design and add division tags | 완료 (push 미완료) |
+| 2026-03-21 | planner | Phase 4 계획 수립 - UI/UX 전체 개선 (ESPN+WHOOP 믹스, 7개 서브 Phase, 약 208분) | 완료 |
+| 2026-03-21 | developer | Phase 4-1 구현 - 디자인 토큰 시스템 구축 (globals.css 컬러/타이포/간격 변수 정의) | 완료 |
+| 2026-03-21 | tester | Phase 4-1 검증 - tsc + CSS변수정의 + 다크모드 + 기존코드영향 + 빌드 | 통과 - 19/19 항목 통과 |
