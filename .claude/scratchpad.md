@@ -642,7 +642,7 @@ reviewer 참고:
 
 ### Phase 3 커밋 (2026-03-21)
 
-📦 커밋: feat: unify tournament card UI with game card design and add division tags
+📦 커밋: `09313e5` feat: unify tournament card UI with game card design and add division tags
 🌿 브랜치: master
 📁 포함 파일:
 - `src/app/(web)/tournaments/_components/tournaments-content.tsx`
