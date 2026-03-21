@@ -366,17 +366,45 @@ export function PersonalHero({ preloadedData }: { preloadedData?: Record<string,
 
   if (loading) {
     return (
-      /* 로딩 스켈레톤: surface-low 배경, No-Line */
-      <div className="h-[160px] animate-pulse rounded-2xl bg-surface-low" />
+      /* 로딩 스켈레톤: h-full로 부모 높이에 맞춤 */
+      <div className="h-full min-h-[160px] animate-pulse rounded-2xl bg-surface-low" />
     );
   }
 
-  if (!data) return null; // Not logged in -- parent will show static hero
+  /* 비로그인 상태: 로그인 유도 카드 표시 */
+  if (!data) {
+    return (
+      <div
+        className="flex h-full flex-col items-center justify-center rounded-2xl p-6 text-center"
+        style={{
+          background: "linear-gradient(135deg, rgba(227,27,35,0.10), rgba(27,60,135,0.06))",
+        }}
+      >
+        <Calendar className="mb-3" size={40} style={{ color: "var(--color-primary)" }} />
+        <h3
+          className="text-lg font-bold"
+          style={{ fontFamily: "var(--font-heading)", color: "var(--color-text-primary)" }}
+        >
+          내 경기/스탯을 한눈에
+        </h3>
+        <p className="mt-2 text-sm" style={{ color: "var(--color-text-muted)" }}>
+          로그인하고 맞춤 정보를 받아보세요
+        </p>
+        <Link
+          href="/login"
+          className="mt-4 rounded-lg px-6 py-2.5 text-sm font-bold text-white transition-transform active:scale-95"
+          style={{ background: "linear-gradient(to right, var(--color-primary), var(--color-accent))" }}
+        >
+          로그인
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div
       ref={containerRef}
-      className="relative overflow-hidden rounded-2xl bg-surface-low"
+      className="relative h-full overflow-hidden rounded-2xl bg-surface-low"
       style={{
         /* 히어로 컨테이너: Red→Navy 미세 그라디언트로 깊이감 */
         background: "linear-gradient(135deg, rgba(227,27,35,0.10), rgba(27,60,135,0.06))",
