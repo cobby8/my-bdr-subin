@@ -51,12 +51,14 @@ const SKILL_BADGE: Record<string, { label: string; color: string; bg: string }> 
 };
 
 // -- 스켈레톤 UI (로딩 중 표시) --
+// -- 스켈레톤 UI: CSS 변수로 다크 모드 자동 대응 --
 function GamesGridSkeleton() {
   return (
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
       {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="rounded-[16px] bg-white border border-[#E8ECF0] overflow-hidden">
-          <div className="h-1 bg-[#E8ECF0]" />
+        <div key={i} className="rounded-[16px] overflow-hidden" style={{ backgroundColor: "var(--color-card)", border: "1px solid var(--color-border)" }}>
+          {/* 상단 컬러바 자리 */}
+          <div className="h-1" style={{ backgroundColor: "var(--color-border)" }} />
           <div className="p-3.5 space-y-2.5">
             <Skeleton className="h-4 w-14 rounded-[6px]" />
             <Skeleton className="h-4 w-3/4 rounded" />
@@ -93,7 +95,8 @@ function GameCard({ game }: { game: GameFromApi }) {
 
   return (
     <Link href={href}>
-      <div className="group flex h-full flex-col rounded-[16px] border border-[#E8ECF0] bg-[#FFFFFF] overflow-hidden transition-all hover:-translate-y-1 hover:shadow-lg hover:border-[#1B3C87]/30">
+      {/* WHOOP 스타일: 호버 시 떠오르지 않고 배경색 미세 변화 */}
+      <div className="group flex h-full flex-col rounded-[16px] overflow-hidden transition-all" style={{ backgroundColor: "var(--color-card)", border: "1px solid var(--color-border)" }} onMouseEnter={e => { e.currentTarget.style.backgroundColor = "var(--color-card-hover)"; }} onMouseLeave={e => { e.currentTarget.style.backgroundColor = "var(--color-card)"; }}>
         {/* 상단 컬러 바 */}
         <div className="h-1" style={{ backgroundColor: badge.bg }} />
 
@@ -114,20 +117,21 @@ function GameCard({ game }: { game: GameFromApi }) {
           </div>
 
           {/* Row 2: 제목 */}
-          <h3 className="mb-1 text-sm font-bold text-[#111827] line-clamp-1 leading-tight group-hover:text-[#1B3C87] transition-colors">
+          {/* 제목: CSS 변수로 다크 모드 텍스트 자동 대응 */}
+          <h3 className="mb-1 text-sm font-bold line-clamp-1 leading-tight transition-colors" style={{ color: "var(--color-text-primary)" }}>
             {game.title}
           </h3>
 
           {/* Row 3: 날짜 + 장소 */}
           <div className="mb-2 space-y-0.5">
             {dateStr && (
-              <p className="flex items-center gap-1 text-xs text-[#6B7280]">
+              <p className="flex items-center gap-1 text-xs" style={{ color: "var(--color-text-secondary)" }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 opacity-50"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
                 {dateStr}
               </p>
             )}
             {location && (
-              <p className="flex items-center gap-1 text-xs text-[#6B7280]">
+              <p className="flex items-center gap-1 text-xs" style={{ color: "var(--color-text-secondary)" }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 opacity-50"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
                 <span className="line-clamp-1">{location}</span>
               </p>
@@ -137,7 +141,8 @@ function GameCard({ game }: { game: GameFromApi }) {
           {/* Row 4: 참가 프로그레스 */}
           {max > 0 && (
             <div className="mb-2 flex items-center gap-2">
-              <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-[#E8ECF0]">
+              {/* 프로그레스바 배경: CSS 변수로 다크 모드 대응 */}
+              <div className="relative h-1.5 flex-1 overflow-hidden rounded-full" style={{ backgroundColor: "var(--color-border)" }}>
                 <div
                   className="absolute left-0 top-0 h-full rounded-full transition-all"
                   style={{ width: `${pct}%`, backgroundColor: barColor }}
@@ -151,8 +156,9 @@ function GameCard({ game }: { game: GameFromApi }) {
 
           {/* Row 5: 참가비 + 난이도 */}
           <div className="mt-auto flex items-center justify-between pt-1">
-            <span className="text-xs font-semibold text-[#111827]">
-              {fee ?? <span className="text-[#9CA3AF]">무료</span>}
+            {/* 참가비: CSS 변수로 다크 모드 텍스트 대응 */}
+            <span className="text-xs font-semibold" style={{ color: "var(--color-text-primary)" }}>
+              {fee ?? <span style={{ color: "var(--color-text-muted)" }}>무료</span>}
             </span>
             {skill && (
               <span
@@ -251,7 +257,8 @@ export function GamesContent({
           <Link
             href="/games/my-games"
             prefetch={true}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FF9F43] text-xs font-black text-[#111827] hover:bg-[#F7931E] transition-colors"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-xs font-black transition-colors"
+            style={{ backgroundColor: "var(--color-accent)", color: "var(--color-text-primary)" }}
             title="내 경기"
           >
             MY
@@ -259,7 +266,8 @@ export function GamesContent({
           <Link
             href="/games/new"
             prefetch={true}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1B3C87] text-white hover:bg-[#142D6B] transition-colors"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-white transition-colors"
+            style={{ backgroundColor: "var(--color-primary)" }}
             title="경기 만들기"
           >
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -277,9 +285,10 @@ export function GamesContent({
       ) : (
         <>
           {/* 필터 활성 시 결과 카운트 */}
+          {/* 필터 결과 카운트: CSS 변수 적용 */}
           {hasFilters && (
-            <p className="mb-4 text-sm text-[#9CA3AF]">
-              검색 결과 <span className="text-[#111827]">{games.length}개</span>
+            <p className="mb-4 text-sm" style={{ color: "var(--color-text-muted)" }}>
+              검색 결과 <span style={{ color: "var(--color-text-primary)" }}>{games.length}개</span>
             </p>
           )}
 
@@ -293,7 +302,7 @@ export function GamesContent({
             {games.length === 0 && (
               <div className="col-span-full py-20 text-center">
                 <div className="mb-3 text-4xl">&#127936;</div>
-                <p className="text-[#6B7280]">
+                <p style={{ color: "var(--color-text-secondary)" }}>
                   {hasFilters ? "조건에 맞는 경기가 없습니다." : "등록된 경기가 없습니다."}
                 </p>
               </div>

@@ -464,6 +464,42 @@ reviewer 참고:
 - YouTube 관련 색상(#FF0000, bg-red-600)은 YouTube 브랜드 가이드라인에 따라 의도적으로 유지
 - getBadgeStyle 함수의 LIVE/HOT 뱃지 색상은 의미론적 색상(빨강=라이브, 주황=인기)이므로 CSS 변수로 전환하지 않음
 
+### Phase 4-5: 경기/대회 목록 카드 리디자인 (CSS 변수 전환 + WHOOP 호버)
+
+구현한 기능: 경기 목록(GameCard)과 대회 목록(TournamentCard)의 하드코딩 색상을 CSS 변수로 전환하고, 호버 효과를 WHOOP 스타일(배경색 미세 변화)로 변경했다. 두 카드가 동일한 디자인 시스템을 공유하도록 일관성 있게 적용했다. 로직/데이터 처리는 일절 건드리지 않았다.
+
+| 파일 경로 | 변경 내용 | 신규/수정 |
+|----------|----------|----------|
+| `src/app/(web)/games/_components/games-content.tsx` | 카드 배경/보더 bg-[#FFFFFF]/border-[#E8ECF0] -> var(--color-card)/var(--color-border), 제목 text-[#111827] -> var(--color-text-primary), 날짜/장소 text-[#6B7280] -> var(--color-text-secondary), 참가비 text-[#111827]/text-[#9CA3AF] -> var(--color-text-primary)/var(--color-text-muted), 프로그레스바 배경 -> var(--color-border), 호버 translate-y+shadow -> 배경색 변화(var(--color-card-hover)), 스켈레톤 CSS 변수 적용, MY버튼 -> var(--color-accent), +버튼 -> var(--color-primary), 필터 결과/빈 상태 텍스트 CSS 변수 적용 | 수정 |
+| `src/app/(web)/tournaments/_components/tournaments-content.tsx` | GameCard와 동일 패턴으로 CSS 변수 전환: 카드 배경/보더/제목/날짜/장소/참가비/프로그레스바/호버 모두 CSS 변수, "대회 만들기" 버튼 bg-[#E31B23] -> var(--color-accent), 종별 칩 bg-[#F3F4F6]/text-[#6B7280] -> var(--color-primary-light)/var(--color-text-secondary), 스켈레톤/필터 결과/빈 상태 텍스트 CSS 변수 적용 | 수정 |
+
+tester 참고:
+- 테스트 방법: tsc --noEmit 통과 확인 (완료). 개발 서버에서 /games와 /tournaments 페이지 라이트/다크 모드 전환 확인 필요
+- 정상 동작:
+  - 라이트 모드: 카드 배경 흰색(#FFFFFF), 테두리 연한 회색(#E5E7EB), 호버 시 미세한 밝기 변화(#F9F9FB)
+  - 다크 모드: 카드 배경 어두운 회색(#1A1A1A), 테두리 더 어두운 회색(#2A2A2A), 호버 시 미세한 밝기 변화(#222222)
+  - 호버 시 카드가 떠오르지 않고(translate-y 제거), 배경색만 미세하게 변화해야 함
+  - "대회 만들기" 버튼이 빨강(#E31B23)이 아닌 웜 오렌지(#F4A261)여야 함
+  - MY 버튼도 웜 오렌지(#F4A261)여야 함
+  - 종별 칩 배경이 브랜드 컬러의 연한 톤(--color-primary-light)이어야 함
+- 주의할 점:
+  - TYPE_BADGE, STATUS_LABEL, SKILL_BADGE, STATUS_STYLE의 색상은 의미론적 색상(상태 표시)이므로 CSS 변수로 변환하지 않았음 (정상)
+  - 프로그레스바의 barColor도 의미론적 색상(정상/경고/위험)이므로 하드코딩 유지 (정상)
+  - 상단 컬러바 색상도 상태별 의미 색상이므로 하드코딩 유지 (정상)
+
+reviewer 참고:
+- 로직/데이터 처리 코드는 일절 변경하지 않음 -- 순수 스타일(CSS) 변경만 진행
+- CSS 변수는 모두 Phase 4-1에서 정의된 것만 사용 (새 변수 추가 없음)
+- 호버 효과는 onMouseEnter/onMouseLeave 이벤트로 CSS 변수 값을 직접 적용 (Tailwind hover: 클래스로 CSS 변수를 쓰면 런타임 적용이 안 될 수 있어서)
+- group-hover:text-[#1B3C87] (제목 호버 색상 변화)를 제거함 -- WHOOP 스타일에서는 텍스트 색상 변화보다 배경 변화에 집중
+- tournaments의 "대회 만들기" 버튼에 중복된 style 속성이 있었으나 하나로 합침 (backgroundColor + fontFamily)
+
+### 작업 로그
+
+| 날짜 | Phase | 작업 내용 | 상태 |
+|------|-------|----------|------|
+| 2026-03-21 | 4-5 | 경기/대회 목록 카드 CSS 변수 전환 + WHOOP 호버 | 완료 |
+
 ## 테스트 결과 (tester)
 
 ### Phase 2: 선호 종별(divisions) 대회 필터 검증 (2026-03-21)
@@ -664,6 +700,118 @@ reviewer 참고:
 
 경고 상세:
 - recommended-videos.tsx의 getBadgeStyle 함수에서 디비전 뱃지 색상 `text-[#E76F00]`이 하드코딩됨. --color-accent(#F4A261)와 미세하게 다른 톤. Tailwind 유틸리티 클래스에서 CSS 변수를 직접 사용하기 어려운 구조적 한계이므로 현시점에서는 허용하되, Phase 4-7(정리/리팩토링) 시점에 검토 권장.
+
+### Phase 4-5: 경기/대회 목록 카드 리디자인 검증 (2026-03-21)
+
+#### 1. TypeScript 컴파일
+
+| 번호 | 검증 항목 | 결과 | 비고 |
+|------|----------|------|------|
+| 1-1 | `npx tsc --noEmit` | 통과 | 에러/경고 0건. 출력 없이 정상 종료 |
+
+#### 2. 하드코딩 색상 -> CSS 변수 전환 (games-content.tsx)
+
+| 번호 | 검증 항목 | 결과 | 비고 |
+|------|----------|------|------|
+| 2-1 | 카드 배경 CSS 변수 전환 | 통과 | 99행: `backgroundColor: "var(--color-card)"` |
+| 2-2 | 카드 테두리 CSS 변수 전환 | 통과 | 99행: `border: "1px solid var(--color-border)"` |
+| 2-3 | 제목 텍스트 CSS 변수 전환 | 통과 | 121행: `color: "var(--color-text-primary)"` |
+| 2-4 | 날짜/장소 텍스트 CSS 변수 전환 | 통과 | 128, 134행: `color: "var(--color-text-secondary)"` |
+| 2-5 | 참가비 텍스트 CSS 변수 전환 | 통과 | 160행: `var(--color-text-primary)`, 161행: `var(--color-text-muted)` (무료) |
+| 2-6 | 프로그레스바 배경 CSS 변수 전환 | 통과 | 145행: `backgroundColor: "var(--color-border)"` |
+| 2-7 | 스켈레톤 CSS 변수 전환 | 통과 | 59행: 배경 `var(--color-card)`, 테두리 `var(--color-border)`, 61행: 컬러바 자리 `var(--color-border)` |
+| 2-8 | MY 버튼 색상 웜 오렌지 | 통과 | 261행: `backgroundColor: "var(--color-accent)"` |
+| 2-9 | + 버튼 색상 브랜드 프라이머리 | 통과 | 270행: `backgroundColor: "var(--color-primary)"` |
+| 2-10 | 필터 결과/빈 상태 텍스트 CSS 변수 | 통과 | 290-291행: `var(--color-text-muted)`, `var(--color-text-primary)`, 305행: `var(--color-text-secondary)` |
+| 2-11 | 헤더 제목 폰트 CSS 변수 | 통과 | 252행: `fontFamily: "var(--font-heading)"` |
+| 2-12 | Tailwind 하드코딩 색상 클래스 잔존 | 통과 | `bg-[#...]`, `border-[#...]`, `text-[#...]` 패턴 0건 |
+
+#### 3. 하드코딩 색상 -> CSS 변수 전환 (tournaments-content.tsx)
+
+| 번호 | 검증 항목 | 결과 | 비고 |
+|------|----------|------|------|
+| 3-1 | 카드 배경 CSS 변수 전환 | 통과 | 105행: `backgroundColor: "var(--color-card)"` |
+| 3-2 | 카드 테두리 CSS 변수 전환 | 통과 | 105행: `border: "1px solid var(--color-border)"` |
+| 3-3 | 제목 텍스트 CSS 변수 전환 | 통과 | 125행: `color: "var(--color-text-primary)"` |
+| 3-4 | 날짜/장소 텍스트 CSS 변수 전환 | 통과 | 132, 138행: `color: "var(--color-text-secondary)"` |
+| 3-5 | 참가비 텍스트 CSS 변수 전환 | 통과 | 164행: `var(--color-text-primary)`, 167행: `var(--color-text-muted)` (무료) |
+| 3-6 | 프로그레스바 배경 CSS 변수 전환 | 통과 | 149행: `backgroundColor: "var(--color-border)"` |
+| 3-7 | 스켈레톤 CSS 변수 전환 | 통과 | 67행: 배경 `var(--color-card)`, 테두리 `var(--color-border)`, 69행: 컬러바 자리 `var(--color-border)` |
+| 3-8 | "대회 만들기" 버튼 웜 오렌지 | 통과 | 271행: `backgroundColor: "var(--color-accent)"` (빨강 #E31B23에서 변경됨) |
+| 3-9 | 종별 칩 CSS 변수 전환 | 통과 | 176행: `backgroundColor: "var(--color-primary-light)"`, `color: "var(--color-text-secondary)"` |
+| 3-10 | 종별 "+N" 텍스트 CSS 변수 | 통과 | 182행: `color: "var(--color-text-muted)"` |
+| 3-11 | 필터 결과/빈 상태 텍스트 CSS 변수 | 통과 | 289-290행: `var(--color-text-muted)`, `var(--color-text-primary)`, 304행: `var(--color-text-secondary)` |
+| 3-12 | 헤더 제목 폰트 CSS 변수 | 통과 | 265행: `fontFamily: "var(--font-heading)"` |
+| 3-13 | Tailwind 하드코딩 색상 클래스 잔존 | 통과 | `bg-[#...]`, `border-[#...]`, `text-[#...]` 패턴 0건 |
+
+#### 4. 호버 효과 WHOOP 스타일 검증
+
+| 번호 | 검증 항목 | 결과 | 비고 |
+|------|----------|------|------|
+| 4-1 | games-content 호버: 배경색 변화 | 통과 | 99행: onMouseEnter -> `var(--color-card-hover)`, onMouseLeave -> `var(--color-card)` |
+| 4-2 | tournaments-content 호버: 배경색 변화 | 통과 | 105행: 동일 패턴 |
+| 4-3 | translate-y / shadow-lg 제거 확인 | 통과 | 두 파일 모두 `translate`, `shadow-lg` 패턴 0건 |
+| 4-4 | 두 파일 호버 패턴 일관성 | 통과 | onMouseEnter/onMouseLeave 코드가 완전히 동일 |
+
+#### 5. 의미론적 색상 유지 확인
+
+| 번호 | 검증 항목 | 결과 | 비고 |
+|------|----------|------|------|
+| 5-1 | games: TYPE_BADGE 하드코딩 유지 | 통과 | 31-35행: PICKUP(파랑), GUEST(녹색), PRACTICE(주황) 원본 유지 |
+| 5-2 | games: STATUS_LABEL 하드코딩 유지 | 통과 | 38-43행: 모집중(녹), 확정(파), 완료(회), 취소(빨) 원본 유지 |
+| 5-3 | games: SKILL_BADGE 하드코딩 유지 | 통과 | 46-51행: 초급/중급/중상/상급 색상 원본 유지 |
+| 5-4 | games: barColor 하드코딩 유지 | 통과 | 83행: 100%=#EF4444, 80%=#D97706, 기본=#1B3C87 원본 유지 |
+| 5-5 | tournaments: STATUS_STYLE 하드코딩 유지 | 통과 | 31-42행: 상태별 color+bg 매핑 원본 유지 |
+| 5-6 | tournaments: barColor 하드코딩 유지 | 통과 | 95행: games와 동일한 색상 로직 |
+
+#### 6. 로직/데이터 처리 무변경 확인
+
+| 번호 | 검증 항목 | 결과 | 비고 |
+|------|----------|------|------|
+| 6-1 | games: API 호출 로직 | 통과 | useEffect, fetch, AbortController, searchParams, preferFilter 처리 원본 유지 (200-237행) |
+| 6-2 | games: 데이터 변환 로직 | 통과 | fee 포맷(87-89행), dateStr 포맷(92-94행), pct 계산(82행) 원본 유지 |
+| 6-3 | tournaments: API 호출 로직 | 통과 | useEffect, fetch, AbortController, searchParams, preferFilter 처리 원본 유지 (221-255행) |
+| 6-4 | tournaments: 데이터 변환 로직 | 통과 | formatDateRange(53-59행), pct 계산(94행), divisions 슬라이싱(98-100행) 원본 유지 |
+
+#### 7. CSS 변수 매칭 (globals.css 정의 확인)
+
+| 번호 | 사용된 CSS 변수 | globals.css 정의 | 결과 |
+|------|---------------|-----------------|------|
+| 7-1 | --color-card | 라이트:#FFFFFF / 다크:#1A1A1A | 통과 |
+| 7-2 | --color-card-hover | 라이트:#F9F9FB / 다크:#222222 | 통과 |
+| 7-3 | --color-border | 라이트:#E5E7EB / 다크:#2A2A2A | 통과 |
+| 7-4 | --color-text-primary | 라이트:#111827 / 다크:#F5F5F5 | 통과 |
+| 7-5 | --color-text-secondary | 라이트:#6B7280 / 다크:#A0A0A0 | 통과 |
+| 7-6 | --color-text-muted | 라이트:#9CA3AF / 다크:#666666 | 통과 |
+| 7-7 | --color-accent | 라이트/다크:#F4A261 | 통과 |
+| 7-8 | --color-primary | 라이트:#1B3C87 / 다크:#5B7FD6 | 통과 |
+| 7-9 | --color-primary-light | 라이트:rgba(27,60,135,0.08) / 다크:rgba(91,127,214,0.15) | 통과 |
+| 7-10 | --font-heading | 'Barlow Condensed', 'Pretendard', sans-serif | 통과 |
+
+#### 8. 두 파일 간 스타일 일관성
+
+| 번호 | 비교 항목 | 결과 | 비고 |
+|------|----------|------|------|
+| 8-1 | 카드 외형 (rounded, overflow, transition) | 통과 | 동일: `rounded-[16px] overflow-hidden transition-all` |
+| 8-2 | 카드 배경/테두리 CSS 변수 | 통과 | 동일: `var(--color-card)`, `var(--color-border)` |
+| 8-3 | 상단 컬러바 높이 | 통과 | 동일: `h-1` |
+| 8-4 | 패딩 구조 | 통과 | 동일: `p-3.5` |
+| 8-5 | Row 1: 뱃지 스타일 | 통과 | 동일: `rounded-[6px] px-2 py-0.5 text-xs font-bold uppercase tracking-wider` |
+| 8-6 | Row 1: 상태 텍스트 스타일 | 통과 | 동일: `text-[11px] font-bold` |
+| 8-7 | Row 2: 제목 스타일 | 통과 | 동일: `mb-1 text-sm font-bold line-clamp-1 leading-tight transition-colors` |
+| 8-8 | Row 3: 날짜/장소 순서 | 통과 | 동일: 날짜 먼저, 장소 다음 |
+| 8-9 | Row 3: 아이콘+텍스트 구조 | 통과 | 동일: SVG 12x12 아이콘 + `gap-1 text-xs` + `var(--color-text-secondary)` |
+| 8-10 | Row 4: 프로그레스바 구조 | 통과 | 동일: `h-1.5 flex-1 rounded-full` + `text-[11px] font-bold tabular-nums` |
+| 8-11 | Row 5: 참가비+하단 레이아웃 | 통과 | 동일: `mt-auto flex items-center justify-between pt-1` |
+| 8-12 | 스켈레톤 구조 | 통과 | 동일: 그리드, 카드 모양, 내부 Skeleton 컴포넌트 구성 |
+| 8-13 | 그리드 레이아웃 | 통과 | 동일: `grid-cols-2 gap-3 lg:grid-cols-3` |
+
+📊 종합: 49개 중 49개 통과 / 0개 실패
+
+참고 사항:
+- 하드코딩 색상은 의미론적 색상(TYPE_BADGE, STATUS_LABEL, SKILL_BADGE, STATUS_STYLE, barColor)에만 남아있으며, 이는 상태/유형을 표현하는 고정 색상이므로 CSS 변수로 전환하지 않는 것이 올바른 설계 판단이다.
+- 호버 효과는 CSS의 :hover가 아닌 onMouseEnter/onMouseLeave 이벤트 핸들러로 구현되었는데, 이는 인라인 style에서 CSS 변수를 동적으로 적용하기 위한 합리적인 선택이다.
+- 두 파일(games-content.tsx, tournaments-content.tsx)의 카드 레이아웃이 Row 1~5까지 완전히 동일한 구조를 공유하며, 차이점은 데이터 특성(경기 유형 vs 대회 형식, 난이도 뱃지 vs 종별 칩)에 의한 것뿐이다.
 
 ## 리뷰 결과 (reviewer)
 
@@ -1502,3 +1650,4 @@ reviewer 참고:
 | 2026-03-21 | git-manager | Phase 4-3 커밋 - feat: redesign header, nav, slide-menu, footer with CSS variables and warm orange accent | 완료 - 342551b (push 미완료) |
 | 2026-03-21 | tester | Phase 4-4 검증 - tsc + 하드코딩색상전환(20항목) + CSS변수매칭(14항목) + 로직무변경(5항목) | 통과 - 39/39 통과, 1경고 |
 | 2026-03-21 | git-manager | Phase 4-4 커밋 - feat: redesign home page components with CSS variables and warm orange accent | 완료 - 6298820 (push 미완료) |
+| 2026-03-21 | tester | Phase 4-5 검증 - tsc + 하드코딩색상전환(25항목) + 호버WHOOP(4항목) + 의미론적색상유지(6항목) + 로직무변경(4항목) + CSS변수매칭(10항목) + 일관성(13항목) | 통과 - 49/49 통과 |
