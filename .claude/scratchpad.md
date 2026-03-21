@@ -341,7 +341,16 @@ reviewer 참고:
 |--------|----------|----------|------|
 
 ## Git 기록 (git-manager)
-(아직 없음)
+
+### Phase 2 커밋 (2026-03-21)
+
+📦 커밋: `ba1af0f` feat: add preferred divisions filter to tournament list API
+🌿 브랜치: master
+📁 포함 파일:
+- `src/lib/services/tournament.ts`
+- `src/app/api/web/tournaments/route.ts`
+- `.claude/scratchpad.md`
+🔄 push 여부: 미완료
 
 ## 문서 기록 (doc-writer)
 (아직 없음)
@@ -365,3 +374,4 @@ reviewer 참고:
 | 2026-03-21 | developer | Phase 2 구현 - 선호 종별 대회 필터 적용 (서비스+API) | 완료 - tsc 통과 |
 | 2026-03-21 | tester | Phase 2 검증 - 정적 분석 + 로직 검증 + tsc 빌드 | 통과 - 13/13 항목 통과 |
 | 2026-03-21 | reviewer | Phase 2 코드 리뷰 - 설계 준수/보안/타입/에러/성능/컨벤션/일관성 7개 관점 | 통과 - 필수/권장 수정 없음 |
+| 2026-03-21 | git-manager | Phase 2 커밋 - feat: add preferred divisions filter to tournament list API | 완료 - ba1af0f (push 미완료) |
