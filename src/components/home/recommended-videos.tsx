@@ -14,25 +14,31 @@ interface VideoItem {
   is_live: boolean;
 }
 
-// 뱃지별 스타일 정의
-/* 뱃지 유형별 스타일 반환. cssColor가 있으면 style prop으로 텍스트 색상 적용 */
-function getBadgeStyle(badge: string): { bg: string; text: string; icon?: "flame" | "pulse"; cssColor?: string } {
+/* 뱃지 유형별 스타일 반환 — Kinetic Pulse 색상 체계
+ * cssVar가 있으면 CSS 변수를 style prop으로 적용 */
+function getBadgeStyle(badge: string): { bg: string; text: string; icon?: "flame" | "pulse"; cssVar?: string } {
   switch (badge) {
     case "LIVE":
-      // 빨간 배경 + 흰 텍스트 + 깜빡이는 점 애니메이션
+      // 빨간 배경 + 흰 텍스트 + 깜빡이는 점 — primary(Red)
       return { bg: "bg-red-600", text: "text-white", icon: "pulse" };
     case "HOT":
-      // 빨간/주황 그라데이션
+      // Red→Navy 그라디언트
       return { bg: "bg-gradient-to-r from-red-500 to-orange-400", text: "text-white", icon: "flame" };
     case "맞춤":
-      // 파란/보라 계열
-      return { bg: "bg-indigo-500/15", text: "text-indigo-600" };
+      // tertiary(밝은 블루) 계열
+      return { bg: "", text: "", cssVar: "tertiary" };
     default:
-      // 디비전명 (스타터스, 챌린저 등) -> 오렌지 계열 (CSS 변수로 다크모드 대응)
-      return { bg: "bg-[#F4A261]/15", text: "", cssColor: "var(--color-accent-hover)" };
+      // 디비전명 (스타터스, 챌린저 등) → primary-light 배경 + primary 텍스트
+      return { bg: "", text: "", cssVar: "primary" };
   }
 }
 
+/* ============================================================
+ * RecommendedVideos — Kinetic Pulse 디자인
+ * - 카드: bg-surface-high, rounded-2xl, hover:bg-surface-bright
+ * - No-Line 규칙: 보더 없이 surface 계층으로 구분
+ * - YouTube 빨간색은 브랜드 색상이므로 그대로 유지
+ * ============================================================ */
 export function RecommendedVideos() {
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,11 +66,11 @@ export function RecommendedVideos() {
     return (
       <section>
         <div className="mb-4 flex items-center gap-2">
-          <Skeleton className="h-7 w-48" />
+          <Skeleton className="h-8 w-56" />
         </div>
-        <div className="flex gap-3 overflow-hidden">
+        <div className="flex gap-4 overflow-hidden">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="h-[180px] w-[280px] flex-shrink-0 rounded-[16px]" />
+            <Skeleton key={i} className="h-[200px] w-[280px] flex-shrink-0 rounded-2xl" />
           ))}
         </div>
       </section>
@@ -75,14 +81,14 @@ export function RecommendedVideos() {
 
   return (
     <section>
-      {/* 헤더: 섹션 제목은 CSS 변수로 텍스트 색상 적용 */}
+      {/* 헤더: YouTube 아이콘(브랜드 빨강) + 섹션 타이틀 */}
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#FF0000]">
             <Play size={14} className="text-white" fill="white" />
           </div>
           <h2
-            className="text-xl font-bold uppercase tracking-wide"
+            className="text-2xl font-bold"
             style={{ fontFamily: "var(--font-heading)", color: "var(--color-text-primary)" }}
           >
             BDR 추천 영상
@@ -95,42 +101,37 @@ export function RecommendedVideos() {
           className="text-sm font-semibold hover:underline"
           style={{ color: "#FF0000" }}
         >
-          채널 보기 →
+          채널 보기
         </a>
       </div>
 
       {/* 영상 카드 가로 스크롤 */}
       <div className="group relative">
-        {/* 스크롤 버튼 (데스크탑): CSS 변수로 배경/텍스트 적용 */}
+        {/* 스크롤 버튼 (데스크탑): surface-high 배경, No-Line */}
         <button
           onClick={() => scroll("left")}
-          className="absolute -left-3 top-1/2 z-10 hidden -translate-y-1/2 rounded-full p-1.5 shadow-md backdrop-blur-sm transition-opacity group-hover:opacity-100 md:block md:opacity-0"
-          style={{ backgroundColor: "var(--color-card)" }}
+          className="absolute -left-3 top-1/2 z-10 hidden -translate-y-1/2 rounded-lg bg-surface-high p-1.5 shadow-md backdrop-blur-sm transition-opacity group-hover:opacity-100 md:block md:opacity-0"
         >
           <ChevronLeft size={18} style={{ color: "var(--color-text-primary)" }} />
         </button>
         <button
           onClick={() => scroll("right")}
-          className="absolute -right-3 top-1/2 z-10 hidden -translate-y-1/2 rounded-full p-1.5 shadow-md backdrop-blur-sm transition-opacity group-hover:opacity-100 md:block md:opacity-0"
-          style={{ backgroundColor: "var(--color-card)" }}
+          className="absolute -right-3 top-1/2 z-10 hidden -translate-y-1/2 rounded-lg bg-surface-high p-1.5 shadow-md backdrop-blur-sm transition-opacity group-hover:opacity-100 md:block md:opacity-0"
         >
           <ChevronRight size={18} style={{ color: "var(--color-text-primary)" }} />
         </button>
 
         <div
           ref={scrollRef}
-          className="scrollbar-hide flex gap-3 overflow-x-auto scroll-smooth pb-2"
+          className="scrollbar-hide flex gap-4 overflow-x-auto scroll-smooth pb-2"
         >
           {videos.map((v) => (
             <div
               key={v.video_id}
               className="w-[260px] flex-shrink-0 sm:w-[300px]"
             >
-              {/* 썸네일 / 플레이어: 다크 배경은 CSS 변수 사용 */}
-              <div
-                className="relative aspect-video overflow-hidden rounded-[12px]"
-                style={{ backgroundColor: "var(--color-text-primary)" }}
-              >
+              {/* 썸네일 / 플레이어: rounded-2xl (Kinetic Pulse 카드 라운딩) */}
+              <div className="relative aspect-video overflow-hidden rounded-2xl bg-surface-high">
                 {playingId === v.video_id ? (
                   <iframe
                     src={`https://www.youtube.com/embed/${v.video_id}?autoplay=1&rel=0`}
@@ -157,10 +158,9 @@ export function RecommendedVideos() {
                       </div>
                     </div>
 
-                    {/* LIVE 인디케이터: 썸네일 좌상단에 빨간 LIVE 표시 */}
+                    {/* LIVE 인디케이터: 썸네일 좌상단 */}
                     {v.is_live && (
-                      <div className="absolute left-2 top-2 flex items-center gap-1 rounded bg-red-600 px-2 py-0.5 shadow-md">
-                        {/* 깜빡이는 빨간 점 */}
+                      <div className="absolute left-2 top-2 flex items-center gap-1 rounded-lg bg-red-600 px-2 py-0.5 shadow-md">
                         <span className="relative flex h-2 w-2">
                           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
                           <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
@@ -168,13 +168,12 @@ export function RecommendedVideos() {
                         <span className="text-[11px] font-bold text-white">LIVE</span>
                       </div>
                     )}
-
                   </button>
                 )}
               </div>
 
-              {/* 영상 정보: 텍스트 색상을 CSS 변수로 전환 */}
-              <div className="mt-2 px-0.5">
+              {/* 영상 정보: 텍스트 색상 CSS 변수 */}
+              <div className="mt-2.5 px-0.5">
                 <h3
                   className="text-sm font-bold line-clamp-2 leading-tight"
                   style={{ color: "var(--color-text-primary)" }}
@@ -182,15 +181,28 @@ export function RecommendedVideos() {
                   {v.title}
                 </h3>
                 {/* 뱃지 목록 + 날짜 */}
-                <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                   {v.badges.map((badge) => {
                     const style = getBadgeStyle(badge);
+                    /* CSS 변수 기반 뱃지 vs Tailwind 클래스 기반 뱃지 분기 */
+                    if (style.cssVar) {
+                      return (
+                        <span
+                          key={badge}
+                          className="inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-[11px] font-semibold"
+                          style={{
+                            backgroundColor: `var(--color-${style.cssVar}-light)`,
+                            color: `var(--color-${style.cssVar})`,
+                          }}
+                        >
+                          {badge}
+                        </span>
+                      );
+                    }
                     return (
                       <span
                         key={badge}
-                        className={`inline-flex items-center gap-1 rounded-[6px] px-2 py-0.5 text-[11px] font-semibold ${style.bg} ${style.text}`}
-                        /* cssColor가 있으면 인라인으로 텍스트 색상 적용 (CSS 변수 다크 모드 대응) */
-                        style={style.cssColor ? { color: style.cssColor } : undefined}
+                        className={`inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-[11px] font-semibold ${style.bg} ${style.text}`}
                       >
                         {/* LIVE 뱃지: 깜빡이는 점 */}
                         {style.icon === "pulse" && (
@@ -207,7 +219,7 @@ export function RecommendedVideos() {
                       </span>
                     );
                   })}
-                  {/* 날짜 텍스트: CSS 변수 사용 */}
+                  {/* 날짜 텍스트 */}
                   <span className="text-xs" style={{ color: "var(--color-text-muted)" }}>
                     {formatDate(v.published_at)}
                   </span>

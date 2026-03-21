@@ -30,11 +30,8 @@ export function HeroSection() {
 
   if (state === "loading") {
     return (
-      /* 로딩 스켈레톤: CSS 변수로 배경색 적용 */
-      <div
-        className="h-[160px] animate-pulse rounded-[20px]"
-        style={{ background: "linear-gradient(to bottom right, var(--color-card), var(--color-elevated))" }}
-      />
+      /* 로딩 스켈레톤: surface 계층 그라디언트로 로딩 표시 */
+      <div className="aspect-[21/9] animate-pulse rounded-2xl bg-surface-low" />
     );
   }
 
@@ -42,37 +39,82 @@ export function HeroSection() {
     return <PersonalHero preloadedData={dashboardData} />;
   }
 
+  /* ============================================================
+   * 비로그인 히어로 — Kinetic Pulse 디자인
+   * - bdr_6 참고: 대형 배너 + 그라디언트 오버레이
+   * - 배경 이미지 대신 그라디언트로 시각적 임팩트
+   * - No-Line 규칙: 보더 없이 배경색 차이로 구분
+   * ============================================================ */
   return (
-    /* 비로그인 히어로: 다크 카드 배경 + 웜 오렌지 포인트 */
-    <section
-      className="relative overflow-hidden rounded-[20px] px-8 py-10 md:px-12 md:py-14"
-      style={{ backgroundColor: "var(--color-text-primary)" }}
-    >
-      {/* 배경 패턴 */}
-      <div className="absolute inset-0 opacity-[0.06]" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-      }} />
-      {/* 그라데이션 오버레이: 웜 오렌지로 변경 */}
+    <section className="relative overflow-hidden rounded-2xl bg-surface-low">
+      {/* 배경 그라디언트 오버레이: surface → 투명으로 페이드 */}
       <div
-        className="absolute right-0 top-0 h-full w-1/2"
-        style={{ background: "linear-gradient(to left, var(--color-accent-light), transparent)" }}
+        className="absolute inset-0"
+        style={{
+          background: "linear-gradient(135deg, rgba(227,27,35,0.12) 0%, rgba(27,60,135,0.08) 100%)",
+        }}
+      />
+      {/* 상단→하단 페이드: 콘텐츠 가독성 확보 */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: "linear-gradient(to top, var(--color-surface) 0%, transparent 60%)",
+        }}
       />
 
-      <div className="relative text-center">
-        {/* 브랜드 타이틀: 포인트 컬러를 웜 오렌지로 변경 */}
-        <h1 className="mb-3 text-4xl font-extrabold uppercase tracking-wide md:text-5xl" style={{ fontFamily: "var(--font-heading)", color: "var(--color-text-on-primary)" }}>
-          <span style={{ color: "var(--color-accent)" }}>B</span>asketball{" "}
-          <span style={{ color: "var(--color-accent)" }}>D</span>aily{" "}
-          <span style={{ color: "var(--color-accent)" }}>R</span>outine
+      {/* 장식용 농구공 패턴 (우측 하단, 반투명) */}
+      <div className="absolute -bottom-10 -right-10 text-[200px] leading-none opacity-[0.04] select-none">
+        🏀
+      </div>
+
+      {/* 메인 콘텐츠 영역 */}
+      <div className="relative px-8 py-12 md:px-12 md:py-16 lg:py-20">
+        {/* LIVE NOW 뱃지: primary 색상으로 스파링하게 사용 */}
+        <div className="mb-4 flex items-center gap-2">
+          <span
+            className="rounded-full px-3 py-1 text-xs font-bold uppercase tracking-widest"
+            style={{ backgroundColor: "var(--color-primary)", color: "#FFFFFF" }}
+          >
+            Welcome
+          </span>
+          <span className="text-sm font-medium" style={{ color: "var(--color-text-secondary)" }}>
+            농구인을 위한 플랫폼
+          </span>
+        </div>
+
+        {/* 헤드라인: Space Grotesk, tracking-tighter, 대형 타이포 */}
+        <h1
+          className="mb-4 text-4xl font-bold leading-tight tracking-tighter md:text-5xl lg:text-6xl"
+          style={{ fontFamily: "var(--font-heading)", color: "var(--color-text-primary)" }}
+        >
+          <span style={{ color: "var(--color-primary)" }}>B</span>asketball{" "}
+          <span style={{ color: "var(--color-primary)" }}>D</span>aily{" "}
+          <span style={{ color: "var(--color-primary)" }}>R</span>outine
         </h1>
-        <p className="mb-8 text-base" style={{ color: "rgba(255,255,255,0.6)" }}>농구 경기와 대회를 쉽고 빠르게 찾고, 즐기세요</p>
-        <div className="flex justify-center gap-3">
+
+        {/* 서브 카피: 따뜻한 톤의 보조 텍스트 */}
+        <p className="mb-8 max-w-lg text-base" style={{ color: "var(--color-text-secondary)" }}>
+          농구 경기와 대회를 쉽고 빠르게 찾고, 즐기세요
+        </p>
+
+        {/* CTA 버튼 2개: 메인(gradient Red→Navy) + 서브(글래스모피즘) */}
+        <div className="flex gap-4">
           <Link href="/games" prefetch={true}>
-            {/* CTA 버튼: 웜 오렌지 (Button cta variant가 이미 Phase 4-2에서 변경됨) */}
-            <Button>경기 찾기</Button>
+            {/* 메인 CTA: Primary→Accent 그라디언트 */}
+            <button
+              className="flex items-center gap-2 rounded-lg px-8 py-3 font-bold text-white transition-transform active:scale-95"
+              style={{
+                background: "linear-gradient(to right, var(--color-primary), var(--color-accent))",
+              }}
+            >
+              경기 찾기
+            </button>
           </Link>
           <Link href="/tournaments" prefetch={true}>
-            <Button variant="secondary">대회 둘러보기</Button>
+            {/* 서브 CTA: 글래스모피즘 스타일 */}
+            <button className="rounded-lg bg-white/10 px-8 py-3 font-bold text-white backdrop-blur-md transition-all hover:bg-white/20">
+              대회 둘러보기
+            </button>
           </Link>
         </div>
       </div>
