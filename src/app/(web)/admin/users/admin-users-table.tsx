@@ -84,7 +84,7 @@ export function AdminUsersTable({ users, updateUserRoleAction, updateUserStatusA
       <Card className="overflow-hidden p-0">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-[#E8ECF0] bg-[#F5F7FA] text-[#6B7280]">
+            <thead className="border-b border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-muted)]">
               <tr>
                 <th className="px-5 py-3.5 font-medium">닉네임</th>
                 <th className="px-5 py-3.5 font-medium">이메일</th>
@@ -100,16 +100,16 @@ export function AdminUsersTable({ users, updateUserRoleAction, updateUserStatusA
                   <tr
                     key={user.id}
                     onClick={() => { setSelectedUser(user); setTab("info"); setConfirm(null); }}
-                    className={`cursor-pointer border-b border-[#F1F5F9] transition-all hover:bg-[#EEF2FF]/60 active:bg-[#EEF2FF] ${user.isAdmin ? "bg-[rgba(239,68,68,0.02)]" : ""}`}
+                    className={`cursor-pointer border-b border-[var(--color-border-subtle)] transition-all hover:bg-[var(--color-elevated)]/60 active:bg-[var(--color-elevated)] ${user.isAdmin ? "bg-[var(--color-error)]/[0.02]" : ""}`}
                   >
                     <td className="px-5 py-3 font-medium">
-                      {user.isAdmin && <span className="mr-1 text-[#EF4444]">★</span>}
+                      {user.isAdmin && <span className="mr-1 text-[var(--color-error)]">★</span>}
                       {user.nickname ?? "-"}
                     </td>
-                    <td className="px-5 py-3 text-[#6B7280] max-w-[200px] truncate">{user.email}</td>
+                    <td className="px-5 py-3 text-[var(--color-text-muted)] max-w-[200px] truncate">{user.email}</td>
                     <td className="px-5 py-3"><Badge variant={role.variant}>{role.label}</Badge></td>
                     <td className="px-5 py-3 text-center">
-                      {user.isAdmin ? <span className="text-[#EF4444] text-xs font-semibold">ON</span> : <span className="text-[#9CA3AF]">-</span>}
+                      {user.isAdmin ? <span className="text-[var(--color-error)] text-xs font-semibold">ON</span> : <span className="text-[var(--color-text-muted)]">-</span>}
                     </td>
                     <td className="px-5 py-3 text-center">{statusBadge(user.status)}</td>
                   </tr>
@@ -126,10 +126,10 @@ export function AdminUsersTable({ users, updateUserRoleAction, updateUserStatusA
         const role = ROLE_MAP[u.membershipType] ?? { label: String(u.membershipType), variant: "default" as const };
         return (
           <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm" onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}>
-            <div className="w-full max-w-md max-h-[90vh] overflow-hidden rounded-t-[20px] sm:rounded-[20px] bg-[#FFFFFF] shadow-[0_-8px_40px_rgba(0,0,0,0.2)] sm:shadow-[0_8px_40px_rgba(0,0,0,0.2)] flex flex-col animate-slide-up sm:animate-fade-in">
+            <div className="w-full max-w-md max-h-[90vh] overflow-hidden rounded-t-[20px] sm:rounded-[20px] bg-[var(--color-card)] shadow-[0_-8px_40px_rgba(0,0,0,0.2)] sm:shadow-[0_8px_40px_rgba(0,0,0,0.2)] flex flex-col animate-slide-up sm:animate-fade-in">
 
               {/* 프로필 헤더 */}
-              <div className="relative bg-gradient-to-br from-[#1B3C87] to-[#2952A3] px-6 pt-5 pb-4">
+              <div className="relative bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-hover)] px-6 pt-5 pb-4">
                 <button onClick={closeModal} className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-full bg-white/20 text-white/80 hover:bg-white/30">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" /></svg>
                 </button>
@@ -153,13 +153,13 @@ export function AdminUsersTable({ users, updateUserRoleAction, updateUserStatusA
               </div>
 
               {/* 탭 */}
-              <div className="flex border-b border-[#E8ECF0]">
+              <div className="flex border-b border-[var(--color-border)]">
                 <button onClick={() => { setTab("info"); setConfirm(null); }}
-                  className={`flex-1 py-2.5 text-xs font-semibold transition-colors ${tab === "info" ? "text-[#1B3C87] border-b-2 border-[#1B3C87]" : "text-[#9CA3AF]"}`}>
+                  className={`flex-1 py-2.5 text-xs font-semibold transition-colors ${tab === "info" ? "text-[var(--color-accent)] border-b-2 border-[var(--color-accent)]" : "text-[var(--color-text-muted)]"}`}>
                   상세정보
                 </button>
                 <button onClick={() => { setTab("edit"); setConfirm(null); }}
-                  className={`flex-1 py-2.5 text-xs font-semibold transition-colors ${tab === "edit" ? "text-[#1B3C87] border-b-2 border-[#1B3C87]" : "text-[#9CA3AF]"}`}>
+                  className={`flex-1 py-2.5 text-xs font-semibold transition-colors ${tab === "edit" ? "text-[var(--color-accent)] border-b-2 border-[var(--color-accent)]" : "text-[var(--color-text-muted)]"}`}>
                   관리
                 </button>
               </div>
@@ -193,62 +193,62 @@ export function AdminUsersTable({ users, updateUserRoleAction, updateUserStatusA
                 ) : (
                   <div className="space-y-4">
                     {/* 역할 변경 */}
-                    <div className="rounded-[14px] border border-[#E8ECF0] p-4">
-                      <p className="mb-2.5 text-xs font-bold text-[#374151]">역할 변경</p>
+                    <div className="rounded-[14px] border border-[var(--color-border)] p-4">
+                      <p className="mb-2.5 text-xs font-bold text-[var(--color-text-secondary)]">역할 변경</p>
                       <form action={async (fd: FormData) => { fd.set("user_id", u.id); await updateUserRoleAction(fd); closeModal(); }}
                         className="flex items-center gap-2">
                         <select name="membership_type" defaultValue={u.membershipType}
-                          className="flex-1 rounded-[10px] border border-[#E8ECF0] bg-[#FFFFFF] px-3 py-2 text-sm text-[#374151] outline-none focus:border-[#1B3C87]">
+                          className="flex-1 rounded-[10px] border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2 text-sm text-[var(--color-text-secondary)] outline-none focus:border-[var(--color-accent)]">
                           <option value={0}>일반유저</option>
                           <option value={1}>픽업호스트</option>
                           <option value={2}>팀장</option>
                           <option value={3}>대회관리자</option>
                         </select>
-                        <button type="submit" className="rounded-[10px] bg-[#1B3C87] px-4 py-2 text-sm font-semibold text-white hover:bg-[#142D6B]">변경</button>
+                        <button type="submit" className="rounded-[10px] bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--color-accent)]">변경</button>
                       </form>
                     </div>
 
                     {/* 슈퍼관리자 */}
-                    <div className="rounded-[14px] border border-[#E8ECF0] p-4 flex items-center justify-between">
+                    <div className="rounded-[14px] border border-[var(--color-border)] p-4 flex items-center justify-between">
                       <div>
-                        <p className="text-xs font-bold text-[#374151]">슈퍼관리자</p>
-                        <p className="text-[11px] text-[#9CA3AF]">시스템 전체 관리 권한</p>
+                        <p className="text-xs font-bold text-[var(--color-text-secondary)]">슈퍼관리자</p>
+                        <p className="text-[11px] text-[var(--color-text-muted)]">시스템 전체 관리 권한</p>
                       </div>
                       <button onClick={() => runAction(toggleUserAdminAction, { user_id: u.id, make_admin: u.isAdmin ? "false" : "true" })}
                         disabled={pending}
-                        className={`rounded-[10px] px-4 py-2 text-sm font-semibold transition-colors ${u.isAdmin ? "bg-[#EF4444] text-white hover:bg-[#DC2626]" : "bg-[#EEF2FF] text-[#1B3C87] hover:bg-[#DDE5FF]"}`}>
+                        className={`rounded-[10px] px-4 py-2 text-sm font-semibold transition-colors ${u.isAdmin ? "bg-[var(--color-error)] text-white hover:bg-[var(--color-error)]" : "bg-[var(--color-elevated)] text-[var(--color-accent)] hover:bg-[var(--color-accent-light)]"}`}>
                         {u.isAdmin ? "해제" : "지정"}
                       </button>
                     </div>
 
                     {/* 계정 상태 */}
-                    <div className="rounded-[14px] border border-[#E8ECF0] p-4 flex items-center justify-between">
+                    <div className="rounded-[14px] border border-[var(--color-border)] p-4 flex items-center justify-between">
                       <div>
-                        <p className="text-xs font-bold text-[#374151]">계정 상태</p>
-                        <p className="text-[11px] text-[#9CA3AF]">현재: {u.status === "active" ? "활성" : u.status === "withdrawn" ? "탈퇴" : "정지"}</p>
+                        <p className="text-xs font-bold text-[var(--color-text-secondary)]">계정 상태</p>
+                        <p className="text-[11px] text-[var(--color-text-muted)]">현재: {u.status === "active" ? "활성" : u.status === "withdrawn" ? "탈퇴" : "정지"}</p>
                       </div>
                       <button onClick={() => runAction(updateUserStatusAction, { user_id: u.id, status: u.status === "active" ? "suspended" : "active" })}
                         disabled={pending}
-                        className={`rounded-[10px] px-4 py-2 text-sm font-semibold transition-colors ${u.status === "active" ? "bg-[rgba(249,115,22,0.1)] text-[#F97316] hover:bg-[rgba(249,115,22,0.2)]" : "bg-[rgba(22,163,74,0.1)] text-[#16A34A] hover:bg-[rgba(22,163,74,0.2)]"}`}>
+                        className={`rounded-[10px] px-4 py-2 text-sm font-semibold transition-colors ${u.status === "active" ? "bg-[var(--color-warning)]/10 text-[var(--color-warning)] hover:bg-[var(--color-warning)]/20" : "bg-[var(--color-success)]/10 text-[var(--color-success)] hover:bg-[var(--color-success)]/20"}`}>
                         {u.status === "active" ? "정지" : "활성화"}
                       </button>
                     </div>
 
                     {/* 위험 영역 */}
                     {!u.isAdmin && (
-                      <div className="rounded-[14px] border border-[#EF4444]/30 bg-[#EF4444]/[0.03] p-4">
-                        <p className="mb-1 text-xs font-bold text-[#EF4444]">위험 영역</p>
-                        <p className="mb-3 text-[11px] text-[#9CA3AF]">이 작업은 되돌릴 수 없습니다.</p>
+                      <div className="rounded-[14px] border border-[var(--color-error)]/30 bg-[var(--color-error)]/[0.03] p-4">
+                        <p className="mb-1 text-xs font-bold text-[var(--color-error)]">위험 영역</p>
+                        <p className="mb-3 text-[11px] text-[var(--color-text-muted)]">이 작업은 되돌릴 수 없습니다.</p>
                         {confirm ? (
                           <div className="flex items-center gap-2">
-                            <span className="text-xs font-medium text-[#EF4444]">
+                            <span className="text-xs font-medium text-[var(--color-error)]">
                               {confirm === "delete" ? "DB에서 완전히 삭제합니다." : "개인정보를 삭제하고 탈퇴 처리합니다."}
                             </span>
                             <div className="flex gap-1.5 ml-auto">
-                              <button onClick={() => setConfirm(null)} className="rounded-[8px] border border-[#E8ECF0] px-3 py-1.5 text-xs text-[#6B7280] hover:bg-[#F5F7FA]">취소</button>
+                              <button onClick={() => setConfirm(null)} className="rounded-[8px] border border-[var(--color-border)] px-3 py-1.5 text-xs text-[var(--color-text-muted)] hover:bg-[var(--color-surface)]">취소</button>
                               <button onClick={() => runAction(confirm === "delete" ? deleteAction : forceWithdrawAction, { user_id: u.id })}
                                 disabled={pending}
-                                className="rounded-[8px] bg-[#EF4444] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#DC2626] disabled:opacity-50">
+                                className="rounded-[8px] bg-[var(--color-error)] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[var(--color-error)] disabled:opacity-50">
                                 {pending ? "처리 중..." : "확인"}
                               </button>
                             </div>
@@ -257,12 +257,12 @@ export function AdminUsersTable({ users, updateUserRoleAction, updateUserStatusA
                           <div className="flex items-center gap-2">
                             {u.status !== "withdrawn" && (
                               <button onClick={() => setConfirm("withdraw")}
-                                className="rounded-[10px] border border-[#F97316]/40 px-4 py-2 text-sm font-semibold text-[#F97316] hover:bg-[#F97316]/10 transition-colors">
+                                className="rounded-[10px] border border-[var(--color-warning)]/40 px-4 py-2 text-sm font-semibold text-[var(--color-warning)] hover:bg-[var(--color-warning)]/10 transition-colors">
                                 강제탈퇴
                               </button>
                             )}
                             <button onClick={() => setConfirm("delete")}
-                              className="rounded-[10px] border border-[#EF4444]/40 px-4 py-2 text-sm font-semibold text-[#EF4444] hover:bg-[#EF4444]/10 transition-colors">
+                              className="rounded-[10px] border border-[var(--color-error)]/40 px-4 py-2 text-sm font-semibold text-[var(--color-error)] hover:bg-[var(--color-error)]/10 transition-colors">
                               완전 삭제
                             </button>
                           </div>
@@ -290,12 +290,12 @@ export function AdminUsersTable({ users, updateUserRoleAction, updateUserStatusA
 function InfoSection({ title, rows }: { title: string; rows: [string, string | null | undefined][] }) {
   return (
     <div>
-      <p className="mb-1.5 text-[11px] font-bold text-[#9CA3AF] uppercase tracking-wider">{title}</p>
-      <div className="rounded-[12px] border border-[#E8ECF0] overflow-hidden">
+      <p className="mb-1.5 text-[11px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider">{title}</p>
+      <div className="rounded-[12px] border border-[var(--color-border)] overflow-hidden">
         {rows.map(([label, value], i) => (
-          <div key={label} className={`flex items-center px-4 py-2 ${i > 0 ? "border-t border-[#F1F5F9]" : ""}`}>
-            <span className="w-20 shrink-0 text-xs text-[#9CA3AF]">{label}</span>
-            <span className="text-sm text-[#111827] break-all">{value || <span className="text-[#D1D5DB]">-</span>}</span>
+          <div key={label} className={`flex items-center px-4 py-2 ${i > 0 ? "border-t border-[var(--color-border-subtle)]" : ""}`}>
+            <span className="w-20 shrink-0 text-xs text-[var(--color-text-muted)]">{label}</span>
+            <span className="text-sm text-[var(--color-text-primary)] break-all">{value || <span className="text-[var(--color-text-muted)]">-</span>}</span>
           </div>
         ))}
       </div>

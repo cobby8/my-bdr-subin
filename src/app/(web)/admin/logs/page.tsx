@@ -5,9 +5,9 @@ import Link from "next/link";
 export const dynamic = "force-dynamic";
 
 const SEVERITY_COLOR: Record<string, string> = {
-  info: "text-[#6B7280]",
-  warning: "text-[#F59E0B]",
-  error: "text-[#EF4444]",
+  info: "text-[var(--color-text-muted)]",
+  warning: "text-[var(--color-warning)]",
+  error: "text-[var(--color-error)]",
 };
 
 const ACTION_LABEL: Record<string, string> = {
@@ -81,7 +81,7 @@ export default async function AdminLogsPage({
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>활동 로그</h1>
-          <p className="mt-1 text-sm text-[#6B7280]">
+          <p className="mt-1 text-sm text-[var(--color-text-muted)]">
             {dateFilter ? `${dateFilter} 로그` : "최근 200건"} · 총 {logs.length}건
           </p>
         </div>
@@ -89,7 +89,7 @@ export default async function AdminLogsPage({
           {dateFilter && (
             <Link
               href="/admin/logs"
-              className="rounded-[10px] border border-[#E8ECF0] px-3 py-1.5 text-sm text-[#6B7280] hover:bg-[#EEF2FF]"
+              className="rounded-[10px] border border-[var(--color-border)] px-3 py-1.5 text-sm text-[var(--color-text-muted)] hover:bg-[var(--color-elevated)]"
             >
               전체 보기
             </Link>
@@ -100,8 +100,8 @@ export default async function AdminLogsPage({
               href={`?date=${d}`}
               className={`rounded-[10px] px-3 py-1.5 text-xs transition-colors ${
                 dateFilter === d
-                  ? "bg-[#1B3C87] text-white"
-                  : "border border-[#E8ECF0] text-[#6B7280] hover:bg-[#EEF2FF]"
+                  ? "bg-[var(--color-accent)] text-white"
+                  : "border border-[var(--color-border)] text-[var(--color-text-muted)] hover:bg-[var(--color-elevated)]"
               }`}
             >
               {d.slice(5)}
@@ -111,7 +111,7 @@ export default async function AdminLogsPage({
       </div>
 
       {logs.length === 0 ? (
-        <Card className="p-8 text-center text-[#6B7280]">
+        <Card className="p-8 text-center text-[var(--color-text-muted)]">
           {dateFilter ? `${dateFilter}에 기록된 활동이 없습니다.` : "활동 로그가 없습니다."}
         </Card>
       ) : (
@@ -145,35 +145,35 @@ export default async function AdminLogsPage({
               <div key={dateKey}>
                 {/* 날짜 헤더 (마크다운 ## 스타일) */}
                 <div className="mb-3 flex items-center gap-3">
-                  <span className="font-mono text-sm font-bold text-[#9CA3AF]">##</span>
-                  <h2 className="font-bold text-[#111827]">{dateKey}</h2>
-                  <span className="text-xs text-[#9CA3AF]">{dayLogs.length}건</span>
+                  <span className="font-mono text-sm font-bold text-[var(--color-text-muted)]">##</span>
+                  <h2 className="font-bold text-[var(--color-text-primary)]">{dateKey}</h2>
+                  <span className="text-xs text-[var(--color-text-muted)]">{dayLogs.length}건</span>
                   {/* 마크다운 다운로드 */}
                   <a
                     href={`data:text/markdown;charset=utf-8,${encodeURIComponent(mdContent)}`}
                     download={`admin-log-${dateKey}.md`}
-                    className="ml-auto rounded px-2 py-0.5 text-xs text-[#1B3C87] hover:bg-[#EEF2FF]"
+                    className="ml-auto rounded px-2 py-0.5 text-xs text-[var(--color-accent)] hover:bg-[var(--color-elevated)]"
                   >
                     .md 저장
                   </a>
                 </div>
 
                 <Card className="overflow-hidden p-0">
-                  <div className="divide-y divide-[#F1F5F9]">
+                  <div className="divide-y divide-[var(--color-border-subtle)]">
                     {dayLogs.map((log) => {
                       const changes = log.changes_made as Record<string, unknown> | null;
                       const prev = log.previous_values as Record<string, unknown> | null;
                       return (
-                        <div key={log.id.toString()} className="flex items-start gap-4 px-5 py-3 hover:bg-[#F9FAFB]">
+                        <div key={log.id.toString()} className="flex items-start gap-4 px-5 py-3 hover:bg-[var(--color-surface)]">
                           {/* 시간 */}
-                          <span className="mt-0.5 w-12 shrink-0 font-mono text-xs text-[#9CA3AF]">
+                          <span className="mt-0.5 w-12 shrink-0 font-mono text-xs text-[var(--color-text-muted)]">
                             {toKSTTime(log.created_at)}
                           </span>
 
                           {/* 심각도 dot */}
                           <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${
-                            log.severity === "error" ? "bg-[#EF4444]" :
-                            log.severity === "warning" ? "bg-[#F59E0B]" : "bg-[#94A3B8]"
+                            log.severity === "error" ? "bg-[var(--color-error)]" :
+                            log.severity === "warning" ? "bg-[var(--color-warning)]" : "bg-[var(--color-text-muted)]"
                           }`} />
 
                           <div className="min-w-0 flex-1">
@@ -181,16 +181,16 @@ export default async function AdminLogsPage({
                               <span className={`font-mono text-xs font-semibold ${SEVERITY_COLOR[log.severity ?? "info"]}`}>
                                 {log.action}
                               </span>
-                              <span className="rounded bg-[#F5F7FA] px-1.5 py-0.5 font-mono text-xs text-[#9CA3AF]">
+                              <span className="rounded bg-[var(--color-surface)] px-1.5 py-0.5 font-mono text-xs text-[var(--color-text-muted)]">
                                 {log.resource_type}
                               </span>
                               {ACTION_LABEL[log.action] && (
-                                <span className="text-xs text-[#374151]">— {ACTION_LABEL[log.action]}</span>
+                                <span className="text-xs text-[var(--color-text-secondary)]">-- {ACTION_LABEL[log.action]}</span>
                               )}
                             </div>
 
                             {log.description && (
-                              <p className="mt-0.5 text-sm text-[#374151]">{log.description}</p>
+                              <p className="mt-0.5 text-sm text-[var(--color-text-secondary)]">{log.description}</p>
                             )}
 
                             {/* 변경 diff */}
@@ -198,25 +198,25 @@ export default async function AdminLogsPage({
                               <div className="mt-1 flex flex-wrap gap-3 font-mono text-xs">
                                 {Object.entries(changes).map(([k, v]) => (
                                   <span key={k}>
-                                    <span className="text-[#9CA3AF]">{k}:</span>{" "}
+                                    <span className="text-[var(--color-text-muted)]">{k}:</span>{" "}
                                     {prev?.[k] !== undefined && (
-                                      <span className="text-[#EF4444] line-through">{String(prev[k])}</span>
+                                      <span className="text-[var(--color-error)] line-through">{String(prev[k])}</span>
                                     )}
                                     {prev?.[k] !== undefined && " → "}
-                                    <span className="text-[#1B3C87]">{String(v)}</span>
+                                    <span className="text-[var(--color-accent)]">{String(v)}</span>
                                   </span>
                                 ))}
                               </div>
                             )}
 
                             {log.users && (
-                              <p className="mt-0.5 text-xs text-[#9CA3AF]">
+                              <p className="mt-0.5 text-xs text-[var(--color-text-muted)]">
                                 by {log.users.nickname ?? log.users.email}
                               </p>
                             )}
                           </div>
 
-                          <span className="hidden shrink-0 text-xs text-[#9CA3AF] lg:block">
+                          <span className="hidden shrink-0 text-xs text-[var(--color-text-muted)] lg:block">
                             {toKSTFull(log.created_at)}
                           </span>
                         </div>
