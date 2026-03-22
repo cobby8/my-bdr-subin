@@ -6,84 +6,131 @@
 
 @theme {
   /* ========================================
-   * Phase 5-1: Kinetic Pulse 디자인 토큰
-   * - 다크 모드 전용 (High-End Sport Editorial)
-   * - 변수명 유지, 값만 Kinetic Pulse로 교체
+   * 새 디자인 시스템 (쿨 그레이 + BDR Red)
+   * - 다크 모드 기본값 (기본 테마)
+   * - 모든 neutral은 쿨 그레이 (R=G=B 또는 차이 2 이내)
+   * - 핑크/살몬/로즈/코랄 색상 절대 금지
    * ======================================== */
 
   /* --- 배경/표면 계층 (Surface Hierarchy) --- */
-  --color-background: #131313;       /* 페이지 기본 배경 (surface) */
-  --color-card: #1C1B1B;             /* 카드 배경 (surface_container_low) */
-  --color-elevated: #353534;         /* 떠있는 요소 (surface_container_highest) */
-  --color-surface: #1C1B1B;          /* surface 기본 (card와 동일 계층으로 조정) */
+  --color-background: #131313;       /* 페이지 기본 배경 */
+  --color-card: #2A2A2A;             /* 카드 배경 */
+  --color-elevated: #3A3A3A;         /* 떠있는 요소 (모달, 드롭다운) */
+  --color-surface: #1A1A1A;          /* 섹션/영역 배경 */
 
-  /* --- 신규: Surface 세분화 변수 --- */
+  /* --- Surface 세분화 변수 --- */
   --color-surface-lowest: #0E0E0E;   /* 입력 필드 등 깊이감 배경 */
-  --color-surface-low: #1C1B1B;      /* card와 동일 계층 */
-  --color-surface-high: #353534;     /* elevated와 동일 계층 */
-  --color-surface-bright: #3B3A39;   /* 카드 호버 시 배경 (약간 어둡게 조정) */
+  --color-surface-low: #1A1A1A;      /* surface와 동일 계층 */
+  --color-surface-high: #3A3A3A;     /* elevated와 동일 계층 */
+  --color-surface-bright: #444444;   /* 카드 호버 시 배경 */
 
-  /* --- 브랜드 색상 (Primary = Electric Red) --- */
-  --color-primary: #E31B23;          /* 기본 브랜드: Electric Red */
-  --color-primary-hover: #FF2D35;    /* 호버 시 밝은 레드 */
+  /* --- 브랜드 색상 (Primary = BDR Red) --- */
+  --color-primary: #E31B23;          /* 기본 브랜드: BDR Red */
+  --color-primary-hover: #FF3B3B;    /* 호버 시 밝은 레드 */
   --color-primary-light: rgba(227, 27, 35, 0.15); /* 레드 반투명 배경 */
   --color-on-primary: #FFFFFF;       /* primary 위 텍스트 */
 
-  /* --- 보조 색상 (Accent = Deep Navy, Secondary) --- */
+  /* --- 보조 색상 (Accent = Deep Navy, Tertiary = Info Blue) --- */
   --color-accent: #1B3C87;           /* 보조 강조: Deep Navy */
-  --color-accent-hover: #2A4F9E;     /* 밝은 네이비 (호버 시 가시성 개선) */
+  --color-accent-hover: #2A4F9E;     /* 네이비 호버 */
   --color-accent-light: rgba(27, 60, 135, 0.15); /* 네이비 반투명 배경 */
   --color-secondary: #1B3C87;        /* secondary = accent 동일 */
-  --color-tertiary: #94CCFF;         /* 텍스트 링크/삼차 강조 */
+  --color-tertiary: #0079B9;         /* 삼차 강조: Info Blue */
 
-  /* --- 텍스트 (화이트 계열, 시인성 향상) --- */
-  --color-text-primary: #F5F5F5;     /* 메인 텍스트: 부드러운 화이트 (시인성 향상) */
-  --color-text-secondary: #D1D1D1;   /* 보조 텍스트: 밝은 회색 (시인성 향상) */
-  --color-text-muted: #9E9E9E;       /* 약한 텍스트: 중간 회색 (시인성 향상) */
-  --color-text-on-primary: #FFFFFF;  /* 버튼 위 텍스트 (유일한 순백 허용) */
+  /* --- 텍스트 (쿨 그레이 계열) --- */
+  --color-text-primary: #E0E0E0;     /* 헤드라인 텍스트 */
+  --color-text-secondary: #B0B0B0;   /* 본문 텍스트 */
+  --color-text-muted: #888888;       /* 약한 텍스트 (캡션, 힌트) */
+  --color-text-disabled: #555555;    /* 비활성 텍스트 */
+  --color-text-on-primary: #FFFFFF;  /* 브랜드 버튼 위 텍스트 */
 
-  /* --- 상태 색상 --- */
+  /* --- 상태 색상 (핑크 계열 제거, 순수 빨강 사용) --- */
   --color-success: #10B981;
-  --color-error: #FFB4AC;            /* 따뜻한 에러 톤 */
+  --color-error: #EF4444;            /* 순수 빨간 계열 에러 (핑크 #FFB4AC 제거) */
+  --color-error-light: rgba(227, 27, 35, 0.15); /* 에러 배경용 반투명 레드 */
   --color-warning: #F59E0B;
-  --color-info: #3B82F6;
+  --color-info: #0079B9;             /* tertiary와 통일 */
 
-  /* --- 테두리 (Ghost Border) --- */
-  --color-border: rgba(159, 140, 133, 0.15);     /* 기본 고스트 보더 (따뜻한 톤) */
-  --color-border-subtle: rgba(159, 140, 133, 0.08); /* 미세한 구분선 (따뜻한 톤) */
+  /* --- 테두리 (쿨 그레이 Ghost Border) --- */
+  --color-border: rgba(255, 255, 255, 0.08);      /* 기본 고스트 보더 (쿨톤) */
+  --color-border-subtle: rgba(255, 255, 255, 0.04); /* 미세한 구분선 */
 
-  /* --- 라운딩 (최소화) --- */
-  --radius-card: 0.5rem;             /* 카드: 최소 라운딩 (rem 단위로 통일) */
-  --radius-card-lg: 0.75rem;         /* 큰 카드 (rem 단위로 통일) */
-  --radius-pill: 0.25rem;            /* 버튼: 거의 직각 (rem 단위로 통일) */
+  /* --- 라운딩 (4px 기본, pill 사용 금지) --- */
+  --radius-card: 0.5rem;             /* 카드: 8px */
+  --radius-card-lg: 0.75rem;         /* 큰 카드: 12px */
+  --radius-pill: 0.25rem;            /* 버튼: 4px (pill 9999px 사용 금지) */
   --radius-button: 4px;              /* 버튼 전용 별칭 */
 
-  /* --- 그림자 (Ambient Shadow) --- */
-  --shadow-card: 0 4px 32px rgba(10, 10, 15, 0.08);
-  --shadow-elevated: 0 8px 48px rgba(10, 10, 15, 0.08);
+  /* --- 그림자 (톤 레이어링 기반) --- */
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.3);
 
   /* --- 폰트 --- */
   --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-heading: 'Space Grotesk', 'Pretendard', sans-serif;
 
-  /* --- 기존 호환 변수 (다크 전용이므로 다크 값) --- */
+  /* --- 기존 호환 변수 --- */
   --color-bg-primary: #131313;       /* background와 동일 */
-  --color-bg-secondary: #1C1B1B;     /* card와 동일 */
-  --color-bg-card: #353534;          /* elevated와 동일 */
-  --color-bg-hover: #2C2C2B;         /* 호버 배경 */
+  --color-bg-secondary: #1A1A1A;     /* surface와 동일 */
+  --color-bg-card: #2A2A2A;          /* card와 동일 */
+  --color-bg-hover: #333333;         /* 호버 배경 (쿨 그레이) */
+  --color-card-hover: #333333;       /* 카드 호버 배경 */
+  --color-error-hover: #DC2626;      /* 에러 호버 (더 진한 빨강) */
 
   /* --- 그라디언트/글래스모피즘 --- */
-  --color-gradient-start: #FFB4AC;   /* CTA 그라디언트 시작 */
-  --color-gradient-end: #E31B23;     /* CTA 그라디언트 끝 */
-  --color-glass-bg: rgba(28, 27, 27, 0.7); /* 글래스 배경 (surface 톤에 맞춤) */
+  --color-gradient-start: #E31B23;   /* CTA 그라디언트 시작 (핑크 #FFB4AC 제거) */
+  --color-gradient-end: #1B3C87;     /* CTA 그라디언트 끝 (Red→Navy) */
+  --color-glass-bg: rgba(26, 26, 26, 0.7); /* 글래스 배경 (쿨 그레이 톤) */
   --color-glass-blur: 20px;          /* 글래스 블러 값 */
 }
 
-/* ---- Dark Mode Variables (Kinetic Pulse - 다크 전용) ---- */
-/* @theme 블록이 이미 다크 값을 가지므로, html.dark에서는
-   color-scheme 선언과 최소한의 오버라이드만 유지 */
+/* ---- Dark Mode ---- */
+/* @theme 블록이 이미 다크 값을 기본으로 가지므로,
+   html.dark에서는 color-scheme 선언만 유지 */
 html.dark {
   color-scheme: dark;
+}
+
+/* ---- Light Mode Variables ---- */
+/* 브랜드 색상(primary, accent, tertiary)은 다크/라이트 동일 유지 */
+html.light {
+  color-scheme: light;
+
+  /* 배경/표면 계층 */
+  --color-background: #F8F8F8;       /* 페이지 기본 배경 */
+  --color-card: #FFFFFF;             /* 카드 배경 */
+  --color-elevated: #E8E8E8;         /* 떠있는 요소 */
+  --color-surface: #F2F2F2;          /* 섹션/영역 배경 */
+
+  --color-surface-lowest: #FFFFFF;   /* 입력 필드 배경 */
+  --color-surface-low: #F2F2F2;      /* surface와 동일 */
+  --color-surface-high: #E8E8E8;     /* elevated와 동일 */
+  --color-surface-bright: #EEEEEE;   /* 카드 호버 시 배경 */
+
+  /* 텍스트 (쿨 그레이) */
+  --color-text-primary: #131313;     /* 헤드라인 텍스트 */
+  --color-text-secondary: #555555;   /* 본문 텍스트 */
+  --color-text-muted: #888888;       /* 약한 텍스트 */
+  --color-text-disabled: #AAAAAA;    /* 비활성 텍스트 */
+
+  /* 테두리 */
+  --color-border: #D0D0D0;           /* 기본 보더 */
+  --color-border-subtle: #E0E0E0;    /* 미세한 구분선 */
+
+  /* 그림자 (라이트 모드는 더 부드럽게) */
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.1);
+
+  /* 기존 호환 변수 */
+  --color-bg-primary: #F8F8F8;
+  --color-bg-secondary: #F2F2F2;
+  --color-bg-card: #FFFFFF;
+  --color-bg-hover: #EEEEEE;
+  --color-card-hover: #F0F0F0;       /* 카드 호버 배경 (라이트) */
+  --color-error-hover: #DC2626;      /* 에러 호버 */
+
+  /* 글래스 */
+  --color-glass-bg: rgba(255, 255, 255, 0.7);
 }
 
 body {
