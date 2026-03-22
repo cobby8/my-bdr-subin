@@ -1,8 +1,8 @@
 "use client";
 
 const inputCls =
-  "w-full rounded-[16px] border-none bg-[#E8ECF0] px-4 py-3 text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#1B3C87]/50";
-const labelCls = "mb-1 block text-sm text-[#6B7280]";
+  "w-full rounded-[16px] border-none bg-[var(--color-border)] px-4 py-3 text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/50";
+const labelCls = "mb-1 block text-sm text-[var(--color-text-muted)]";
 
 export interface ScheduleFormData {
   startDate: string;

@@ -239,7 +239,7 @@ export default function TournamentJoinPage() {
   if (error && !data) {
     return (
       <Card className="mx-auto max-w-lg text-center">
-        <p className="text-[#EF4444]">{error}</p>
+        <p className="text-[var(--color-error)]">{error}</p>
         <Button variant="ghost" className="mt-4" onClick={() => router.back()}>
           돌아가기
         </Button>
@@ -276,8 +276,8 @@ export default function TournamentJoinPage() {
 
       {/* 접수 불가 */}
       {!data.is_registration_open && step < 5 && (
-        <Card className="mb-4 border-[#EF4444]/30 bg-[#FEF2F2]">
-          <p className="text-sm font-medium text-[#EF4444]">현재 접수 기간이 아닙니다.</p>
+        <Card className="mb-4 border-[var(--color-error)]/30 bg-[var(--color-error)]/5">
+          <p className="text-sm font-medium text-[var(--color-error)]">현재 접수 기간이 아닙니다.</p>
         </Card>
       )}
 
@@ -313,8 +313,8 @@ export default function TournamentJoinPage() {
 
       {/* 에러 */}
       {error && (
-        <Card className="mb-4 border-[#EF4444]/30 bg-[#FEF2F2]">
-          <p className="text-sm text-[#EF4444]">{error}</p>
+        <Card className="mb-4 border-[var(--color-error)]/30 bg-[var(--color-error)]/5">
+          <p className="text-sm text-[var(--color-error)]">{error}</p>
         </Card>
       )}
 
@@ -771,8 +771,8 @@ export default function TournamentJoinPage() {
       {step === 5 && result && (
         <Card className="text-center">
           <div className="mb-4 flex justify-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#16A34A]/20">
-              <svg className="h-8 w-8 text-[#16A34A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-success)]/20">
+              <svg className="h-8 w-8 text-[var(--color-success)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20 6 9 17l-5-5" />
               </svg>
             </div>

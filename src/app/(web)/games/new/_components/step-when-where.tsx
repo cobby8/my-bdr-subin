@@ -150,7 +150,7 @@ function AdvancedSettings({ data, updateData }: {
             </div>
             <button type="button" role="switch" aria-checked={data.isRecurring}
               onClick={() => updateData("isRecurring", !data.isRecurring)}
-              className={`relative h-6 w-11 flex-shrink-0 rounded-full transition-colors ${data.isRecurring ? "bg-[var(--color-accent)]" : "bg-[#CBD5E1]"}`}>
+              className={`relative h-6 w-11 flex-shrink-0 rounded-full transition-colors ${data.isRecurring ? "bg-[var(--color-accent)]" : "bg-[var(--color-text-muted)]"}`}>
               <span className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-all ${data.isRecurring ? "left-6" : "left-1"}`} />
             </button>
           </div>
@@ -447,7 +447,7 @@ export function StepWhenWhere({
                       </p>
                     </button>
                     <button type="button" onClick={() => handleDeletePreset(i)}
-                      className="text-xs text-[var(--color-text-secondary)] hover:text-[#EF4444]">삭제</button>
+                      className="text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-error)]">삭제</button>
                   </div>
                 ))}
               </div>

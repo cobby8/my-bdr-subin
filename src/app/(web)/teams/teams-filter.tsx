@@ -4,7 +4,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useCallback, useRef } from "react";
 
 const selectCls =
-  "h-10 appearance-none rounded-[12px] border border-[#E8ECF0] bg-[#FFFFFF] pl-3 pr-8 text-sm text-[#111827] focus:border-[#1B3C87]/60 focus:outline-none cursor-pointer";
+  "h-10 appearance-none rounded-[12px] border border-[var(--color-border)] bg-[var(--color-card)] pl-3 pr-8 text-sm text-[var(--color-text-primary)] focus:border-[var(--color-accent)]/60 focus:outline-none cursor-pointer";
 
 export function TeamsFilter({ cities }: { cities: string[] }) {
   const router = useRouter();
@@ -33,7 +33,7 @@ export function TeamsFilter({ cities }: { cities: string[] }) {
     <div className="mb-6 flex flex-wrap items-center gap-2">
       <div className="relative min-w-[180px] flex-1">
         <svg
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7280]"
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"
           width="15" height="15" viewBox="0 0 15 15" fill="none"
         >
           <circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.4" />
@@ -44,7 +44,7 @@ export function TeamsFilter({ cities }: { cities: string[] }) {
           placeholder="팀 이름 검색..."
           defaultValue={params.get("q") ?? ""}
           onChange={(e) => handleSearch(e.target.value)}
-          className="h-10 w-full rounded-[12px] border border-[#E8ECF0] bg-[#FFFFFF] pl-9 pr-4 text-sm text-[#111827] placeholder:text-[#6B7280] focus:border-[#1B3C87]/60 focus:outline-none"
+          className="h-10 w-full rounded-[12px] border border-[var(--color-border)] bg-[var(--color-card)] pl-9 pr-4 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent)]/60 focus:outline-none"
         />
       </div>
 
@@ -58,7 +58,7 @@ export function TeamsFilter({ cities }: { cities: string[] }) {
           {cities.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
         <svg
-          className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
+          className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"
           width="12" height="12" viewBox="0 0 12 12" fill="none"
         >
           <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />

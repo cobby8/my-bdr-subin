@@ -111,7 +111,7 @@ export default async function AdminPaymentsPage() {
                     <td className="py-3 pr-4">
                       <span
                         className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                          STATUS_COLOR[p.status] ?? "text-[var(--color-text-muted)] bg-[#EEF2FF]"
+                          STATUS_COLOR[p.status] ?? "text-[var(--color-text-muted)] bg-[var(--color-elevated)]"
                         }`}
                       >
                         {STATUS_LABEL[p.status] ?? p.status}

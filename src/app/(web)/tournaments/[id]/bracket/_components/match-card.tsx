@@ -30,8 +30,8 @@ function StatusBadge({ status }: { status: string }) {
     return (
       <span className="inline-flex items-center gap-1 rounded-full bg-[rgba(244,162,97,0.15)] px-2 py-0.5 text-xs font-bold text-[var(--color-primary)]">
         <span className="relative flex h-1.5 w-1.5">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#E31B23] opacity-75" />
-          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#E31B23]" />
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-primary)] opacity-75" />
+          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
         </span>
         LIVE
       </span>

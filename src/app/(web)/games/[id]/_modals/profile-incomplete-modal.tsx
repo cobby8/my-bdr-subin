@@ -27,9 +27,9 @@ export function ProfileIncompleteModal({
           참가 신청을 위해 아래 정보를 입력해야 합니다.
         </p>
         {missingFields.length > 0 && (
-          <div className="mb-4 rounded-[12px] bg-[#FFF3CD] px-4 py-3">
-            <p className="text-xs font-medium text-[#856404]">미입력 항목</p>
-            <p className="mt-1 text-sm text-[#856404]">
+          <div className="mb-4 rounded-[12px] bg-[var(--color-warning)]/10 px-4 py-3">
+            <p className="text-xs font-medium text-[var(--color-warning)]">미입력 항목</p>
+            <p className="mt-1 text-sm text-[var(--color-warning)]">
               {missingFields.join(", ")}
             </p>
           </div>

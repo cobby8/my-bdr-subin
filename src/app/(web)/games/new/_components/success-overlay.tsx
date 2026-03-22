@@ -26,7 +26,7 @@ export function SuccessOverlay({ gameId }: SuccessOverlayProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-card)]/95">
       <div className="text-center">
         {/* Success check animation */}
-        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[#22C55E] animate-[scale-in_0.3s_ease-out]">
+        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[var(--color-success)] animate-[scale-in_0.3s_ease-out]">
           <svg
             className="h-10 w-10 text-white"
             fill="none"

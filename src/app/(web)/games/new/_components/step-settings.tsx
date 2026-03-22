@@ -178,7 +178,7 @@ export function StepSettings({ data, updateData, errors, generateTitle }: StepSe
             aria-checked={data.allowGuests}
             onClick={() => updateData("allowGuests", !data.allowGuests)}
             className={`relative h-6 w-12 flex-shrink-0 rounded-full transition-colors ${
-              data.allowGuests ? "bg-[var(--color-accent)]" : "bg-[#CBD5E1]"
+              data.allowGuests ? "bg-[var(--color-accent)]" : "bg-[var(--color-text-muted)]"
             }`}
           >
             <span

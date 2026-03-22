@@ -1,8 +1,8 @@
 "use client";
 
 const inputCls =
-  "w-full rounded-[16px] border-none bg-[#E8ECF0] px-4 py-3 text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#1B3C87]/50";
-const labelCls = "mb-1 block text-sm text-[#6B7280]";
+  "w-full rounded-[16px] border-none bg-[var(--color-border)] px-4 py-3 text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/50";
+const labelCls = "mb-1 block text-sm text-[var(--color-text-muted)]";
 
 export interface TeamSettingsData {
   maxTeams: string;
@@ -26,18 +26,18 @@ export function TeamSettingsForm({ data, totalDivCaps, onChange }: Props) {
 
       {/* maxTeams 자동 계산 옵션 */}
       {totalDivCaps > 0 && (
-        <div className="rounded-[12px] border border-[#E8ECF0] bg-[#EEF2FF] p-3">
+        <div className="rounded-[12px] border border-[var(--color-border)] bg-[var(--color-elevated)] p-3">
           <div className="flex items-center gap-3">
             <input
               type="checkbox"
               id="auto_calc"
               checked={data.autoCalcMaxTeams}
               onChange={(e) => onChange("autoCalcMaxTeams", e.target.checked)}
-              className="accent-[#1B3C87]"
+              className="accent-[var(--color-accent)]"
             />
             <label htmlFor="auto_calc" className="text-sm">
               디비전 정원 합산으로 자동 계산{" "}
-              <span className="font-bold text-[#1B3C87]">({totalDivCaps}팀)</span>
+              <span className="font-bold text-[var(--color-accent)]">({totalDivCaps}팀)</span>
             </label>
           </div>
         </div>
@@ -93,7 +93,7 @@ export function TeamSettingsForm({ data, totalDivCaps, onChange }: Props) {
           id="auto_approve"
           checked={data.autoApproveTeams}
           onChange={(e) => onChange("autoApproveTeams", e.target.checked)}
-          className="accent-[#E31B23]"
+          className="accent-[var(--color-primary)]"
         />
         <label htmlFor="auto_approve" className="text-sm">
           팀 자동 승인

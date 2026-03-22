@@ -3,8 +3,8 @@
 import { Button } from "@/components/ui/button";
 
 const inputCls =
-  "w-full rounded-[16px] border-none bg-[#E8ECF0] px-4 py-3 text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#1B3C87]/50";
-const labelCls = "mb-1 block text-sm text-[#6B7280]";
+  "w-full rounded-[16px] border-none bg-[var(--color-border)] px-4 py-3 text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/50";
+const labelCls = "mb-1 block text-sm text-[var(--color-text-muted)]";
 
 export interface RegistrationSettingsData {
   categories: Record<string, string[]>;
@@ -34,12 +34,12 @@ export function RegistrationSettingsForm({ data, onChange }: Props) {
       {/* 부문/디비전 관리 */}
       <div>
         <label className={labelCls}>부문 / 디비전</label>
-        <p className="mb-2 text-xs text-[#9CA3AF]">
+        <p className="mb-2 text-xs text-[var(--color-text-muted)]">
           부문(일반부, 대학부 등)을 추가하고, 각 부문 아래 디비전(D3, D4 등)을 설정합니다.
         </p>
 
         {Object.entries(categories).map(([cat, divs]) => (
-          <div key={cat} className="mb-3 rounded-[12px] border border-[#E8ECF0] p-3">
+          <div key={cat} className="mb-3 rounded-[12px] border border-[var(--color-border)] p-3">
             <div className="mb-2 flex items-center justify-between">
               <span className="font-medium">{cat}</span>
               <button
@@ -55,7 +55,7 @@ export function RegistrationSettingsForm({ data, onChange }: Props) {
                   delete nextCats[cat];
                   onChange({ categories: nextCats, divCaps: nextCaps, divFees: nextFees });
                 }}
-                className="text-xs text-[#EF4444] hover:underline"
+                className="text-xs text-[var(--color-error)] hover:underline"
               >
                 부문 삭제
               </button>
@@ -76,9 +76,9 @@ export function RegistrationSettingsForm({ data, onChange }: Props) {
                       else delete next[div];
                       onChange({ divCaps: next });
                     }}
-                    className="w-20 rounded-[8px] border border-[#E8ECF0] px-2 py-1 text-sm"
+                    className="w-20 rounded-[8px] border border-[var(--color-border)] px-2 py-1 text-sm"
                   />
-                  <span className="text-xs text-[#9CA3AF]">팀</span>
+                  <span className="text-xs text-[var(--color-text-muted)]">팀</span>
                   <input
                     type="number"
                     placeholder="참가비"
@@ -90,9 +90,9 @@ export function RegistrationSettingsForm({ data, onChange }: Props) {
                       else delete next[div];
                       onChange({ divFees: next });
                     }}
-                    className="w-24 rounded-[8px] border border-[#E8ECF0] px-2 py-1 text-sm"
+                    className="w-24 rounded-[8px] border border-[var(--color-border)] px-2 py-1 text-sm"
                   />
-                  <span className="text-xs text-[#9CA3AF]">원</span>
+                  <span className="text-xs text-[var(--color-text-muted)]">원</span>
                   <button
                     type="button"
                     onClick={() => {
@@ -105,7 +105,7 @@ export function RegistrationSettingsForm({ data, onChange }: Props) {
                       if (nextDivs.length === 0) delete nextCats[cat];
                       onChange({ categories: nextCats, divCaps: nextCaps, divFees: nextFees });
                     }}
-                    className="text-xs text-[#EF4444]"
+                    className="text-xs text-[var(--color-error)]"
                   >
                     ×
                   </button>
@@ -127,9 +127,9 @@ export function RegistrationSettingsForm({ data, onChange }: Props) {
                 <input
                   name="newDiv"
                   placeholder="디비전 추가 (예: D3)"
-                  className="flex-1 rounded-[8px] border border-[#E8ECF0] px-2 py-1 text-sm"
+                  className="flex-1 rounded-[8px] border border-[var(--color-border)] px-2 py-1 text-sm"
                 />
-                <button type="submit" className="text-xs font-medium text-[#1B3C87] hover:underline">
+                <button type="submit" className="text-xs font-medium text-[var(--color-accent)] hover:underline">
                   추가
                 </button>
               </form>
@@ -168,7 +168,7 @@ export function RegistrationSettingsForm({ data, onChange }: Props) {
           onChange={(e) => onChange({ entryFee: e.target.value })}
           placeholder="0 (무료)"
         />
-        <p className="mt-1 text-xs text-[#9CA3AF]">디비전별 참가비를 설정하면 기본 참가비 대신 적용됩니다.</p>
+        <p className="mt-1 text-xs text-[var(--color-text-muted)]">디비전별 참가비를 설정하면 기본 참가비 대신 적용됩니다.</p>
       </div>
 
       {/* 대기접수 */}
@@ -178,7 +178,7 @@ export function RegistrationSettingsForm({ data, onChange }: Props) {
           id="allow_waiting"
           checked={data.allowWaitingList}
           onChange={(e) => onChange({ allowWaitingList: e.target.checked })}
-          className="accent-[#E31B23]"
+          className="accent-[var(--color-primary)]"
         />
         <label htmlFor="allow_waiting" className="text-sm">
           대기접수 허용
@@ -199,7 +199,7 @@ export function RegistrationSettingsForm({ data, onChange }: Props) {
       )}
 
       {/* 입금 정보 */}
-      <h3 className="pt-2 text-sm font-semibold text-[#6B7280]">참가비 입금 정보</h3>
+      <h3 className="pt-2 text-sm font-semibold text-[var(--color-text-muted)]">참가비 입금 정보</h3>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className={labelCls}>은행명</label>

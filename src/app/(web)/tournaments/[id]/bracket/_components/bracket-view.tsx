@@ -92,8 +92,8 @@ export function BracketView({ rounds, tournamentId }: BracketViewProps) {
               {round.roundName}
               {round.hasLive && activeRound !== round.roundNumber && (
                 <span className="relative flex h-1.5 w-1.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#E31B23] opacity-75" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#E31B23]" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-primary)] opacity-75" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
                 </span>
               )}
             </button>
@@ -234,8 +234,8 @@ function DesktopBracketView({
             </span>
             {rh.hasLive && (
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#E31B23] opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-[#E31B23]" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-primary)] opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--color-primary)]" />
               </span>
             )}
           </div>
@@ -255,7 +255,7 @@ function DesktopBracketView({
             <path
               key={path.id}
               d={path.d}
-              stroke={path.isActive ? "rgba(244,162,97,0.5)" : "#D1D5DB"}
+              stroke={path.isActive ? "rgba(244,162,97,0.5)" : "var(--color-text-muted)"}
               strokeWidth={1.5}
               fill="none"
             />

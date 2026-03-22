@@ -360,7 +360,7 @@ export default function ProfileEditPage() {
             className="mt-0.5 h-4 w-4 rounded border-[var(--color-border)] accent-[var(--color-accent)]"
           />
           <span className="text-sm text-[var(--color-text-primary)]">
-            개인정보(계좌번호) 수집·이용에 동의합니다 <span className="text-[#EF4444]">(필수)</span>
+            개인정보(계좌번호) 수집·이용에 동의합니다 <span className="text-[var(--color-error)]">(필수)</span>
           </span>
         </label>
 

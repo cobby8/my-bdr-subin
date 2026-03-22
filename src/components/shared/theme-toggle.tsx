@@ -27,7 +27,7 @@ export function ThemeToggle() {
       onClick={toggle}
       className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-[rgba(27,60,135,0.08)]"
       title={dark ? "라이트 모드" : "다크 모드"}
-      style={{ color: dark ? "#FBBF24" : "#6B7280" }}
+      style={{ color: dark ? "var(--color-warning)" : "var(--color-text-muted)" }}
     >
       {dark ? <Sun size={20} /> : <Moon size={20} />}
     </button>

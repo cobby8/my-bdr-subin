@@ -654,7 +654,7 @@ function PreviewPanel({
   return (
     <div
       className="overflow-hidden rounded-[16px] bg-[var(--color-card)] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.06)]"
-      style={{ borderLeft: "3px solid #E31B23" }}
+      style={{ borderLeft: "3px solid var(--color-primary)" }}
     >
       <div className="mb-3 flex items-center gap-1.5">
         <span className="text-base">{typeEmoji}</span>

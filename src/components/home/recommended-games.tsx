@@ -222,7 +222,7 @@ export function RecommendedGames() {
                 <button
                   className="w-full rounded py-4 font-black uppercase tracking-tighter transition-all active:scale-95"
                   style={{
-                    backgroundColor: "#FFFFFF",
+                    backgroundColor: "var(--color-card)",
                     color: "var(--color-accent)",
                   }}
                 >

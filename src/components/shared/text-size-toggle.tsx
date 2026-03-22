@@ -27,7 +27,7 @@ export function TextSizeToggle() {
       onClick={toggle}
       className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-[rgba(27,60,135,0.08)]"
       title={large ? "기본 글씨" : "큰 글씨"}
-      style={{ color: large ? "#E31B23" : "#9CA3AF" }}
+      style={{ color: large ? "var(--color-primary)" : "var(--color-text-muted)" }}
     >
       <ALargeSmall size={20} />
     </button>

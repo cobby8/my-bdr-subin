@@ -106,7 +106,7 @@ export function StepConfirm({ data, updateData, generateTitle, submitError }: St
 
         {data.contactPhone && (
           <div className="mt-2">
-            <span className="rounded-full bg-[#FEF3C7] px-2 py-0.5 text-xs text-[#92400E]">
+            <span className="rounded-full bg-[var(--color-warning)]/10 px-2 py-0.5 text-xs text-[var(--color-warning)]">
               📞 {data.contactPhone}
             </span>
           </div>
@@ -180,7 +180,7 @@ export function StepConfirm({ data, updateData, generateTitle, submitError }: St
                   aria-checked={data.isRecurring}
                   onClick={() => updateData("isRecurring", !data.isRecurring)}
                   className={`relative h-6 w-12 flex-shrink-0 rounded-full transition-colors ${
-                    data.isRecurring ? "bg-[var(--color-accent)]" : "bg-[#CBD5E1]"
+                    data.isRecurring ? "bg-[var(--color-accent)]" : "bg-[var(--color-text-muted)]"
                   }`}
                 >
                   <span

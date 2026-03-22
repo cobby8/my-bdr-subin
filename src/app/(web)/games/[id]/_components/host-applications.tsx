@@ -66,7 +66,7 @@ export function HostApplications({ gameId, applicants }: HostApplicationsProps) 
             {pending.map((a) => (
               <div
                 key={a.id}
-                className="flex items-center justify-between rounded-[12px] border border-[var(--color-primary)]/30 bg-[#FFF7F0] px-4 py-3"
+                className="flex items-center justify-between rounded-[12px] border border-[var(--color-primary)]/30 bg-[var(--color-warning)]/5 px-4 py-3"
               >
                 <div>
                   <p className="text-sm font-medium">

@@ -17,7 +17,7 @@ interface RegionPickerProps {
 }
 
 const inp =
-  "w-full rounded-[16px] border border-[#E8ECF0] bg-[#FFFFFF] px-4 py-3 text-[#111827] placeholder:text-[#9CA3AF] focus:border-[#1B3C87] focus:outline-none focus:ring-2 focus:ring-[#1B3C87]/20 text-sm";
+  "w-full rounded-[16px] border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3 text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20 text-sm";
 
 export function RegionPicker({ value, onChange, max = 3, className = "" }: RegionPickerProps) {
   const [locating, setLocating] = useState(false);
@@ -126,14 +126,14 @@ export function RegionPicker({ value, onChange, max = 3, className = "" }: Regio
   return (
     <div className={className}>
       <div className="mb-2 flex items-center justify-between">
-        <label className="block text-sm text-[#6B7280]">
-          활동 지역 <span className="text-xs text-[#9CA3AF]">(최대 {max}곳)</span>
+        <label className="block text-sm text-[var(--color-text-muted)]">
+          활동 지역 <span className="text-xs text-[var(--color-text-muted)]">(최대 {max}곳)</span>
         </label>
         <button
           type="button"
           onClick={handleGeolocate}
           disabled={locating}
-          className="flex items-center gap-1 rounded-[10px] border border-[#1B3C87]/30 px-2.5 py-1.5 text-xs font-medium text-[#1B3C87] transition-colors hover:bg-[#EEF2FF] disabled:opacity-50"
+          className="flex items-center gap-1 rounded-[10px] border border-[var(--color-accent)]/30 px-2.5 py-1.5 text-xs font-medium text-[var(--color-accent)] transition-colors hover:bg-[var(--color-elevated)] disabled:opacity-50"
         >
           <Navigation size={12} className={locating ? "animate-pulse" : ""} />
           {locating ? "찾는 중..." : "현재 위치로 선택"}
@@ -141,7 +141,7 @@ export function RegionPicker({ value, onChange, max = 3, className = "" }: Regio
       </div>
 
       {locError && (
-        <p className="mb-2 text-xs text-[#EF4444]">{locError}</p>
+        <p className="mb-2 text-xs text-[var(--color-error)]">{locError}</p>
       )}
 
       <div className="space-y-3">
@@ -149,7 +149,7 @@ export function RegionPicker({ value, onChange, max = 3, className = "" }: Regio
           const districts = region.city ? (REGIONS[region.city] ?? []) : [];
           return (
             <div key={i} className="flex items-start gap-2">
-              <MapPin size={16} className="mt-3.5 flex-shrink-0 text-[#9CA3AF]" />
+              <MapPin size={16} className="mt-3.5 flex-shrink-0 text-[var(--color-text-muted)]" />
               <div className="grid flex-1 grid-cols-2 gap-2">
                 <select
                   className={inp}
@@ -177,7 +177,7 @@ export function RegionPicker({ value, onChange, max = 3, className = "" }: Regio
                 <button
                   type="button"
                   onClick={() => removeRegion(i)}
-                  className="mt-3 flex-shrink-0 rounded-full p-1 text-[#9CA3AF] transition-colors hover:bg-[#FEE2E2] hover:text-[#EF4444]"
+                  className="mt-3 flex-shrink-0 rounded-full p-1 text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-error)]/10 hover:text-[var(--color-error)]"
                 >
                   <X size={16} />
                 </button>
@@ -191,7 +191,7 @@ export function RegionPicker({ value, onChange, max = 3, className = "" }: Regio
         <button
           type="button"
           onClick={addRegion}
-          className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-[12px] border border-dashed border-[#D1D5DB] py-2.5 text-xs font-medium text-[#6B7280] transition-colors hover:border-[#1B3C87] hover:text-[#1B3C87]"
+          className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-[12px] border border-dashed border-[var(--color-text-muted)] py-2.5 text-xs font-medium text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
         >
           <Plus size={14} />
           활동 지역 추가
