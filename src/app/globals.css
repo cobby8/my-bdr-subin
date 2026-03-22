@@ -310,3 +310,20 @@ a,
     padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
   }
 }
+
+/* Sidebar scaling to 80% - 사이드바 내부 컨텐츠를 80%로 축소하여 더 많은 요소 수용 */
+.sidebar-scaled {
+  transform: scale(0.8);
+  transform-origin: top left;
+  width: 125%;
+  height: 125%;
+}
+
+/* Hide scrollbar for horizontal scroll sections - 수평 스크롤 영역 스크롤바 숨기기 */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

@@ -90,17 +90,20 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
        * 데스크탑 좌측 사이드바 (lg 이상에서만 표시)
        * fixed left-0, w-64, 어두운 배경
        * ======================================== */}
-      <aside className="fixed left-0 top-0 z-40 hidden h-full w-64 flex-col border-r border-[#222222] bg-[#111111] px-4 py-6 lg:flex">
+      <aside className="fixed left-0 top-0 z-40 hidden h-full w-64 flex-col border-r border-[#222222] bg-[#111111] overflow-hidden lg:flex">
 
-        {/* 상단: BDR 로고 (중앙 배치, 130% 확대) + 서브텍스트 */}
-        <div className="mb-8 flex flex-col items-center">
+        {/* sidebar-scaled: 내부 컨텐츠를 80%로 축소하여 더 많은 요소 수용 */}
+        <div className="sidebar-scaled p-8 flex flex-col h-full">
+
+        {/* 상단: BDR 로고 (중앙 배치, 236px 확대) + 서브텍스트 */}
+        <div className="mb-12 flex flex-col items-center">
           <Link href="/" prefetch={true}>
             <Image
               src="/images/logo.png"
               alt="BDR"
-              width={182}
-              height={55}
-              className="h-[55px] w-auto"
+              width={236}
+              height={71}
+              className="w-[236px] h-auto"
               priority
             />
           </Link>
@@ -111,7 +114,7 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* 메인 네비게이션 메뉴 (6개) */}
-        <nav className="flex flex-1 flex-col gap-1">
+        <nav className="flex flex-1 flex-col gap-2">
           {sideNavItems.map((item) => {
             const active = isActive(item.href);
             return (
@@ -209,6 +212,7 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
             </button>
           </div>
         </div>
+        </div>{/* sidebar-scaled 래퍼 닫기 */}
       </aside>
 
       {/* ========================================
@@ -284,7 +288,7 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
        * pt-16 (모바일 헤더) / lg:pt-20 (데스크탑 여유)
        * pb-20 (모바일 하단 네비) / lg:pb-8 (데스크탑)
        * ======================================== */}
-      <main className="min-h-screen flex-1 pb-20 pt-16 lg:ml-64 lg:pb-8 lg:pt-20">
+      <main className="min-h-screen flex-1 pb-20 pt-16 lg:ml-64 lg:pb-12 lg:pt-20">
         <div className="mx-auto max-w-7xl p-6 lg:p-10">
           {children}
         </div>
