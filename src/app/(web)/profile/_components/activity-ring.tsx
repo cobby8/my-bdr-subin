@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Crown, Flame, Trophy, Zap } from "lucide-react";
+// lucide-react 제거 → Material Symbols Outlined 사용
 
 const MILESTONES = [
   { key: "bronze", label: "Bronze", target: 8, color: "#CD7F32" },
@@ -58,7 +58,7 @@ export function ActivityRing({ monthlyGames, totalGames, totalTournaments }: Act
         <div className="flex items-center gap-2">
           {/* 아이콘 배경: accent 그라데이션 */}
           <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-hover))' }}>
-            <Zap size={16} className="text-white" />
+            <span className="material-symbols-outlined text-base text-white">bolt</span>
           </div>
           <div>
             <h2 className="text-sm font-black uppercase tracking-wider" style={{ fontFamily: "var(--font-heading)", color: 'var(--color-text-primary)' }}>
@@ -72,7 +72,7 @@ export function ActivityRing({ monthlyGames, totalGames, totalTournaments }: Act
             className="flex items-center gap-1 rounded-full px-3 py-1"
             style={{ backgroundColor: `${tierColor}20`, border: `1px solid ${tierColor}60` }}
           >
-            <Crown size={12} style={{ color: tierColor }} />
+            <span className="material-symbols-outlined text-xs" style={{ color: tierColor }}>workspace_premium</span>
             <span className="text-[11px] font-bold uppercase" style={{ color: tierColor }}>
               {currentTier}
             </span>
@@ -100,7 +100,7 @@ export function ActivityRing({ monthlyGames, totalGames, totalTournaments }: Act
           </div>
           {currentTier === "gold" && (
             <div className="absolute -right-1 -top-1 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[#FFD700] to-[#F4A261] shadow-lg shadow-[#FFD700]/40">
-              <Crown size={16} className="text-white" />
+              <span className="material-symbols-outlined text-base text-white">workspace_premium</span>
             </div>
           )}
         </div>
@@ -109,7 +109,7 @@ export function ActivityRing({ monthlyGames, totalGames, totalTournaments }: Act
         <div className="flex flex-1 flex-col gap-2.5">
           <div className="flex items-center gap-3 rounded-2xl border px-3.5 py-2.5" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-elevated)' }}>
             <div className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ backgroundColor: 'var(--color-accent-light)' }}>
-              <Flame size={20} style={{ color: 'var(--color-accent)' }} />
+              <span className="material-symbols-outlined text-xl" style={{ color: 'var(--color-accent)' }}>local_fire_department</span>
             </div>
             <div className="flex-1">
               <p className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>총 참가</p>
@@ -118,7 +118,7 @@ export function ActivityRing({ monthlyGames, totalGames, totalTournaments }: Act
           </div>
           <div className="flex items-center gap-3 rounded-2xl border px-3.5 py-2.5" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-elevated)' }}>
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F4A261]/10">
-              <Trophy size={20} className="text-[#F4A261]" />
+              <span className="material-symbols-outlined text-xl text-[#F4A261]">emoji_events</span>
             </div>
             <div className="flex-1">
               <p className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>대회</p>
@@ -154,7 +154,7 @@ export function ActivityRing({ monthlyGames, totalGames, totalTournaments }: Act
                     boxShadow: achieved ? `0 0 12px ${m.color}40` : "none",
                   }}
                 >
-                  <Crown size={13} style={{ color: achieved ? "#FFFFFF" : "var(--color-text-muted)" }} />
+                  <span className="material-symbols-outlined text-[13px]" style={{ color: achieved ? "#FFFFFF" : "var(--color-text-muted)" }}>workspace_premium</span>
                 </div>
                 <span className="text-xs font-bold uppercase" style={{ color: achieved ? m.color : "var(--color-text-muted)" }}>
                   {m.label}

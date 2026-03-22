@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { TrendingUp } from "lucide-react";
+// lucide-react 제거 → Material Symbols Outlined 사용
 
 interface CareerAverages {
   gamesPlayed: number;
@@ -64,7 +64,7 @@ export function StatBars({ careerAverages, seasonHighs }: StatBarsProps) {
           내 기록
         </h2>
         <div className="flex flex-col items-center gap-3 py-6">
-          <TrendingUp size={32} style={{ color: 'var(--color-accent)' }} />
+          <span className="material-symbols-outlined text-3xl" style={{ color: 'var(--color-accent)' }}>trending_up</span>
           <p className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>아직 기록이 없어요</p>
           <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>대회에 참가하면 스탯이 기록됩니다</p>
           {/* CTA 버튼: 웜 오렌지 accent */}

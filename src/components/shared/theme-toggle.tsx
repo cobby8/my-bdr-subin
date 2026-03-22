@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Sun, Moon } from "lucide-react";
+// lucide-react 제거 → Material Symbols Outlined 사용
 
 export function ThemeToggle() {
   const [dark, setDark] = useState(false);
@@ -29,7 +29,8 @@ export function ThemeToggle() {
       title={dark ? "라이트 모드" : "다크 모드"}
       style={{ color: dark ? "var(--color-warning)" : "var(--color-text-muted)" }}
     >
-      {dark ? <Sun size={20} /> : <Moon size={20} />}
+      {/* 다크모드: light_mode(해) / 라이트모드: dark_mode(달) */}
+      <span className="material-symbols-outlined text-xl">{dark ? "light_mode" : "dark_mode"}</span>
     </button>
   );
 }

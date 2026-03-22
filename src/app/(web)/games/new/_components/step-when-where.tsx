@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Save, FolderOpen } from "lucide-react";
+// lucide-react 제거 → Material Symbols Outlined 사용
 import type { WizardFormData, RecentVenue } from "./game-wizard";
 
 const SKILL_LEVELS = [
@@ -252,12 +252,12 @@ export function StepWhenWhere({
           <button type="button" title="설정 저장"
             onClick={() => setShowSaveModal(true)}
             className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--color-text-muted)] hover:bg-[rgba(27,60,135,0.08)] transition-colors">
-            <Save size={16} />
+            <span className="material-symbols-outlined text-base">save</span>
           </button>
           <button type="button" title="설정 불러오기"
             onClick={() => { setPresets(loadPresets()); setShowLoadModal(true); }}
             className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--color-text-muted)] hover:bg-[rgba(27,60,135,0.08)] transition-colors">
-            <FolderOpen size={16} />
+            <span className="material-symbols-outlined text-base">folder_open</span>
           </button>
         </div>
       </div>

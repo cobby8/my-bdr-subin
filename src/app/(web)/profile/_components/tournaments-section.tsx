@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Trophy } from "lucide-react";
+// lucide-react 제거 → Material Symbols Outlined 사용
 import { TOURNAMENT_STATUS_LABEL } from "@/lib/constants/tournament-status";
 import { SectionWrapper } from "./section-wrapper";
 
@@ -27,7 +27,7 @@ export function TournamentsSection({ tournaments }: { tournaments: Tournament[] 
             className="flex items-center gap-3 rounded-[12px] border px-3 py-2.5 transition-colors"
             style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-elevated)' }}
           >
-            <Trophy size={14} className="flex-shrink-0" style={{ color: 'var(--color-accent)' }} />
+            <span className="material-symbols-outlined flex-shrink-0 text-sm" style={{ color: 'var(--color-accent)' }}>emoji_events</span>
             <span className="flex-1 truncate text-sm" style={{ color: 'var(--color-text-primary)' }}>{t.name}</span>
             <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
               {TOURNAMENT_STATUS_LABEL[t.status ?? ""] ?? t.status ?? "-"}

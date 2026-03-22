@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useCallback, useRef, useState, useEffect } from "react";
-import { Search, X } from "lucide-react";
+// lucide-react 제거 → Material Symbols Outlined 사용
 
 const GAME_TYPES = [
   { value: "all", label: "전체 유형" },
@@ -101,7 +101,7 @@ export function GamesFilter({ cities }: { cities: string[] }) {
         }`}
         title="검색 및 필터"
       >
-        {open ? <X size={18} /> : <Search size={18} />}
+        <span className="material-symbols-outlined text-lg">{open ? "close" : "search"}</span>
       </button>
 
       {/* 활성 필터 도트 인디케이터 */}
@@ -114,7 +114,7 @@ export function GamesFilter({ cities }: { cities: string[] }) {
         <div className="absolute right-0 top-12 z-50 w-[300px] rounded-[16px] border border-[var(--color-border)] bg-[var(--color-card)] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.12)] space-y-3">
           {/* 검색 */}
           <div className="relative">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[15px] text-[var(--color-text-muted)]">search</span>
             <input
               type="text"
               placeholder="경기 검색..."

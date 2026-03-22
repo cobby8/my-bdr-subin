@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Play, ChevronLeft, ChevronRight, Flame } from "lucide-react";
+// lucide-react 제거 → Material Symbols Outlined 사용
 import { Skeleton } from "@/components/ui/skeleton";
 
 // API 응답에 맞춘 인터페이스
@@ -85,7 +85,7 @@ export function RecommendedVideos() {
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#FF0000]">
-            <Play size={14} className="text-white" fill="white" />
+            <span className="material-symbols-outlined text-sm text-white" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
           </div>
           <h2
             className="text-2xl font-bold"
@@ -112,13 +112,13 @@ export function RecommendedVideos() {
           onClick={() => scroll("left")}
           className="absolute -left-3 top-1/2 z-10 hidden -translate-y-1/2 rounded-lg bg-surface-high p-1.5 shadow-md backdrop-blur-sm transition-opacity group-hover:opacity-100 md:block md:opacity-0"
         >
-          <ChevronLeft size={18} style={{ color: "var(--color-text-primary)" }} />
+          <span className="material-symbols-outlined text-lg" style={{ color: "var(--color-text-primary)" }}>chevron_left</span>
         </button>
         <button
           onClick={() => scroll("right")}
           className="absolute -right-3 top-1/2 z-10 hidden -translate-y-1/2 rounded-lg bg-surface-high p-1.5 shadow-md backdrop-blur-sm transition-opacity group-hover:opacity-100 md:block md:opacity-0"
         >
-          <ChevronRight size={18} style={{ color: "var(--color-text-primary)" }} />
+          <span className="material-symbols-outlined text-lg" style={{ color: "var(--color-text-primary)" }}>chevron_right</span>
         </button>
 
         <div
@@ -154,7 +154,7 @@ export function RecommendedVideos() {
                     {/* 재생 오버레이 */}
                     <div className="absolute inset-0 flex items-center justify-center bg-black/20 transition-colors group-hover/thumb:bg-black/40">
                       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FF0000]/90 shadow-lg transition-transform group-hover/thumb:scale-110">
-                        <Play size={20} className="ml-0.5 text-white" fill="white" />
+                        <span className="material-symbols-outlined ml-0.5 text-xl text-white" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
                       </div>
                     </div>
 
@@ -213,7 +213,7 @@ export function RecommendedVideos() {
                         )}
                         {/* HOT 뱃지: 불꽃 아이콘 */}
                         {style.icon === "flame" && (
-                          <Flame size={10} className="text-white" />
+                          <span className="material-symbols-outlined text-[10px] text-white">local_fire_department</span>
                         )}
                         {badge}
                       </span>

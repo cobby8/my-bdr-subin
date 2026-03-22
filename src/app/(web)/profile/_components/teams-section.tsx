@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Users } from "lucide-react";
+// lucide-react 제거 → Material Symbols Outlined 사용
 import { Badge } from "@/components/ui/badge";
 import { SectionWrapper } from "./section-wrapper";
 
@@ -27,7 +27,7 @@ export function TeamsSection({ teams }: { teams: Team[] }) {
             className="flex items-center gap-3 rounded-[12px] border px-3 py-2.5 transition-colors"
             style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-elevated)' }}
           >
-            <Users size={14} className="flex-shrink-0" style={{ color: 'var(--color-primary)' }} />
+            <span className="material-symbols-outlined flex-shrink-0 text-sm" style={{ color: 'var(--color-primary)' }}>group</span>
             <span className="flex-1 truncate text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>{t.name}</span>
             <Badge>{t.role === "captain" ? "주장" : "멤버"}</Badge>
           </Link>

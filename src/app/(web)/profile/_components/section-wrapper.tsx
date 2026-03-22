@@ -1,6 +1,6 @@
 import { type ReactNode } from "react";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+// lucide-react 제거 → Material Symbols Outlined 사용
 
 interface SectionWrapperProps {
   title: string;
@@ -29,7 +29,7 @@ export function SectionWrapper({ title, href, children, emptyText, isEmpty }: Se
             style={{ color: 'var(--color-accent)' }}
           >
             자세히 보기
-            <ChevronRight size={14} />
+            <span className="material-symbols-outlined text-sm">chevron_right</span>
           </Link>
         )}
       </div>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Home, Dribbble, Trophy, MessageSquare, Menu, Sparkles } from "lucide-react";
+// lucide-react 제거 → Material Symbols Outlined 사용
 import { SlideMenu } from "./slide-menu";
 import { UserDropdown } from "./user-dropdown";
 import { BellIcon } from "./bell-icon";
@@ -11,11 +11,12 @@ import { ThemeToggle } from "./theme-toggle";
 import { TextSizeToggle } from "./text-size-toggle";
 import { usePreferFilter } from "@/contexts/prefer-filter-context";
 
+// 모바일 하단 내비 아이템 — Material Symbols 아이콘 이름으로 변경
 const navItems = [
-  { href: "/", label: "홈", Icon: Home },
-  { href: "/games", label: "경기", Icon: Dribbble },
-  { href: "/tournaments", label: "대회", Icon: Trophy },
-  { href: "/community", label: "게시판", Icon: MessageSquare },
+  { href: "/", label: "홈", icon: "home" },
+  { href: "/games", label: "경기", icon: "sports_basketball" },
+  { href: "/tournaments", label: "대회", icon: "emoji_events" },
+  { href: "/community", label: "게시판", icon: "forum" },
 ];
 
 const desktopNavItems = [
@@ -130,7 +131,7 @@ export function Header() {
                   backgroundColor: preferFilter ? 'var(--color-primary-light)' : 'transparent',
                 }}
               >
-                <Sparkles size={20} />
+                <span className="material-symbols-outlined text-xl">auto_awesome</span>
               </button>
             )}
             <TextSizeToggle />
@@ -178,7 +179,11 @@ export function Header() {
                 {active && (
                   <span className="absolute top-0 left-1/2 h-[2px] w-6 -translate-x-1/2 rounded-full" style={{ backgroundColor: 'var(--color-primary)' }} />
                 )}
-                <item.Icon size={24} strokeWidth={active ? 2.5 : 1.5} />
+                {/* Material Symbols 아이콘: 활성 시 FILL 1 적용 */}
+                <span
+                  className="material-symbols-outlined text-2xl"
+                  style={active ? { fontVariationSettings: "'FILL' 1" } : undefined}
+                >{item.icon}</span>
                 {item.label}
               </Link>
             );
@@ -191,7 +196,10 @@ export function Header() {
             {menuOpen && (
               <span className="absolute top-0 left-1/2 h-[2px] w-6 -translate-x-1/2 rounded-full" style={{ backgroundColor: 'var(--color-primary)' }} />
             )}
-            <Menu size={24} strokeWidth={menuOpen ? 2.5 : 1.5} />
+            <span
+              className="material-symbols-outlined text-2xl"
+              style={menuOpen ? { fontVariationSettings: "'FILL' 1" } : undefined}
+            >menu</span>
             전체
           </button>
         </div>

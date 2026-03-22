@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
-import { Play, Flame } from "lucide-react";
+// lucide-react 제거 → Material Symbols Outlined 사용
 import { PersonalHero } from "./personal-hero";
 
 // --- 유튜브 API 응답 타입 ---
@@ -298,7 +298,7 @@ function YoutubeSlide({ video, isLive }: { video: VideoItem; isLive: boolean }) 
                         : "var(--color-accent)",
                   }}
                 >
-                  {badge === "HOT" && <Flame size={10} />}
+                  {badge === "HOT" && <span className="material-symbols-outlined text-[10px]">local_fire_department</span>}
                   {badge}
                 </span>
               ))}
@@ -326,7 +326,7 @@ function YoutubeSlide({ video, isLive }: { video: VideoItem; isLive: boolean }) 
                 "linear-gradient(to right, var(--color-primary), var(--color-accent))",
             }}
           >
-            <Play size={14} fill="currentColor" />
+            <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
             시청하기
           </span>
         </div>

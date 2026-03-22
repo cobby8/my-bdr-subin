@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ALargeSmall } from "lucide-react";
+// lucide-react 제거 → Material Symbols Outlined 사용
 
 export function TextSizeToggle() {
   const [large, setLarge] = useState(false);
@@ -29,7 +29,8 @@ export function TextSizeToggle() {
       title={large ? "기본 글씨" : "큰 글씨"}
       style={{ color: large ? "var(--color-primary)" : "var(--color-text-muted)" }}
     >
-      <ALargeSmall size={20} />
+      {/* 텍스트 크기 조절 아이콘 */}
+      <span className="material-symbols-outlined text-xl">text_fields</span>
     </button>
   );
 }

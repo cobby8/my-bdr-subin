@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Settings } from "lucide-react";
+// lucide-react 제거 → Material Symbols Outlined 사용
 
 interface ProfileHeaderProps {
   nickname: string | null;
@@ -20,7 +20,7 @@ export function ProfileHeader({ nickname, email, profileImageUrl }: ProfileHeade
         className="absolute right-4 top-4 rounded-full p-1.5 transition-colors"
         style={{ color: 'var(--color-text-muted)' }}
       >
-        <Settings size={18} />
+        <span className="material-symbols-outlined text-lg">settings</span>
       </Link>
       <div className="flex items-center gap-4">
         {profileImageUrl ? (

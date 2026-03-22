@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Calendar } from "lucide-react";
+// lucide-react 제거 → Material Symbols Outlined 사용
 import { SectionWrapper } from "./section-wrapper";
 
 interface Game {
@@ -27,7 +27,7 @@ export function RecentGamesSection({ games }: { games: Game[] }) {
             className="flex items-center gap-3 rounded-[12px] border px-3 py-2.5 transition-colors"
             style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-elevated)' }}
           >
-            <Calendar size={14} className="flex-shrink-0" style={{ color: 'var(--color-accent)' }} />
+            <span className="material-symbols-outlined flex-shrink-0 text-sm" style={{ color: 'var(--color-accent)' }}>calendar_today</span>
             <span className="flex-1 truncate text-sm" style={{ color: 'var(--color-text-primary)' }}>{g.title ?? "경기"}</span>
             <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
               {g.scheduled_at ? new Date(g.scheduled_at).toLocaleDateString("ko-KR") : "-"}

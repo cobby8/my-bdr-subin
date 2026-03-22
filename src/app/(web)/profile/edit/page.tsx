@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
+// lucide-react 제거 → Material Symbols Outlined 사용
 import { BANKS } from "@/lib/constants/banks";
 import { RegionPicker, type Region } from "@/components/shared/region-picker";
 
@@ -315,7 +315,7 @@ export default function ProfileEditPage() {
                 disabled={generatingBio}
                 className="flex items-center gap-1 rounded-[10px] border border-[#7C3AED]/30 px-2.5 py-1.5 text-xs font-medium text-[#7C3AED] transition-colors hover:bg-[#7C3AED]/10 disabled:opacity-50"
               >
-                <Sparkles size={12} className={generatingBio ? "animate-spin" : ""} />
+                <span className={`material-symbols-outlined text-xs ${generatingBio ? "animate-spin" : ""}`}>auto_awesome</span>
                 {generatingBio ? "생성 중..." : "AI 자동 작성"}
               </button>
             </div>
@@ -426,7 +426,7 @@ export default function ProfileEditPage() {
           href="/profile/preferences"
           className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--color-accent)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--color-accent-hover,#142D6B)]"
         >
-          <Sparkles className="h-4 w-4" />
+          <span className="material-symbols-outlined text-base">auto_awesome</span>
           맞춤 설정 관리
         </Link>
       </div>

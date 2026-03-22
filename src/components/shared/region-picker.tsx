@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { MapPin, X, Plus, Navigation } from "lucide-react";
+// lucide-react 제거 → Material Symbols Outlined 사용
 import { REGIONS, PROVINCES } from "@/lib/constants/regions";
 
 export interface Region {
@@ -135,7 +135,7 @@ export function RegionPicker({ value, onChange, max = 3, className = "" }: Regio
           disabled={locating}
           className="flex items-center gap-1 rounded-[10px] border border-[var(--color-accent)]/30 px-2.5 py-1.5 text-xs font-medium text-[var(--color-accent)] transition-colors hover:bg-[var(--color-elevated)] disabled:opacity-50"
         >
-          <Navigation size={12} className={locating ? "animate-pulse" : ""} />
+          <span className={`material-symbols-outlined text-xs ${locating ? "animate-pulse" : ""}`}>navigation</span>
           {locating ? "찾는 중..." : "현재 위치로 선택"}
         </button>
       </div>
@@ -149,7 +149,7 @@ export function RegionPicker({ value, onChange, max = 3, className = "" }: Regio
           const districts = region.city ? (REGIONS[region.city] ?? []) : [];
           return (
             <div key={i} className="flex items-start gap-2">
-              <MapPin size={16} className="mt-3.5 flex-shrink-0 text-[var(--color-text-muted)]" />
+              <span className="material-symbols-outlined mt-3.5 flex-shrink-0 text-base text-[var(--color-text-muted)]">location_on</span>
               <div className="grid flex-1 grid-cols-2 gap-2">
                 <select
                   className={inp}
@@ -179,7 +179,7 @@ export function RegionPicker({ value, onChange, max = 3, className = "" }: Regio
                   onClick={() => removeRegion(i)}
                   className="mt-3 flex-shrink-0 rounded-full p-1 text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-error)]/10 hover:text-[var(--color-error)]"
                 >
-                  <X size={16} />
+                  <span className="material-symbols-outlined text-base">close</span>
                 </button>
               )}
             </div>
@@ -193,7 +193,7 @@ export function RegionPicker({ value, onChange, max = 3, className = "" }: Regio
           onClick={addRegion}
           className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-[12px] border border-dashed border-[var(--color-text-muted)] py-2.5 text-xs font-medium text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
         >
-          <Plus size={14} />
+          <span className="material-symbols-outlined text-sm">add</span>
           활동 지역 추가
         </button>
       )}
