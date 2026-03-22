@@ -124,7 +124,7 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
                 key={item.href + item.label}
                 href={item.href}
                 prefetch={true}
-                className={`flex items-center gap-4 rounded-lg px-4 py-3 text-sm font-medium transition-all ${
+                className={`flex items-center gap-4 rounded-lg px-4 py-3 text-base font-medium transition-all ${
                   active
                     ? "bg-[var(--color-primary)] text-white"
                     : "text-[var(--color-text-muted)] hover:bg-[var(--color-surface)] hover:text-[var(--color-text-primary)]"

@@ -19,12 +19,16 @@ const DIVISION_KEYWORDS = [
   "pro", "elite", "open",
 ];
 
-// HOT 판단 기준: 게시 경과일 대비 조회수 임계값
+// HOT 판단 기준: 최근 30일 이내 영상의 조회수 임계값
 const HOT_THRESHOLDS = [
   { maxDays: 1, minViews: 1000 },   // 24시간 이내 1000뷰 이상
   { maxDays: 3, minViews: 5000 },   // 3일 이내 5000뷰 이상
   { maxDays: 7, minViews: 10000 },  // 7일 이내 10000뷰 이상
+  { maxDays: 30, minViews: 20000 }, // 30일 이내 20000뷰 이상
 ];
+
+// 최근 영상 조회 범위: 30일
+const RECENT_DAYS = 30;
 
 // --- 타입 정의 ---
 
@@ -307,17 +311,47 @@ export async function GET() {
     const scored = scoreVideos(videos, userCity, userPosition);
     scored.sort((a, b) => b.score - a.score);
 
-    // API 응답: badges 배열, is_live 포함
-    const result = scored.slice(0, 5).map((s) => ({
+    // 라이브 영상과 비라이브 영상을 분리
+    const liveVideos = scored.filter((s) => s.isLive);
+    const nonLiveVideos = scored.filter((s) => !s.isLive);
+
+    // 최근 30일 이내 비라이브 영상만 필터링하고 조회수 순 정렬
+    const now = Date.now();
+    const recentNonLive = nonLiveVideos
+      .filter((s) => {
+        const daysSince = (now - new Date(s.video.publishedAt).getTime()) / (1000 * 60 * 60 * 24);
+        return daysSince <= RECENT_DAYS;
+      })
+      .sort((a, b) => b.video.viewCount - a.video.viewCount);
+
+    // 라이브 최대 2개
+    const topLive = liveVideos.slice(0, 2).map((s) => ({
       video_id: s.video.videoId,
       title: s.video.title,
       thumbnail: s.video.thumbnail,
       published_at: s.video.publishedAt,
+      view_count: s.video.viewCount,
       badges: s.badges,
-      is_live: s.isLive,
+      is_live: true,
     }));
 
-    return NextResponse.json({ videos: result });
+    // 비라이브 조회수 상위 2개
+    const topNonLive = recentNonLive.slice(0, 2).map((s) => ({
+      video_id: s.video.videoId,
+      title: s.video.title,
+      thumbnail: s.video.thumbnail,
+      published_at: s.video.publishedAt,
+      view_count: s.video.viewCount,
+      badges: s.badges,
+      is_live: false,
+    }));
+
+    // 하위 호환: videos 필드에 전체 합산, live_videos/popular_videos 필드 추가
+    return NextResponse.json({
+      videos: [...topLive, ...topNonLive],
+      live_videos: topLive,
+      popular_videos: topNonLive,
+    });
   } catch (err) {
     console.error("[youtube] Error:", err);
     return NextResponse.json(

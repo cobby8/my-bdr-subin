@@ -91,9 +91,9 @@ export function RightSidebarLoggedIn() {
       <div className="bg-surface rounded-xl border border-border flex flex-col">
         {/* 헤더 */}
         <div className="p-6 border-b border-border">
-          <h4 className="text-sm font-bold text-text-primary flex items-center justify-between">
+          <h4 className="text-base font-bold text-text-primary flex items-center justify-between">
             커뮤니티
-            <span className="material-symbols-outlined text-text-muted text-lg">forum</span>
+            <span className="material-symbols-outlined text-text-muted text-xl">forum</span>
           </h4>
         </div>
 
@@ -101,25 +101,25 @@ export function RightSidebarLoggedIn() {
         <div className="p-6 space-y-10">
           {/* 최신글 */}
           <div>
-            <h5 className="text-[10px] font-bold text-primary uppercase mb-4 tracking-wider">
+            <h5 className="text-xs font-bold text-primary uppercase mb-4 tracking-wider">
               최신글
             </h5>
             <ul className="space-y-4">
               <li className="flex items-start gap-3 group cursor-pointer">
-                <span className="w-1.5 h-1.5 bg-elevated rounded-full mt-1.5 group-hover:bg-primary shrink-0" />
-                <p className="text-xs text-text-secondary group-hover:text-text-primary leading-relaxed">
+                <span className="w-1.5 h-1.5 bg-elevated rounded-full mt-2 group-hover:bg-primary shrink-0" />
+                <p className="text-sm text-text-secondary group-hover:text-text-primary leading-relaxed">
                   이번 윈터 챌린지 룰 변경사항 있나요?
                 </p>
               </li>
               <li className="flex items-start gap-3 group cursor-pointer">
-                <span className="w-1.5 h-1.5 bg-elevated rounded-full mt-1.5 group-hover:bg-primary shrink-0" />
-                <p className="text-xs text-text-secondary group-hover:text-text-primary leading-relaxed">
+                <span className="w-1.5 h-1.5 bg-elevated rounded-full mt-2 group-hover:bg-primary shrink-0" />
+                <p className="text-sm text-text-secondary group-hover:text-text-primary leading-relaxed">
                   Storm FC 팀원 모집합니다 (수비수)
                 </p>
               </li>
               <li className="flex items-start gap-3 group cursor-pointer">
-                <span className="w-1.5 h-1.5 bg-elevated rounded-full mt-1.5 group-hover:bg-primary shrink-0" />
-                <p className="text-xs text-text-secondary group-hover:text-text-primary leading-relaxed">
+                <span className="w-1.5 h-1.5 bg-elevated rounded-full mt-2 group-hover:bg-primary shrink-0" />
+                <p className="text-sm text-text-secondary group-hover:text-text-primary leading-relaxed">
                   신규 업데이트 패치노트 요약
                 </p>
               </li>
@@ -128,21 +128,21 @@ export function RightSidebarLoggedIn() {
 
           {/* 조회수 높은 글 */}
           <div>
-            <h5 className="text-[10px] font-bold text-secondary uppercase mb-4 tracking-wider">
+            <h5 className="text-xs font-bold text-secondary uppercase mb-4 tracking-wider">
               조회수 높은 글
             </h5>
             <ul className="space-y-4">
               <li className="flex flex-col gap-1 group cursor-pointer">
-                <p className="text-xs text-text-secondary group-hover:text-text-primary line-clamp-1">
+                <p className="text-sm text-text-secondary group-hover:text-text-primary line-clamp-1">
                   11월 랭킹 보상 공지 확인하세요
                 </p>
-                <span className="text-[10px] text-text-muted">1.2k views</span>
+                <span className="text-xs text-text-muted">1.2k views</span>
               </li>
               <li className="flex flex-col gap-1 group cursor-pointer">
-                <p className="text-xs text-text-secondary group-hover:text-text-primary line-clamp-1">
+                <p className="text-sm text-text-secondary group-hover:text-text-primary line-clamp-1">
                   초보자를 위한 경기 운영 팁 5가지
                 </p>
-                <span className="text-[10px] text-text-muted">850 views</span>
+                <span className="text-xs text-text-muted">850 views</span>
               </li>
             </ul>
           </div>
@@ -150,8 +150,8 @@ export function RightSidebarLoggedIn() {
 
         {/* 하단: 대회 알림 받기 (네이비 배경) */}
         <div className="p-6 bg-secondary text-white rounded-b-xl">
-          <p className="text-xs font-bold mb-3">대회 알림 받기</p>
-          <button className="w-full bg-white text-secondary py-2.5 rounded-lg text-xs font-bold hover:bg-white/90 transition-colors">
+          <p className="text-sm font-bold mb-3">대회 알림 받기</p>
+          <button className="w-full bg-white text-secondary py-2.5 rounded-lg text-sm font-bold hover:bg-white/90 transition-colors">
             알림 설정
           </button>
         </div>

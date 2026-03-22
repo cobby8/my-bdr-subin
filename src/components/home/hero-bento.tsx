@@ -17,8 +17,16 @@ interface RecommendVideo {
   title: string;
   thumbnail: string;
   published_at: string;
+  view_count?: number;
   badges: string[];
   is_live: boolean;
+}
+
+// API 전체 응답 타입
+interface RecommendResponse {
+  videos: RecommendVideo[];
+  live_videos: RecommendVideo[];
+  popular_videos: RecommendVideo[];
 }
 
 // 자동 슬라이드 간격 (5초)
@@ -44,15 +52,22 @@ export function HeroBento() {
   const pauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // --- API에서 영상 목록 가져오기 ---
+  // 라이브(최대 2개) + 조회수 상위(최대 2개)를 조합하여 최대 4개 표시
   useEffect(() => {
     async function fetchVideos() {
       try {
         const res = await fetch("/api/web/youtube/recommend");
         if (!res.ok) throw new Error("API 응답 실패");
-        const data = await res.json();
-        // 상위 4개만 사용
-        const top4 = (data.videos ?? []).slice(0, 4) as RecommendVideo[];
-        setVideos(top4);
+        const data = (await res.json()) as RecommendResponse;
+
+        // API가 이미 라이브(최대2) + 인기(최대2)를 분리해서 보내줌
+        const liveVideos = (data.live_videos ?? []).slice(0, 2);
+        const popularVideos = (data.popular_videos ?? []).slice(0, 2);
+
+        // 라이브를 앞에 배치, 뒤에 인기 영상 배치
+        const combined = [...liveVideos, ...popularVideos];
+
+        setVideos(combined);
       } catch {
         console.error("[HeroBento] 영상 목록 가져오기 실패");
         setHasError(true);
