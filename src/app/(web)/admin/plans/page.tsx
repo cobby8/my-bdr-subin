@@ -154,25 +154,25 @@ export default function AdminPlansPage() {
             return (
               <div
                 key={tier.membershipType}
-                className="flex items-center justify-between rounded-[12px] bg-[#F5F7FA] px-4 py-3"
+                className="flex items-center justify-between rounded-[12px] bg-[var(--color-surface)] px-4 py-3"
               >
                 <div>
-                  <p className="font-medium text-[#111827]">{tier.label}</p>
-                  <p className="text-xs text-[#6B7280]">
+                  <p className="font-medium text-[var(--color-text-primary)]">{tier.label}</p>
+                  <p className="text-xs text-[var(--color-text-muted)]">
                     정가 {tier.price} ·{" "}
-                    <span className="font-medium text-[#E31B23]">프로모션 무료 {count}명</span>
+                    <span className="font-medium text-[var(--color-primary)]">프로모션 무료 {count}명</span>
                   </p>
                 </div>
                 {count > 0 ? (
                   <button
                     onClick={() => endPromotion(tier.membershipType, tier.label)}
                     disabled={endingPromo === tier.membershipType}
-                    className="rounded-[10px] bg-[rgba(239,68,68,0.1)] px-4 py-2 text-xs font-semibold text-[#EF4444] hover:bg-[rgba(239,68,68,0.2)] disabled:opacity-50"
+                    className="rounded-[10px] bg-[var(--color-error)]/10 px-4 py-2 text-xs font-semibold text-[var(--color-error)] hover:bg-[var(--color-error)]/20 disabled:opacity-50"
                   >
                     {endingPromo === tier.membershipType ? "처리 중..." : "프로모션 종료"}
                   </button>
                 ) : (
-                  <span className="rounded-[10px] bg-[#EEF2FF] px-3 py-1 text-xs text-[#9CA3AF]">
+                  <span className="rounded-[10px] bg-[var(--color-elevated)] px-3 py-1 text-xs text-[var(--color-text-muted)]">
                     프로모션 없음
                   </span>
                 )}
@@ -180,16 +180,16 @@ export default function AdminPlansPage() {
             );
           })}
         </div>
-        <p className="mt-3 text-xs text-[#9CA3AF]">
+        <p className="mt-3 text-xs text-[var(--color-text-muted)]">
           * 프로모션 종료 시 해당 티어의 subscription_expires_at = NULL 인 유저가 즉시 만료됩니다.
         </p>
       </Card>
 
       {loading ? (
-        <div className="py-12 text-center text-[#6B7280]">로딩 중...</div>
+        <div className="py-12 text-center text-[var(--color-text-muted)]">로딩 중...</div>
       ) : plans.length === 0 ? (
-        <Card className="py-12 text-center text-[#6B7280]">
-          <div className="mb-2 text-3xl text-[#9CA3AF]">--</div>
+        <Card className="py-12 text-center text-[var(--color-text-muted)]">
+          <div className="mb-2 text-3xl text-[var(--color-text-muted)]">--</div>
           등록된 요금제가 없습니다.
         </Card>
       ) : (
@@ -205,7 +205,7 @@ export default function AdminPlansPage() {
                 <col className="w-[165px]" />
               </colgroup>
               <thead>
-                <tr className="border-b border-[#EEF2FF] text-left text-xs text-[#9CA3AF]">
+                <tr className="border-b border-[var(--color-elevated)] text-left text-xs text-[var(--color-text-muted)]">
                   <th className="pb-3 pr-4">이름</th>
                   <th className="pb-3 pr-4">기능 키</th>
                   <th className="pb-3 pr-4">타입</th>
@@ -216,30 +216,30 @@ export default function AdminPlansPage() {
               </thead>
               <tbody>
                 {plans.map((plan) => (
-                  <tr key={plan.id} className="border-b border-[#FFFFFF] hover:bg-[#EEF2FF]/50">
+                  <tr key={plan.id} className="border-b border-[var(--color-card)] hover:bg-[var(--color-elevated)]/50">
                     <td className="py-3 pr-4 font-medium">
                       {plan.name}
                       {plan.description && (
-                        <div className="text-xs text-[#9CA3AF]">{plan.description}</div>
+                        <div className="text-xs text-[var(--color-text-muted)]">{plan.description}</div>
                       )}
                     </td>
-                    <td className="py-3 pr-4 font-mono text-xs text-[#6B7280]">{plan.feature_key}</td>
-                    <td className="py-3 pr-4 text-xs text-[#6B7280]">{PLAN_TYPE_LABELS[plan.plan_type] ?? plan.plan_type}</td>
+                    <td className="py-3 pr-4 font-mono text-xs text-[var(--color-text-muted)]">{plan.feature_key}</td>
+                    <td className="py-3 pr-4 text-xs text-[var(--color-text-muted)]">{PLAN_TYPE_LABELS[plan.plan_type] ?? plan.plan_type}</td>
                     <td className="py-3 pr-4 font-semibold">{plan.price.toLocaleString()}원</td>
                     <td className="py-3 pr-4">
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${plan.is_active ? "bg-[rgba(74,222,128,0.1)] text-[#4ADE80]" : "bg-[#EEF2FF] text-[#9CA3AF]"}`}>
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${plan.is_active ? "bg-[var(--color-success)]/10 text-[var(--color-success)]" : "bg-[var(--color-elevated)] text-[var(--color-text-muted)]"}`}>
                         {plan.is_active ? "활성" : "비활성"}
                       </span>
                     </td>
                     <td className="py-3">
                       <div className="flex gap-2">
-                        <button onClick={() => openEdit(plan)} className="rounded-[8px] bg-[#EEF2FF] px-3 py-1 text-xs text-[#6B7280] hover:text-[#111827]">
+                        <button onClick={() => openEdit(plan)} className="rounded-[8px] bg-[var(--color-elevated)] px-3 py-1 text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]">
                           수정
                         </button>
-                        <button onClick={() => handleToggle(plan)} className="rounded-[8px] bg-[#EEF2FF] px-3 py-1 text-xs text-[#6B7280] hover:text-[#111827]">
+                        <button onClick={() => handleToggle(plan)} className="rounded-[8px] bg-[var(--color-elevated)] px-3 py-1 text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]">
                           {plan.is_active ? "비활성화" : "활성화"}
                         </button>
-                        <button onClick={() => handleDelete(plan)} className="rounded-[8px] bg-[rgba(239,68,68,0.1)] px-3 py-1 text-xs text-[#EF4444] hover:bg-[rgba(239,68,68,0.2)]">
+                        <button onClick={() => handleDelete(plan)} className="rounded-[8px] bg-[var(--color-error)]/10 px-3 py-1 text-xs text-[var(--color-error)] hover:bg-[var(--color-error)]/20">
                           삭제
                         </button>
                       </div>
@@ -255,7 +255,7 @@ export default function AdminPlansPage() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-md rounded-[20px] border border-[#E8ECF0] bg-[#FFFFFF] p-6">
+          <div className="w-full max-w-md rounded-[20px] border border-[var(--color-border)] bg-[var(--color-card)] p-6">
             <h2 className="mb-4 text-lg font-bold">{editTarget ? "요금제 수정" : "요금제 추가"}</h2>
 
             {error && (
@@ -264,43 +264,43 @@ export default function AdminPlansPage() {
 
             <div className="space-y-3">
               <div>
-                <label className="mb-1 block text-xs text-[#6B7280]">이름 *</label>
+                <label className="mb-1 block text-xs text-[var(--color-text-muted)]">이름 *</label>
                 <input
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full rounded-[12px] border-none bg-[#E8ECF0] px-4 py-2.5 text-sm text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#1B3C87]/50"
+                  className="w-full rounded-[12px] border-none bg-[var(--color-border)] px-4 py-2.5 text-sm text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/50"
                   placeholder="예: 팀 생성권"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-[#6B7280]">설명</label>
+                <label className="mb-1 block text-xs text-[var(--color-text-muted)]">설명</label>
                 <input
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  className="w-full rounded-[12px] border-none bg-[#E8ECF0] px-4 py-2.5 text-sm text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#1B3C87]/50"
+                  className="w-full rounded-[12px] border-none bg-[var(--color-border)] px-4 py-2.5 text-sm text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/50"
                   placeholder="간단한 설명"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1 block text-xs text-[#6B7280]">타입 *</label>
+                  <label className="mb-1 block text-xs text-[var(--color-text-muted)]">타입 *</label>
                   <select
                     value={form.plan_type}
                     onChange={(e) => setForm({ ...form, plan_type: e.target.value })}
                     disabled={!!editTarget}
-                    className="w-full rounded-[12px] border-none bg-[#E8ECF0] px-4 py-2.5 text-sm text-[#111827] focus:outline-none"
+                    className="w-full rounded-[12px] border-none bg-[var(--color-border)] px-4 py-2.5 text-sm text-[var(--color-text-primary)] focus:outline-none"
                   >
                     <option value="monthly">월 구독</option>
                     <option value="one_time">1회 구매</option>
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs text-[#6B7280]">기능 키 *</label>
+                  <label className="mb-1 block text-xs text-[var(--color-text-muted)]">기능 키 *</label>
                   <select
                     value={form.feature_key}
                     onChange={(e) => setForm({ ...form, feature_key: e.target.value })}
                     disabled={!!editTarget}
-                    className="w-full rounded-[12px] border-none bg-[#E8ECF0] px-4 py-2.5 text-sm text-[#111827] focus:outline-none"
+                    className="w-full rounded-[12px] border-none bg-[var(--color-border)] px-4 py-2.5 text-sm text-[var(--color-text-primary)] focus:outline-none"
                   >
                     {FEATURE_KEY_OPTIONS.map((o) => (
                       <option key={o.value} value={o.value}>{o.label}</option>
@@ -310,22 +310,22 @@ export default function AdminPlansPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1 block text-xs text-[#6B7280]">금액 (원) *</label>
+                  <label className="mb-1 block text-xs text-[var(--color-text-muted)]">금액 (원) *</label>
                   <input
                     type="number"
                     value={form.price}
                     onChange={(e) => setForm({ ...form, price: e.target.value })}
-                    className="w-full rounded-[12px] border-none bg-[#E8ECF0] px-4 py-2.5 text-sm text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#1B3C87]/50"
+                    className="w-full rounded-[12px] border-none bg-[var(--color-border)] px-4 py-2.5 text-sm text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/50"
                     placeholder="9900"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs text-[#6B7280]">최대 사용 횟수</label>
+                  <label className="mb-1 block text-xs text-[var(--color-text-muted)]">최대 사용 횟수</label>
                   <input
                     type="number"
                     value={form.max_uses}
                     onChange={(e) => setForm({ ...form, max_uses: e.target.value })}
-                    className="w-full rounded-[12px] border-none bg-[#E8ECF0] px-4 py-2.5 text-sm text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#1B3C87]/50"
+                    className="w-full rounded-[12px] border-none bg-[var(--color-border)] px-4 py-2.5 text-sm text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/50"
                     placeholder="2 (선택)"
                   />
                 </div>
@@ -338,7 +338,7 @@ export default function AdminPlansPage() {
               </Button>
               <button
                 onClick={() => setShowModal(false)}
-                className="flex-1 rounded-[12px] border border-[#E8ECF0] py-2 text-sm text-[#6B7280] hover:text-[#111827]"
+                className="flex-1 rounded-[12px] border border-[var(--color-border)] py-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
               >
                 취소
               </button>

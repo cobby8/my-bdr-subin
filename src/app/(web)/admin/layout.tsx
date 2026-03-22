@@ -14,7 +14,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA]">
+    <div className="min-h-screen bg-[var(--color-surface)]">
       <AdminSidebar />
       <main className="lg:ml-[260px]">
         <div className="mx-auto max-w-7xl p-6">{children}</div>

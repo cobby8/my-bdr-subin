@@ -78,10 +78,10 @@ export default async function AdminUsersPage({
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold sm:text-2xl">유저 관리</h1>
-          <p className="mt-1 text-sm text-[#6B7280]">
-            전체 <span className="font-semibold text-[#111827]">{totalCount.toLocaleString()}명</span>
+          <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+            전체 <span className="font-semibold text-[var(--color-text-primary)]">{totalCount.toLocaleString()}명</span>
             {totalCount > 0 && <span className="ml-1">· {from}–{to}번째</span>}
-            <span className="ml-2 rounded-full bg-[rgba(239,68,68,0.1)] px-2 py-0.5 text-xs text-[#EF4444]">
+            <span className="ml-2 rounded-full bg-[var(--color-error)]/10 px-2 py-0.5 text-xs text-[var(--color-error)]">
               슈퍼관리자 {superAdminCount}/4
             </span>
           </p>
@@ -91,14 +91,14 @@ export default async function AdminUsersPage({
             name="q"
             defaultValue={q ?? ""}
             placeholder="닉네임/이메일 검색"
-            className="rounded-full border border-[#E8ECF0] bg-[#FFFFFF] px-4 py-2 text-sm text-[#111827] placeholder-[#9CA3AF] outline-none focus:border-[#1B3C87]"
+            className="rounded-full border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-2 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] outline-none focus:border-[var(--color-accent)]"
           />
-          <button type="submit" className="rounded-full bg-[#1B3C87] px-4 py-2 text-sm font-semibold text-white">검색</button>
+          <button type="submit" className="rounded-full bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white">검색</button>
         </form>
       </div>
 
       {error && (
-        <div className="mb-4 rounded-[12px] bg-[rgba(239,68,68,0.1)] px-4 py-3 text-sm text-[#EF4444]">{error}</div>
+        <div className="mb-4 rounded-[12px] bg-[var(--color-error)]/10 px-4 py-3 text-sm text-[var(--color-error)]">{error}</div>
       )}
 
       <AdminUsersTable
@@ -115,16 +115,16 @@ export default async function AdminUsersPage({
           {page > 1 && (
             <Link
               href={`?${new URLSearchParams({ ...(q ? { q } : {}), page: String(page - 1) })}`}
-              className="rounded-full border border-[#E8ECF0] px-4 py-2 text-sm text-[#6B7280] hover:bg-[#EEF2FF]"
+              className="rounded-full border border-[var(--color-border)] px-4 py-2 text-sm text-[var(--color-text-muted)] hover:bg-[var(--color-elevated)]"
             >
               이전
             </Link>
           )}
-          <span className="text-sm text-[#9CA3AF]">{page} / {totalPages}</span>
+          <span className="text-sm text-[var(--color-text-muted)]">{page} / {totalPages}</span>
           {page < totalPages && (
             <Link
               href={`?${new URLSearchParams({ ...(q ? { q } : {}), page: String(page + 1) })}`}
-              className="rounded-full border border-[#E8ECF0] px-4 py-2 text-sm text-[#6B7280] hover:bg-[#EEF2FF]"
+              className="rounded-full border border-[var(--color-border)] px-4 py-2 text-sm text-[var(--color-text-muted)] hover:bg-[var(--color-elevated)]"
             >
               다음
             </Link>

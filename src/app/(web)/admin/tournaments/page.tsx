@@ -81,8 +81,8 @@ export default async function AdminTournamentsPage({
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-extrabold uppercase tracking-wide sm:text-3xl" style={{ fontFamily: "var(--font-heading)" }}>토너먼트 관리</h1>
-          <p className="mt-1 text-sm text-[#6B7280]">
-            전체 <span className="font-semibold text-[#111827]">{totalCount}개</span>
+          <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+            전체 <span className="font-semibold text-[var(--color-text-primary)]">{totalCount}개</span>
           </p>
         </div>
         <form method="GET" className="flex gap-2">
@@ -90,9 +90,9 @@ export default async function AdminTournamentsPage({
             name="q"
             defaultValue={q ?? ""}
             placeholder="대회명 검색"
-            className="rounded-[10px] border border-[#E8ECF0] bg-[#FFFFFF] px-4 py-2 text-sm outline-none focus:border-[#1B3C87]"
+            className="rounded-[10px] border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-2 text-sm outline-none focus:border-[var(--color-accent)]"
           />
-          <button type="submit" className="rounded-[10px] bg-[#1B3C87] px-4 py-2 text-sm font-semibold text-white">
+          <button type="submit" className="rounded-[10px] bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white">
             검색
           </button>
         </form>
@@ -109,7 +109,7 @@ export default async function AdminTournamentsPage({
               <col className="w-[245px]" />
               <col className="w-[100px]" />
             </colgroup>
-            <thead className="border-b border-[#E8ECF0] bg-[#F5F7FA] text-[#6B7280]">
+            <thead className="border-b border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-muted)]">
               <tr>
                 <th className="px-5 py-4 font-medium">대회명</th>
                 <th className="px-5 py-4 font-medium">주최자</th>
@@ -126,25 +126,25 @@ export default async function AdminTournamentsPage({
                 const transitions = TRANSITIONS[status] ?? [];
 
                 return (
-                  <tr key={t.id} className="border-b border-[#F1F5F9] hover:bg-[#EEF2FF] transition-colors">
+                  <tr key={t.id} className="border-b border-[var(--color-border-subtle)] hover:bg-[var(--color-elevated)] transition-colors">
                     <td className="px-5 py-3">
                       <Link
                         href={`/tournament-admin/tournaments/${t.id}`}
-                        className="block truncate font-medium text-[#1B3C87] hover:underline"
+                        className="block truncate font-medium text-[var(--color-accent)] hover:underline"
                       >
                         {t.name}
                       </Link>
                       {t.startDate && (
-                        <p className="text-xs text-[#9CA3AF]">{t.startDate.toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" })}</p>
+                        <p className="text-xs text-[var(--color-text-muted)]">{t.startDate.toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" })}</p>
                       )}
                     </td>
-                    <td className="px-5 py-3 truncate text-[#6B7280]">
+                    <td className="px-5 py-3 truncate text-[var(--color-text-muted)]">
                       {organizer?.nickname ?? organizer?.email ?? "-"}
                     </td>
-                    <td className="px-5 py-3 text-[#6B7280]">
+                    <td className="px-5 py-3 text-[var(--color-text-muted)]">
                       {FORMAT_LABEL[t.format ?? ""] ?? t.format ?? "-"}
                     </td>
-                    <td className="px-5 py-3 text-[#6B7280]">
+                    <td className="px-5 py-3 text-[var(--color-text-muted)]">
                       {t._count.tournamentTeams}팀 · {t._count.tournamentMatches}경기
                     </td>
                     <td className="px-5 py-3">
@@ -156,7 +156,7 @@ export default async function AdminTournamentsPage({
                             <select
                               name="status"
                               defaultValue=""
-                              className="rounded-[10px] border border-[#E8ECF0] bg-[#FFFFFF] px-3 py-1 text-xs text-[#374151] outline-none focus:border-[#1B3C87]"
+                              className="rounded-[10px] border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-1 text-xs text-[var(--color-text-secondary)] outline-none focus:border-[var(--color-accent)]"
                             >
                               <option value="" disabled>변경</option>
                               {transitions.map((s) => (
@@ -165,7 +165,7 @@ export default async function AdminTournamentsPage({
                             </select>
                             <button
                               type="submit"
-                              className="rounded-[10px] bg-[#1B3C87] px-3 py-1 text-xs font-semibold text-white hover:bg-[#142D6B]"
+                              className="rounded-[10px] bg-[var(--color-accent)] px-3 py-1 text-xs font-semibold text-white hover:bg-[var(--color-accent-hover)]"
                             >
                               적용
                             </button>
@@ -173,7 +173,7 @@ export default async function AdminTournamentsPage({
                         )}
                       </form>
                     </td>
-                    <td className="px-5 py-3 text-[#9CA3AF]">
+                    <td className="px-5 py-3 text-[var(--color-text-muted)]">
                       {t.createdAt.toLocaleDateString("ko-KR")}
                     </td>
                   </tr>
@@ -183,7 +183,7 @@ export default async function AdminTournamentsPage({
           </table>
         </div>
         {tournaments.length === 0 && (
-          <div className="p-8 text-center text-[#6B7280]">등록된 토너먼트가 없습니다.</div>
+          <div className="p-8 text-center text-[var(--color-text-muted)]">등록된 토너먼트가 없습니다.</div>
         )}
       </Card>
     </div>

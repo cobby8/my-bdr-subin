@@ -60,32 +60,32 @@ export default async function AdminAnalyticsPage() {
         <StatCard
           label="이번 달 가입"
           value={data.thisMonthUsers.toLocaleString()}
-          icon={<span className="text-xl font-bold text-[#1B3C87]">+</span>}
+          icon={<span className="text-xl font-bold text-[var(--color-accent)]">+</span>}
         />
         <StatCard
           label="이번 달 대회"
           value={data.thisMonthTournaments.toLocaleString()}
-          icon={<span className="text-xl font-bold text-[#1B3C87]">T</span>}
+          icon={<span className="text-xl font-bold text-[var(--color-accent)]">T</span>}
         />
         <StatCard
           label="이번 달 경기"
           value={data.thisMonthGames.toLocaleString()}
-          icon={<span className="text-xl font-bold text-[#E31B23]">G</span>}
+          icon={<span className="text-xl font-bold text-[var(--color-primary)]">G</span>}
         />
       </div>
 
       {/* 누적 통계 */}
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
         <Card>
-          <p className="text-xs text-[#6B7280]">전체 유저</p>
+          <p className="text-xs text-[var(--color-text-muted)]">전체 유저</p>
           <p className="mt-1 text-xl font-bold sm:text-2xl">{data.totalUsers.toLocaleString()}</p>
         </Card>
         <Card>
-          <p className="text-xs text-[#6B7280]">전체 대회</p>
+          <p className="text-xs text-[var(--color-text-muted)]">전체 대회</p>
           <p className="mt-1 text-xl font-bold sm:text-2xl">{data.totalTournaments.toLocaleString()}</p>
         </Card>
         <Card>
-          <p className="text-xs text-[#6B7280]">전체 경기</p>
+          <p className="text-xs text-[var(--color-text-muted)]">전체 경기</p>
           <p className="mt-1 text-xl font-bold sm:text-2xl">{data.totalGames.toLocaleString()}</p>
         </Card>
       </div>
@@ -99,14 +99,14 @@ export default async function AdminAnalyticsPage() {
               const heightPct = Math.round((m.count / maxCount) * 100);
               return (
                 <div key={m.month} className="flex flex-1 flex-col items-center gap-2">
-                  <span className="text-xs font-semibold text-[#E31B23]">{m.count}</span>
+                  <span className="text-xs font-semibold text-[var(--color-primary)]">{m.count}</span>
                   <div className="flex w-full flex-col justify-end" style={{ height: "140px" }}>
                     <div
-                      className="w-full rounded-t-[6px] bg-[#1B3C87] transition-all"
+                      className="w-full rounded-t-[6px] bg-[var(--color-accent)] transition-all"
                       style={{ height: `${Math.max(heightPct, 4)}%` }}
                     />
                   </div>
-                  <span className="text-xs text-[#9CA3AF]">
+                  <span className="text-xs text-[var(--color-text-muted)]">
                     {m.month.slice(5)}월
                   </span>
                 </div>
@@ -114,7 +114,7 @@ export default async function AdminAnalyticsPage() {
             })}
           </div>
         ) : (
-          <div className="flex h-48 items-center justify-center text-[#6B7280]">
+          <div className="flex h-48 items-center justify-center text-[var(--color-text-muted)]">
             데이터가 없습니다.
           </div>
         )}

@@ -40,9 +40,9 @@ export default function AdminSettingsPage() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-semibold">점검 모드</h3>
-              <p className="text-sm text-[#6B7280]">사이트를 점검 모드로 전환합니다. 일반 유저 접근이 차단됩니다.</p>
+              <p className="text-sm text-[var(--color-text-muted)]">사이트를 점검 모드로 전환합니다. 일반 유저 접근이 차단됩니다.</p>
               {maintenanceMsg && (
-                <p className={`mt-1 text-sm font-medium ${maintenanceEnabled ? "text-[#F59E0B]" : "text-[#1B3C87]"}`}>
+                <p className={`mt-1 text-sm font-medium ${maintenanceEnabled ? "text-[var(--color-warning)]" : "text-[var(--color-accent)]"}`}>
                   {maintenanceMsg}
                 </p>
               )}
@@ -52,8 +52,8 @@ export default function AdminSettingsPage() {
               disabled={isPendingMaintenance}
               className={`min-w-[80px] rounded-[10px] px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-50 ${
                 maintenanceEnabled
-                  ? "bg-[rgba(239,68,68,0.1)] text-[#EF4444] hover:bg-[rgba(239,68,68,0.2)]"
-                  : "bg-[#EF4444] text-white hover:bg-[#DC2626]"
+                  ? "bg-[var(--color-error)]/10 text-[var(--color-error)] hover:bg-[var(--color-error)]/20"
+                  : "bg-[var(--color-error)] text-white hover:bg-[var(--color-error-hover,#DC2626)]"
               }`}
             >
               {isPendingMaintenance ? "처리중..." : maintenanceEnabled ? "비활성화" : "활성화"}
@@ -66,15 +66,15 @@ export default function AdminSettingsPage() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-semibold">캐시 초기화</h3>
-              <p className="text-sm text-[#6B7280]">전체 페이지 캐시를 초기화합니다. 잠시 응답 속도가 느려질 수 있습니다.</p>
+              <p className="text-sm text-[var(--color-text-muted)]">전체 페이지 캐시를 초기화합니다. 잠시 응답 속도가 느려질 수 있습니다.</p>
               {cacheMsg && (
-                <p className="mt-1 text-sm font-medium text-[#1B3C87]">{cacheMsg}</p>
+                <p className="mt-1 text-sm font-medium text-[var(--color-accent)]">{cacheMsg}</p>
               )}
             </div>
             <button
               onClick={handleCacheClear}
               disabled={isPendingCache}
-              className="rounded-[10px] border border-[#E8ECF0] bg-[#F5F7FA] px-4 py-2 text-sm font-semibold text-[#374151] transition-colors hover:bg-[#E8ECF0] disabled:opacity-50"
+              className="rounded-[10px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm font-semibold text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-border)] disabled:opacity-50"
             >
               {isPendingCache ? "초기화중..." : "실행"}
             </button>
