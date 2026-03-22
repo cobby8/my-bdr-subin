@@ -68,7 +68,14 @@ Dev/design/          → 디자인 시안 (Stitch 내보내기)
 ### 실행 효율화
 1. **병렬 실행**: 독립 에이전트 동시 실행 (tester+reviewer 등)
 2. **확인 축소**: 명확한 요청은 바로 실행, 모호한 것만 확인
-3. **커밋 간소화**: tester 통과 시 PM이 직접 커밋
+
+### Git 커밋/푸시 규칙
+- **자동 커밋**: tester 검증 통과 시 PM이 **자동으로 커밋** (사용자에게 매번 안 물어봄)
+- **tester 생략 시**: 소규모 수정은 tsc --noEmit 통과만으로 커밋 가능
+- **커밋 메시지**: Conventional Commits 형식 (feat:/fix:/style:/refactor:/docs:)
+- **푸시는 자동으로 하지 않는다**: 사용자가 "푸시해" 또는 "push" 요청 시에만 진행
+- **미푸시 알림**: 작업 완료 보고 시 미푸시 커밋 수를 항상 알림
+- **Co-Authored-By**: 모든 커밋에 `Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>` 포함
 
 ### 에이전트별 기록 책임 (필수)
 
