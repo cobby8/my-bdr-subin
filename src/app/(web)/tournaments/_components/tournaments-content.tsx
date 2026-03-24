@@ -32,16 +32,16 @@ const TOURNAMENTS_PER_PAGE = 9;
 
 // -- 상태별 배지 색상 (상단 이미지 배너에 표시) --
 const STATUS_BADGE: Record<string, { label: string; bg: string }> = {
-  draft:               { label: "DRAFT", bg: "var(--color-text-disabled)" },
-  active:              { label: "ACTIVE", bg: "var(--color-primary)" },
-  published:           { label: "OPEN", bg: "var(--color-primary)" },
-  registration:        { label: "OPENING SOON", bg: "var(--color-primary)" },
-  registration_open:   { label: "OPENING SOON", bg: "var(--color-primary)" },
-  registration_closed: { label: "CLOSED", bg: "#D97706" },
-  in_progress:         { label: "LIVE", bg: "var(--color-info)" },
-  ongoing:             { label: "LIVE", bg: "var(--color-info)" },
-  completed:           { label: "ENDED", bg: "var(--color-text-disabled)" },
-  cancelled:           { label: "CANCELLED", bg: "#EF4444" },
+  draft:               { label: "준비중", bg: "var(--color-text-disabled)" },
+  active:              { label: "진행중", bg: "var(--color-primary)" },
+  published:           { label: "모집중", bg: "var(--color-primary)" },
+  registration:        { label: "곧 모집", bg: "var(--color-primary)" },
+  registration_open:   { label: "곧 모집", bg: "var(--color-primary)" },
+  registration_closed: { label: "마감", bg: "#D97706" },
+  in_progress:         { label: "라이브", bg: "var(--color-info)" },
+  ongoing:             { label: "라이브", bg: "var(--color-info)" },
+  completed:           { label: "종료", bg: "var(--color-text-disabled)" },
+  cancelled:           { label: "취소됨", bg: "#EF4444" },
 };
 
 // -- 대회 형식 한글 라벨 매핑 --
@@ -56,7 +56,7 @@ const FORMAT_LABEL: Record<string, string> = {
 function formatDate(isoStr: string | null): string {
   if (!isoStr) return "";
   const d = new Date(isoStr);
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const days = ["일", "월", "화", "수", "목", "금", "토"];
   const yyyy = d.getFullYear();
   const mm = String(d.getMonth() + 1).padStart(2, "0");
   const dd = String(d.getDate()).padStart(2, "0");
@@ -228,13 +228,13 @@ function TournamentCard({ tournament: t }: { tournament: TournamentFromApi }) {
                     className="text-xs font-medium"
                     style={{ color: "var(--color-text-secondary)" }}
                   >
-                    Recruitment: {Math.round(pct)}%
+                    모집현황: {Math.round(pct)}%
                   </span>
                   <span
                     className="text-xs font-bold"
                     style={{ color: "var(--color-text-primary)" }}
                   >
-                    {t.team_count}/{maxTeams} Teams
+                    {t.team_count}/{maxTeams} 팀
                   </span>
                 </div>
                 <div
@@ -257,7 +257,7 @@ function TournamentCard({ tournament: t }: { tournament: TournamentFromApi }) {
               className="w-full font-bold py-3 rounded text-sm uppercase tracking-tight transition-colors text-white"
               style={{ backgroundColor: "var(--color-primary)" }}
             >
-              Join Tournament
+              대회 참여
             </button>
           </div>
         </div>
@@ -501,7 +501,7 @@ export function TournamentsContent({
             className="font-bold text-sm tracking-widest uppercase mb-2 block"
             style={{ color: "var(--color-primary)" }}
           >
-            Premium League
+            프리미엄 리그
           </span>
           <h1
             className="text-4xl sm:text-5xl font-bold leading-tight"
@@ -510,7 +510,7 @@ export function TournamentsContent({
               color: "var(--color-text-primary)",
             }}
           >
-            TOURNAMENT DIRECTORY
+            대회 찾기
           </h1>
         </div>
 

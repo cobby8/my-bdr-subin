@@ -61,12 +61,12 @@ function getStatusBadge(game: GameFromApi): { text: string; className: string } 
 
   // 진행중 -> LIVE 배지 (빨간색 + 깜빡이는 점)
   if (game.status === 3) {
-    return { text: "LIVE", className: "bg-[var(--color-primary)] text-white" };
+    return { text: "라이브", className: "bg-[var(--color-primary)] text-white" };
   }
 
   // 인원 가득 -> FULLY BOOKED (회색)
   if (pct >= 100) {
-    return { text: "FULLY BOOKED", className: "bg-[#555555] text-white" };
+    return { text: "만석", className: "bg-[#555555] text-white" };
   }
 
   // 모집중이고 24시간 이내 시작 -> STARTS SOON (노란색)
@@ -75,7 +75,7 @@ function getStatusBadge(game: GameFromApi): { text: string; className: string } 
     const now = Date.now();
     const hoursUntilStart = (scheduledTime - now) / (1000 * 60 * 60);
     if (hoursUntilStart > 0 && hoursUntilStart <= 24) {
-      return { text: "STARTS SOON", className: "bg-black text-white" };
+      return { text: "곧 시작", className: "bg-black text-white" };
     }
   }
 
@@ -120,7 +120,7 @@ function GameCard({ game }: { game: GameFromApi }) {
 
   // 상태 배지 (LIVE / STARTS SOON / FULLY BOOKED)
   const statusBadge = getStatusBadge(game);
-  const isFullyBooked = statusBadge?.text === "FULLY BOOKED";
+  const isFullyBooked = statusBadge?.text === "만석";
 
   // Decimal 문자열 -> 포맷된 가격
   const fee = game.fee_per_person && Number(game.fee_per_person) > 0
@@ -154,7 +154,7 @@ function GameCard({ game }: { game: GameFromApi }) {
             <div className="absolute top-4 left-4 flex gap-2">
               <span className={`text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 ${statusBadge.className}`}>
                 {/* LIVE일 때 깜빡이는 점 */}
-                {statusBadge.text === "LIVE" && (
+                {statusBadge.text === "라이브" && (
                   <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
                 )}
                 {statusBadge.text}
@@ -166,7 +166,7 @@ function GameCard({ game }: { game: GameFromApi }) {
           {isFullyBooked && (
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
               <span className="bg-white text-black font-black text-xs px-4 py-2 rounded">
-                FULLY BOOKED
+                만석
               </span>
             </div>
           )}
@@ -220,7 +220,7 @@ function GameCard({ game }: { game: GameFromApi }) {
                   equalizer
                 </span>
                 <span className="text-xs text-[var(--color-text-secondary)]">
-                  Level: {skill.label}
+                  실력: {skill.label}
                 </span>
               </div>
             )}
@@ -232,7 +232,7 @@ function GameCard({ game }: { game: GameFromApi }) {
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold text-[var(--color-primary)]">{cur}/{max}</span>
-                  <span className="text-[10px] text-[var(--color-text-muted)]">recruiting</span>
+                  <span className="text-[10px] text-[var(--color-text-muted)]">모집중</span>
                 </div>
               </div>
               <div className="w-full bg-[var(--color-border)] h-1 rounded-full overflow-hidden">
@@ -247,7 +247,7 @@ function GameCard({ game }: { game: GameFromApi }) {
           {/* 가격 + JOIN 버튼 */}
           <div className="mt-auto pt-3 border-t border-[var(--color-border)] flex items-center justify-between">
             <div>
-              {fee && <p className="text-[10px] text-[var(--color-text-muted)]">Entry Fee</p>}
+              {fee && <p className="text-[10px] text-[var(--color-text-muted)]">참가비</p>}
               <span className="text-lg font-bold text-[var(--color-text-primary)]">
                 {fee ?? <span className="text-sm text-[var(--color-text-muted)]">무료</span>}
               </span>
@@ -257,11 +257,11 @@ function GameCard({ game }: { game: GameFromApi }) {
                 className="bg-[var(--color-border)] text-[var(--color-text-muted)] font-bold py-2 px-6 rounded text-sm cursor-not-allowed"
                 disabled
               >
-                CLOSED
+                마감
               </button>
             ) : (
               <button className="bg-[var(--color-primary)] text-white font-bold py-2 px-6 rounded text-sm hover:bg-[var(--color-primary-hover)] transition-all">
-                JOIN
+                참여
               </button>
             )}
           </div>
@@ -330,7 +330,7 @@ export function GamesContent({
       {/* 헤더 영역 - "Game Finder" + MY/NEW 버튼 */}
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[var(--color-text-primary)]" style={{ fontFamily: "var(--font-heading)" }}>
-          Game Finder
+          경기 찾기
         </h1>
         <div className="flex items-center gap-2">
           <Link
@@ -367,9 +367,9 @@ export function GamesContent({
           {/* "Available Games" + 건수 배지 (항상 표시) */}
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-[var(--color-text-primary)] flex items-center gap-2" style={{ fontFamily: "var(--font-heading)" }}>
-              Available Games
+              참여 가능한 경기
               <span className="bg-[var(--color-surface)] text-[var(--color-text-secondary)] text-xs px-2 py-1 rounded">
-                {games.length} Active
+                {games.length} 진행중
               </span>
             </h2>
           </div>

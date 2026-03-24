@@ -271,7 +271,7 @@ export function HeroBento() {
         {currentVideo.is_live && (
           <div className="absolute top-4 left-4 z-10 flex items-center gap-2 px-3 py-1.5 bg-red-600 text-white text-xs font-bold rounded shadow-lg animate-pulse">
             <span className="w-2 h-2 bg-white rounded-full" />
-            LIVE NOW
+            실시간
           </div>
         )}
 

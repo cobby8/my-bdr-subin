@@ -135,7 +135,7 @@ export function RecommendedVideos() {
                         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
                         <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white" />
                       </span>
-                      LIVE
+                      라이브
                     </span>
                   )}
                 </div>

@@ -30,7 +30,7 @@ interface TeamsApiResponse {
 const TEAMS_PER_PAGE = 12;
 
 // -- 배지 타입 정의 --
-type BadgeType = "TOP1" | "HOT" | "NEW" | "PLATINUM" | "PRO" | "GOLD" | "ROOKIE" | null;
+type BadgeType = "TOP1" | "인기" | "신규" | "플래티넘" | "프로" | "골드" | "루키" | null;
 
 // -- 배지 계산: 승수 기반 디비전 + 특수 배지(TOP1/HOT/NEW) --
 function computeBadges(teams: TeamFromApi[]): Map<string, BadgeType> {
@@ -54,31 +54,31 @@ function computeBadges(teams: TeamFromApi[]): Map<string, BadgeType> {
       continue;
     }
 
-    // NEW: created_at이 30일 이내
+    // 신규: created_at이 30일 이내
     if (team.created_at) {
       const created = new Date(team.created_at);
       const daysDiff = (Date.now() - created.getTime()) / (1000 * 60 * 60 * 24);
       if (daysDiff <= 30) {
-        badgeMap.set(team.id, "NEW");
+        badgeMap.set(team.id, "신규");
         continue;
       }
     }
 
-    // HOT: 승률 70% 이상이고 5경기 이상
+    // 인기: 승률 70% 이상이고 5경기 이상
     if (winRate >= 70 && total >= 5) {
-      badgeMap.set(team.id, "HOT");
+      badgeMap.set(team.id, "인기");
       continue;
     }
 
     // 디비전 배지: 승수 기준
     if (wins >= 30) {
-      badgeMap.set(team.id, "PLATINUM");
+      badgeMap.set(team.id, "플래티넘");
     } else if (wins >= 20) {
-      badgeMap.set(team.id, "PRO");
+      badgeMap.set(team.id, "프로");
     } else if (wins >= 10) {
-      badgeMap.set(team.id, "GOLD");
+      badgeMap.set(team.id, "골드");
     } else {
-      badgeMap.set(team.id, "ROOKIE");
+      badgeMap.set(team.id, "루키");
     }
   }
 
@@ -90,17 +90,17 @@ function getBadgeStyle(badge: BadgeType): { bg: string; text: string } {
   switch (badge) {
     case "TOP1":
       return { bg: "var(--color-primary)", text: "#FFFFFF" };
-    case "HOT":
+    case "인기":
       return { bg: "var(--color-accent)", text: "#FFFFFF" };
-    case "NEW":
+    case "신규":
       return { bg: "var(--color-success)", text: "#FFFFFF" };
-    case "PLATINUM":
+    case "플래티넘":
       return { bg: "var(--color-accent)", text: "#FFFFFF" };
-    case "PRO":
+    case "프로":
       return { bg: "var(--color-primary)", text: "#FFFFFF" };
-    case "GOLD":
+    case "골드":
       return { bg: "var(--color-tertiary)", text: "#FFFFFF" };
-    case "ROOKIE":
+    case "루키":
       return { bg: "var(--color-text-disabled)", text: "#FFFFFF" };
     default:
       return { bg: "transparent", text: "transparent" };
