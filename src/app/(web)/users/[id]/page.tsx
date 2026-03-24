@@ -5,6 +5,8 @@ import { UserRadarSection } from "./_components/user-radar-section";
 import { UserStatsSection } from "./_components/user-stats-section";
 import { UserRecentGames } from "./_components/user-recent-games";
 import { ActionButtons } from "./_components/action-buttons";
+// 내 프로필과 동일한 승률 계산 로직을 재사용
+import { getPlayerStats } from "@/lib/services/user";
 
 /**
  * 타인 프로필 페이지 (/users/[id])
@@ -41,7 +43,8 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
   const { id } = await params;
 
   // 기존 user 쿼리 유지 + matchPlayerStat 집계 추가 (병렬 실행)
-  const [user, statAgg, recentGames] = await Promise.all([
+  // playerStats: 내 프로필과 동일한 서비스 함수로 승률(winRate) 계산
+  const [user, statAgg, recentGames, playerStats] = await Promise.all([
     // 1) 기존 유저 정보 쿼리 (유지)
     prisma.user.findUnique({
       where: { id: BigInt(id) },
@@ -110,6 +113,9 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
       orderBy: { createdAt: "desc" },
       take: 5,
     }).catch(() => []),
+
+    // 4) 승률 계산 - 내 프로필과 동일한 서비스 함수 재사용
+    getPlayerStats(BigInt(id)).catch(() => null),
   ]);
 
   if (!user) return notFound();
@@ -259,9 +265,11 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
                 className="p-3 rounded-lg text-center min-w-[90px]"
                 style={{ backgroundColor: "var(--color-card)" }}
               >
-                {/* 승률: DB에 없으므로 placeholder */}
+                {/* 승률: getPlayerStats 서비스로 계산 (내 프로필과 동일 로직) */}
                 <p className="text-xs mb-1" style={{ color: "var(--color-text-muted)" }}>승률</p>
-                <p className="text-xl font-bold" style={{ color: "var(--color-primary)" }}>-%</p>
+                <p className="text-xl font-bold" style={{ color: "var(--color-primary)" }}>
+                  {playerStats?.winRate != null ? `${playerStats.winRate}%` : "-%"}
+                </p>
               </div>
               <div
                 className="p-3 rounded-lg text-center min-w-[90px]"
