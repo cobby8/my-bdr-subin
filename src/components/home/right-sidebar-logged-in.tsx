@@ -92,24 +92,28 @@ export function RightSidebarLoggedIn() {
       ]);
 
       // 나의 통계 처리
-      if (results[0].status === "fulfilled" && results[0].value?.data) {
-        const stats = results[0].value.data as ProfileStats;
-        if (stats.careerAverages) {
-          setGamesPlayed(stats.careerAverages.gamesPlayed);
+      // apiSuccess()는 data 래핑 없이 직접 반환 → .value가 곧 stats 객체
+      // 단, snake_case 자동 변환이 적용되므로 career_averages / games_played로 접근
+      if (results[0].status === "fulfilled" && results[0].value?.career_averages) {
+        const careerAvg = results[0].value.career_averages;
+        if (careerAvg.games_played) {
+          setGamesPlayed(careerAvg.games_played);
         }
       }
 
       // 팀 랭킹 처리 (상위 3팀만 slice)
-      if (results[1].status === "fulfilled" && results[1].value?.data?.teams) {
-        const teams = results[1].value.data.teams as TeamData[];
+      // apiSuccess()는 data 래핑 없이 직접 반환 → .value.teams로 접근
+      if (results[1].status === "fulfilled" && results[1].value?.teams) {
+        const teams = results[1].value.teams as TeamData[];
         if (teams.length > 0) {
           setTopTeams(teams.slice(0, 3));
         }
       }
 
       // 커뮤니티 처리: 최신글 3개 + 조회수 높은 글 2개
-      if (results[2].status === "fulfilled" && results[2].value?.data?.posts) {
-        const posts = results[2].value.data.posts as PostData[];
+      // apiSuccess()는 data 래핑 없이 직접 반환 → .value.posts로 접근
+      if (results[2].status === "fulfilled" && results[2].value?.posts) {
+        const posts = results[2].value.posts as PostData[];
         if (posts.length > 0) {
           // 최신글: API가 이미 created_at DESC로 반환하므로 앞 3개
           setRecentPosts(posts.slice(0, 3));

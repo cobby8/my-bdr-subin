@@ -76,24 +76,26 @@ export function RightSidebarGuest() {
       ]);
 
       // 팀 랭킹: 상위 3팀만 사용
-      if (results[0].status === "fulfilled" && results[0].value?.data?.teams) {
-        const teams = results[0].value.data.teams as TeamData[];
+      // apiSuccess()는 data 래핑 없이 직접 반환 → .value.teams로 접근
+      if (results[0].status === "fulfilled" && results[0].value?.teams) {
+        const teams = results[0].value.teams as TeamData[];
         if (teams.length > 0) {
           setTopTeams(teams.slice(0, 3));
         }
       }
 
       // 커뮤니티: 최신글 2개만 사용
-      if (results[1].status === "fulfilled" && results[1].value?.data?.posts) {
-        const posts = results[1].value.data.posts as PostData[];
+      // apiSuccess()는 data 래핑 없이 직접 반환 → .value.posts로 접근
+      if (results[1].status === "fulfilled" && results[1].value?.posts) {
+        const posts = results[1].value.posts as PostData[];
         if (posts.length > 0) {
           setRecentPosts(posts.slice(0, 2));
         }
       }
 
-      // 플랫폼 통계: snake_case 응답이므로 키 이름 주의
-      if (results[2].status === "fulfilled" && results[2].value?.data) {
-        const d = results[2].value.data;
+      // 플랫폼 통계: apiSuccess()가 직접 { team_count, match_count, user_count } 반환
+      if (results[2].status === "fulfilled" && results[2].value?.team_count !== undefined) {
+        const d = results[2].value;
         setStats({
           teamCount: d.team_count ?? 0,
           matchCount: d.match_count ?? 0,
