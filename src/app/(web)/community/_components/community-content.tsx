@@ -6,7 +6,6 @@ import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePreferFilter } from "@/contexts/prefer-filter-context";
 import { CommunitySidebar } from "./community-sidebar";
-import { FloatingFilterPanel, type FilterConfig } from "@/components/shared/floating-filter-panel";
 
 // API에서 내려오는 게시글 데이터 타입 (apiSuccess가 snake_case로 자동 변환)
 interface PostFromApi {
@@ -229,8 +228,8 @@ export function CommunityContent() {
         커뮤니티
       </h2>
 
-      {/* 검색바 + 플로팅 필터 트리거 */}
-      <form onSubmit={handleSearch} className="mb-6">
+      {/* 검색바 + 글쓰기 버튼 */}
+      <form onSubmit={handleSearch} className="mb-4">
         <div className="flex items-center gap-3">
           <div className="relative flex-1">
             <span
@@ -258,29 +257,51 @@ export function CommunityContent() {
           >
             검색
           </button>
-          {/* 플로팅 필터: 카테고리를 패널 안으로 이동 */}
-          <FloatingFilterPanel
-            filters={[
-              {
-                key: "category",
-                label: "카테고리",
-                type: "tabs" as const,
-                options: categoryTabs.map((tab) => ({
-                  value: tab.key ?? "all",
-                  label: tab.label,
-                })),
-                value: category ?? "all",
-                onChange: (v: string) => handleCategoryChange(v === "all" ? null : v),
-              },
-            ]}
-            onReset={() => {
-              handleCategoryChange(null);
-              handleClearSearch();
-            }}
-            activeCount={category ? 1 : 0}
-          />
         </div>
       </form>
+
+      {/* 카테고리 인라인 탭 (가로 스크롤, 밑줄 스타일) */}
+      <div
+        className="mb-6 overflow-x-auto"
+        style={{
+          /* 스크롤바 숨김 */
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+        }}
+      >
+        <div
+          className="flex gap-1 border-b min-w-max"
+          style={{ borderColor: "var(--color-border)" }}
+        >
+          {categoryTabs.map((tab) => {
+            // 현재 선택된 탭인지 확인
+            const isActive = category === tab.key;
+            return (
+              <button
+                key={tab.key ?? "all"}
+                type="button"
+                onClick={() => handleCategoryChange(tab.key)}
+                className="px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors relative"
+                style={{
+                  color: isActive
+                    ? "var(--color-primary)"
+                    : "var(--color-text-muted)",
+                  fontWeight: isActive ? 700 : 500,
+                }}
+              >
+                {tab.label}
+                {/* 선택된 탭 하단 밑줄 (빨간색 2px) */}
+                {isActive && (
+                  <span
+                    className="absolute bottom-0 left-0 right-0 h-0.5"
+                    style={{ backgroundColor: "var(--color-primary)" }}
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* 검색 결과 안내 */}
       {hasFilters && !loading && (
