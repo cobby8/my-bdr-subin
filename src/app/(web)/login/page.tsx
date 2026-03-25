@@ -2,6 +2,7 @@
 
 import { useState, useActionState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { loginAction, devLoginAction } from "@/app/actions/auth";
 
@@ -36,8 +37,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-[80vh] flex-col items-center justify-center px-4 -mt-8">
       <div className="mb-4 text-center">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/images/logo.png" alt="BDR" className="mx-auto mb-2 w-52 h-auto" />
+        <Image src="/images/logo.png" alt="BDR" width={208} height={104} className="mx-auto mb-2 w-52 h-auto" />
         {/* 브랜드 타이틀: 메인 텍스트 색상 */}
         <p className="text-lg font-bold" style={{ fontFamily: "var(--font-heading)", color: 'var(--color-text-primary)' }}>
           새로운 BDR의 시작

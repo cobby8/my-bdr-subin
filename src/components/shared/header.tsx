@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 // lucide-react 제거 → Material Symbols Outlined 사용
@@ -88,11 +89,13 @@ export function Header() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
           {/* Logo -- Kinetic Pulse: Electric Red + Space Grotesk italic bold */}
           <Link href="/" prefetch={true} className="flex items-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src="/images/logo.png"
               alt="BDR"
-              className="h-[55px] w-auto" /* 로고 크기 130% 확대 (42px → 55px) */
+              width={110}
+              height={55}
+              className="h-[55px] w-auto"
+              priority /* 헤더 로고는 LCP 후보이므로 즉시 로딩 */
             />
           </Link>
 

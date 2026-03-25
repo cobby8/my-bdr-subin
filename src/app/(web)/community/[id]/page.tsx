@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { cache } from "react";
 import { prisma } from "@/lib/db/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { CommentForm } from "./comment-form";
 import { PostDetailSidebar } from "./_components/post-detail-sidebar";
 import { ShareButton } from "./_components/share-button";
@@ -9,6 +11,23 @@ import { LikeButton } from "./_components/like-button";
 import { getWebSession } from "@/lib/auth/web-session";
 
 export const revalidate = 30;
+
+// React cache()로 감싸서 같은 렌더 사이클 내 중복 DB 쿼리 방지
+// generateMetadata()와 본문 컴포넌트가 같은 게시글을 조회해도 실제 쿼리는 1회만 실행됨
+const getPost = cache(async (publicId: string) => {
+  return prisma.community_posts.findUnique({
+    where: { public_id: publicId },
+    include: {
+      users: {
+        select: {
+          id: true,
+          nickname: true,
+          profile_image_url: true,
+        },
+      },
+    },
+  }).catch(() => null);
+});
 
 // 카테고리 라벨 매핑 (브레드크럼 표시용)
 const categoryLabelMap: Record<string, string> = {
@@ -38,10 +57,8 @@ function formatRelativeTime(date: Date): string {
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  const post = await prisma.community_posts.findUnique({
-    where: { public_id: id },
-    select: { title: true, content: true },
-  }).catch(() => null);
+  // cache()로 감싼 getPost를 사용 — 본문 컴포넌트와 쿼리 공유
+  const post = await getPost(id);
 
   if (!post) return {};
 
@@ -60,55 +77,22 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 export default async function CommunityPostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  // 게시글 조회: 작성자 프로필 이미지도 함께 가져옴
-  const post = await prisma.community_posts.findUnique({
-    where: { public_id: id },
-    include: {
-      users: {
-        select: {
-          id: true,
-          nickname: true,
-          profile_image_url: true,
-        },
-      },
-    },
-  }).catch(() => null);
+  // 1단계: post와 session을 병렬로 조회 (서로 독립적)
+  // cache()된 getPost를 사용하므로 generateMetadata와 쿼리 공유
+  const [post, session] = await Promise.all([
+    getPost(id),
+    getWebSession(),
+  ]);
   if (!post) return notFound();
 
-  // 현재 로그인 유저 확인 + 좋아요/팔로우 여부 쿼리
-  const session = await getWebSession();
+  // 2단계: post.id가 필요한 댓글 + 좋아요/팔로우를 병렬 실행
   let isLiked = false;
   let isFollowing = false;
   const isLoggedIn = !!session;
   const currentUserId = session?.sub ?? undefined;
 
-  if (session) {
-    // 로그인 상태면 좋아요 + 팔로우 여부를 병렬 쿼리
-    const [like, follow] = await Promise.all([
-      prisma.community_post_likes.findUnique({
-        where: {
-          community_post_id_user_id: {
-            community_post_id: post.id,
-            user_id: BigInt(session.sub),
-          },
-        },
-      }).catch(() => null),
-      // 게시글 작성자를 팔로우하고 있는지 확인
-      prisma.follows.findUnique({
-        where: {
-          follower_id_following_id: {
-            follower_id: BigInt(session.sub),
-            following_id: post.user_id,
-          },
-        },
-      }).catch(() => null),
-    ]);
-    isLiked = !!like;
-    isFollowing = !!follow;
-  }
-
-  // 댓글 조회: 작성자 프로필 이미지 포함
-  const comments = await prisma.comments.findMany({
+  // 댓글 쿼리 함수 (post.id 필요하므로 1단계 이후 실행)
+  const fetchComments = () => prisma.comments.findMany({
     where: { commentable_type: "CommunityPost", commentable_id: post.id },
     orderBy: { created_at: "asc" },
     include: {
@@ -119,7 +103,39 @@ export default async function CommunityPostPage({ params }: { params: Promise<{ 
         },
       },
     },
-  }).catch(() => []);
+  });
+  type CommentsResult = Awaited<ReturnType<typeof fetchComments>>;
+  const commentsQuery = fetchComments().catch(() => [] as CommentsResult);
+
+  // 로그인 시: 댓글 + 좋아요 + 팔로우를 모두 병렬 실행
+  // 비로그인 시: 댓글만 조회
+  let comments: CommentsResult;
+  if (session) {
+    const [fetchedComments, like, follow] = await Promise.all([
+      commentsQuery,
+      prisma.community_post_likes.findUnique({
+        where: {
+          community_post_id_user_id: {
+            community_post_id: post.id,
+            user_id: BigInt(session.sub),
+          },
+        },
+      }).catch(() => null),
+      prisma.follows.findUnique({
+        where: {
+          follower_id_following_id: {
+            follower_id: BigInt(session.sub),
+            following_id: post.user_id,
+          },
+        },
+      }).catch(() => null),
+    ]);
+    comments = fetchedComments;
+    isLiked = !!like;
+    isFollowing = !!follow;
+  } else {
+    comments = await commentsQuery;
+  }
 
   const categoryLabel = categoryLabelMap[post.category ?? ""] ?? post.category ?? "기타";
 
@@ -161,9 +177,11 @@ export default async function CommunityPostPage({ params }: { params: Promise<{ 
                 <div className="flex items-center gap-3">
                   {/* 아바타 */}
                   {post.users?.profile_image_url ? (
-                    <img
+                    <Image
                       src={post.users.profile_image_url}
                       alt={post.users.nickname ?? ""}
+                      width={40}
+                      height={40}
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (
@@ -262,9 +280,11 @@ export default async function CommunityPostPage({ params }: { params: Promise<{ 
                   <div key={c.id.toString()} className="flex gap-4">
                     {/* 댓글 작성자 아바타 */}
                     {c.users?.profile_image_url ? (
-                      <img
+                      <Image
                         src={c.users.profile_image_url}
                         alt={c.users.nickname ?? ""}
+                        width={40}
+                        height={40}
                         className="w-10 h-10 rounded-full object-cover shrink-0"
                       />
                     ) : (

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Prisma } from "@prisma/client";
 
 // ─── 타입 ───────────────────────────────────────────────────────────────────
@@ -115,10 +116,13 @@ function formatLabel(f: string | null): string {
 function TeamAvatar({ name, logoUrl, size = 8 }: { name: string; logoUrl: string | null; size?: number }) {
   if (logoUrl) {
     return (
-      <img
+      <Image
         src={logoUrl}
         alt={name}
+        width={size * 4}
+        height={size * 4}
         className={`h-${size} w-${size} rounded-full object-cover`}
+        unoptimized /* 외부 도메인이 다양하므로 최적화 생략 */
       />
     );
   }
@@ -652,7 +656,7 @@ export function ClassicTemplate({
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2">
             {site.logoUrl ? (
-              <img src={site.logoUrl} alt="" className="h-8 w-8 rounded-full object-cover" />
+              <Image src={site.logoUrl} alt="" width={32} height={32} className="h-8 w-8 rounded-full object-cover" unoptimized />
             ) : (
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-sm font-bold text-white">
                 {siteName[0]}
