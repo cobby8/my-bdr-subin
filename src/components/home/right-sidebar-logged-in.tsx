@@ -63,14 +63,21 @@ const FALLBACK_POPULAR_POSTS: PostData[] = [
   { id: "5", public_id: null, title: "초보자를 위한 경기 운영 팁 5가지", view_count: 850, created_at: null },
 ];
 
-export function RightSidebarLoggedIn() {
+/* 서버에서 미리 가져온 데이터를 받을 수 있는 props (없으면 기존처럼 SWR이 API 호출) */
+interface RightSidebarLoggedInProps {
+  fallbackTeams?: { teams: TeamData[] };
+  fallbackCommunity?: { posts: PostData[] };
+}
+
+export function RightSidebarLoggedIn({ fallbackTeams, fallbackCommunity }: RightSidebarLoggedInProps = {}) {
   // 3개의 독립 API를 각각 useSWR로 호출
-  // SWR이 자동으로 중복 제거: /api/web/teams, /api/web/community는 다른 컴포넌트와 공유됨
+  // fallbackData가 있으면 로딩 없이 즉시 표시, SWR이 뒤에서 최신 데이터 갱신
+  // profile/stats는 개인 데이터라 프리페치 안 함 (기존 SWR 유지)
   const { data: profileData } = useSWR<{ career_averages: { games_played: number } | null }>(
     "/api/web/profile/stats"
   );
-  const { data: teamsData } = useSWR<{ teams: TeamData[] }>("/api/web/teams");
-  const { data: communityData } = useSWR<{ posts: PostData[] }>("/api/web/community");
+  const { data: teamsData } = useSWR<{ teams: TeamData[] }>("/api/web/teams", null, { fallbackData: fallbackTeams });
+  const { data: communityData } = useSWR<{ posts: PostData[] }>("/api/web/community", null, { fallbackData: fallbackCommunity });
 
   // 나의 통계: career_averages.games_played (snake_case API 응답)
   const gamesPlayed = profileData?.career_averages?.games_played ?? 0;

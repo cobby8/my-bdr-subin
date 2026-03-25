@@ -44,6 +44,8 @@ interface RecommendedData {
 
 interface RecommendedGamesProps {
   session: UserSession | null;
+  /* 서버에서 미리 가져온 데이터 (있으면 로딩 없이 즉시 표시, 없으면 기존처럼 SWR이 API 호출) */
+  fallbackData?: RecommendedData;
 }
 
 /* ---- 경기 유형별 뱃지/그라디언트 매핑 ---- */
@@ -108,10 +110,14 @@ const FALLBACK_GAMES: RecommendedGame[] = [
   },
 ];
 
-export function RecommendedGames({ session }: RecommendedGamesProps) {
-  // useSWR로 추천 경기 API 호출 (글로벌 fetcher + dedupingInterval 적용)
+export function RecommendedGames({ session, fallbackData }: RecommendedGamesProps) {
+  // useSWR로 추천 경기 API 호출
+  // fallbackData가 있으면 초기값으로 사용 → 로딩 스켈레톤 없이 즉시 렌더링
+  // SWR이 백그라운드에서 API를 다시 호출하여 최신 데이터로 갱신
   const { data, isLoading: loading } = useSWR<RecommendedData>(
-    "/api/web/recommended-games"
+    "/api/web/recommended-games",
+    null,
+    { fallbackData }
   );
 
   /* 로그인 시 "~님을 위한 추천", 비로그인 시 "인기 경기 및 토너먼트" */

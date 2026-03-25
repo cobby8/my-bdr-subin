@@ -55,12 +55,19 @@ interface StatsData {
   userCount: number;
 }
 
-export function RightSidebarGuest() {
+/* 서버에서 미리 가져온 데이터를 받을 수 있는 props (없으면 기존처럼 SWR이 API 호출) */
+interface RightSidebarGuestProps {
+  fallbackTeams?: { teams: TeamData[] };
+  fallbackCommunity?: { posts: PostData[] };
+  fallbackStats?: { team_count: number; match_count: number; user_count: number };
+}
+
+export function RightSidebarGuest({ fallbackTeams, fallbackCommunity, fallbackStats }: RightSidebarGuestProps = {}) {
   // 3개의 독립 API를 각각 useSWR로 호출
-  // SWR이 자동으로 중복 제거: notable-teams와 같은 /api/web/teams URL은 1회만 요청됨
-  const { data: teamsData } = useSWR<{ teams: TeamData[] }>("/api/web/teams");
-  const { data: communityData } = useSWR<{ posts: PostData[] }>("/api/web/community");
-  const { data: statsData } = useSWR<{ team_count: number; match_count: number; user_count: number }>("/api/web/stats");
+  // fallbackData가 있으면 로딩 없이 즉시 표시, SWR이 뒤에서 최신 데이터 갱신
+  const { data: teamsData } = useSWR<{ teams: TeamData[] }>("/api/web/teams", null, { fallbackData: fallbackTeams });
+  const { data: communityData } = useSWR<{ posts: PostData[] }>("/api/web/community", null, { fallbackData: fallbackCommunity });
+  const { data: statsData } = useSWR<{ team_count: number; match_count: number; user_count: number }>("/api/web/stats", null, { fallbackData: fallbackStats });
 
   // 팀 랭킹: 상위 3팀 (API 데이터 없으면 fallback)
   const topTeams: TeamData[] = (() => {

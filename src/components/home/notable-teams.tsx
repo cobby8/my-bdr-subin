@@ -41,10 +41,18 @@ const FALLBACK_TEAMS: TeamData[] = [
   { id: "0", name: "Neon Pulse", primary_color: "#8B5CF6", secondary_color: null, city: null, district: null, wins: 0, losses: 0, accepting_members: true, tournaments_count: 0, member_count: 0 },
 ];
 
-export function NotableTeams() {
+/* 서버에서 미리 가져온 데이터를 받을 수 있는 props */
+interface NotableTeamsProps {
+  fallbackData?: { teams: TeamData[] };
+}
+
+export function NotableTeams({ fallbackData }: NotableTeamsProps = {}) {
   // useSWR로 팀 API 호출 (right-sidebar와 같은 URL이므로 SWR이 자동 중복 제거)
+  // fallbackData가 있으면 로딩 없이 즉시 렌더링, SWR이 뒤에서 최신 데이터 갱신
   const { data: json, isLoading } = useSWR<{ teams: TeamData[] }>(
-    "/api/web/teams"
+    "/api/web/teams",
+    null,
+    { fallbackData }
   );
 
   // API 응답에서 상위 4팀 추출, 데이터 없으면 fallback 사용
