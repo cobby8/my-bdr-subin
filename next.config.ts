@@ -58,6 +58,8 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   images: {
+    // AVIF 우선, 미지원 브라우저는 WebP fallback (AVIF는 WebP보다 20~30% 더 작음)
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       { protocol: "http", hostname: "k.kakaocdn.net" },
       { protocol: "https", hostname: "k.kakaocdn.net" },

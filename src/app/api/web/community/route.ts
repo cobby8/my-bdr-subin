@@ -89,10 +89,13 @@ export async function GET(request: NextRequest) {
     }));
 
     // 선호 카테고리 목록도 함께 반환 (프론트엔드에서 하이라이트 표시용)
-    return apiSuccess({
+    const response = apiSuccess({
       posts: serializedPosts,
       preferred_categories: preferredCategories ?? [],
     });
+    // 30초 캐시: 게시글은 자주 변경되므로 짧은 캐시 적용
+    response.headers.set("Cache-Control", "public, s-maxage=30, max-age=30");
+    return response;
   } catch (error) {
     console.error("[GET /api/web/community] Error:", error);
     return apiError("게시글 목록을 불러올 수 없습니다.", 500, "INTERNAL_ERROR");

@@ -77,7 +77,10 @@ async function getTeamRankings() {
     };
   });
 
-  return apiSuccess({ rankings });
+  // 2분 캐시: 랭킹은 실시간성이 낮으므로 CDN/브라우저 캐시 활용
+  const response = apiSuccess({ rankings });
+  response.headers.set("Cache-Control", "public, s-maxage=120, max-age=120");
+  return response;
 }
 
 /**
@@ -167,5 +170,8 @@ async function getPlayerRankings() {
     };
   });
 
-  return apiSuccess({ rankings });
+  // 2분 캐시: 개인 랭킹도 팀 랭킹과 동일한 캐시 정책 적용
+  const response = apiSuccess({ rankings });
+  response.headers.set("Cache-Control", "public, s-maxage=120, max-age=120");
+  return response;
 }

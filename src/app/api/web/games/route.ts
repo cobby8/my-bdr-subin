@@ -101,7 +101,10 @@ export async function GET(request: NextRequest) {
       skillLevel: g.skill_level,
     }));
 
-    return apiSuccess({ games: serializedGames, cities });
+    // 30초 캐시: 경기 목록은 자주 변경되므로 짧은 캐시 적용
+    const response = apiSuccess({ games: serializedGames, cities });
+    response.headers.set("Cache-Control", "public, s-maxage=30, max-age=30");
+    return response;
   } catch (error) {
     console.error("[GET /api/web/games] Error:", error);
     return apiError("경기 목록을 불러올 수 없습니다.", 500, "INTERNAL_ERROR");

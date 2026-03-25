@@ -66,7 +66,10 @@ export async function GET(request: NextRequest) {
       teamCount: t._count.tournamentTeams,              // 참가팀 수
     }));
 
-    return apiSuccess({ tournaments });
+    // 60초 캐시: 대회 목록은 비교적 정적이므로 중간 캐시 적용
+    const response = apiSuccess({ tournaments });
+    response.headers.set("Cache-Control", "public, s-maxage=60, max-age=60");
+    return response;
   } catch (error) {
     console.error("[GET /api/web/tournaments] Error:", error);
     return apiError("대회 목록을 불러올 수 없습니다.", 500, "INTERNAL_ERROR");
