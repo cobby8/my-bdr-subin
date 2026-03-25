@@ -62,18 +62,29 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
     });
   }, [setLoggedIn]);
 
-  /* 페이지 이동 시 알림 카운트만 갱신 */
+  /* 알림 카운트 30초 간격 폴링 (페이지 이동마다 호출하지 않고 주기적으로만) */
   useEffect(() => {
     if (!user) return;
-    fetch("/api/web/notifications", { credentials: "include" })
-      .then(async (r) => {
-        if (r.ok) {
-          const data = (await r.json()) as { unreadCount: number };
-          setUnreadCount(data.unreadCount ?? 0);
-        }
-      })
-      .catch(() => {});
-  }, [user, pathname]);
+
+    // 폴링 함수: 알림 API를 호출하여 미읽 수 갱신
+    const pollNotifications = () => {
+      fetch("/api/web/notifications", { credentials: "include" })
+        .then(async (r) => {
+          if (r.ok) {
+            const data = (await r.json()) as { unreadCount: number };
+            setUnreadCount(data.unreadCount ?? 0);
+          }
+        })
+        .catch(() => {});
+    };
+
+    // 마운트 시 즉시 1회 호출 + 30초 간격 반복
+    pollNotifications();
+    const intervalId = setInterval(pollNotifications, 30000);
+
+    // 언마운트 시 타이머 정리 (메모리 누수 방지)
+    return () => clearInterval(intervalId);
+  }, [user]);
 
   /* 현재 경로가 활성 메뉴인지 판별 */
   const isActive = (href: string) =>

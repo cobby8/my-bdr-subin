@@ -80,7 +80,10 @@ export async function GET(request: NextRequest) {
       memberCount: t._count.teamMembers,            // _count를 평탄화
     }));
 
-    return apiSuccess({ teams: serializedTeams, cities });
+    // 1분 캐시: 팀 목록은 비교적 정적이므로 CDN/브라우저 캐시 활용
+    const response = apiSuccess({ teams: serializedTeams, cities });
+    response.headers.set("Cache-Control", "public, s-maxage=60, max-age=60");
+    return response;
   } catch (error) {
     console.error("[GET /api/web/teams] Error:", error);
     return apiError("팀 목록을 불러올 수 없습니다.", 500, "INTERNAL_ERROR");

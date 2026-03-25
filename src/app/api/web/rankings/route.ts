@@ -106,32 +106,35 @@ async function getPlayerRankings() {
     return apiSuccess({ rankings: [] });
   }
 
-  // 2단계: 유저 ID 목록으로 이름 조회
+  // 2+3단계 병렬 실행: 유저 이름 조회와 최근 팀명 조회는 서로 독립적이므로 동시에 실행
   const userIds = grouped.map((g) => g.userId);
-  const users = await prisma.user.findMany({
-    where: { id: { in: userIds } },
-    select: { id: true, name: true, nickname: true },
-  });
+  const [users, latestPlayers] = await Promise.all([
+    // 2단계: 유저 ID 목록으로 이름 조회
+    prisma.user.findMany({
+      where: { id: { in: userIds } },
+      select: { id: true, name: true, nickname: true },
+    }),
+    // 3단계: 각 유저의 가장 최근 TournamentTeamPlayer에서 팀명 추출
+    // (최근 대회 참가 기준으로 소속팀 표시)
+    prisma.tournamentTeamPlayer.findMany({
+      where: { userId: { in: userIds }, games_played: { gt: 0 } },
+      orderBy: { createdAt: "desc" },
+      distinct: ["userId"], // 유저별 가장 최근 1건만
+      select: {
+        userId: true,
+        tournamentTeam: {
+          select: {
+            team: { select: { name: true } },
+          },
+        },
+      },
+    }),
+  ]);
+
   // userId -> 유저 이름 맵
   const userMap = new Map(
     users.map((u) => [u.id.toString(), u.nickname || u.name || "이름 없음"])
   );
-
-  // 3단계: 각 유저의 가장 최근 TournamentTeamPlayer에서 팀명 추출
-  // (최근 대회 참가 기준으로 소속팀 표시)
-  const latestPlayers = await prisma.tournamentTeamPlayer.findMany({
-    where: { userId: { in: userIds }, games_played: { gt: 0 } },
-    orderBy: { createdAt: "desc" },
-    distinct: ["userId"], // 유저별 가장 최근 1건만
-    select: {
-      userId: true,
-      tournamentTeam: {
-        select: {
-          team: { select: { name: true } },
-        },
-      },
-    },
-  });
   // userId -> 팀명 맵
   const teamMap = new Map(
     latestPlayers.map((p) => [

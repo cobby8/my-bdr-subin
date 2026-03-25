@@ -11,8 +11,8 @@
  * - 경기 카드: 유형별 아이콘/그라디언트 + 뱃지 + 제목 + 일시/장소 + "예약하기" 버튼
  * ============================================================ */
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
+import useSWR from "swr";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /* 세션 정보: 서버에서 getWebSession()으로 받은 JwtPayload를 전달받는다 */
@@ -109,16 +109,10 @@ const FALLBACK_GAMES: RecommendedGame[] = [
 ];
 
 export function RecommendedGames({ session }: RecommendedGamesProps) {
-  const [data, setData] = useState<RecommendedData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/web/recommended-games", { credentials: "include" })
-      .then(async (r) => (r.ok ? r.json() : null))
-      .then(setData)
-      .catch(() => null)
-      .finally(() => setLoading(false));
-  }, []);
+  // useSWR로 추천 경기 API 호출 (글로벌 fetcher + dedupingInterval 적용)
+  const { data, isLoading: loading } = useSWR<RecommendedData>(
+    "/api/web/recommended-games"
+  );
 
   /* 로그인 시 "~님을 위한 추천", 비로그인 시 "인기 경기 및 토너먼트" */
   const userName = data?.user_name ?? session?.name;

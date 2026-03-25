@@ -392,11 +392,19 @@ export async function GET() {
     }));
 
     // 하위 호환: videos 필드에 전체 합산, live_videos/popular_videos 필드 추가
-    return NextResponse.json({
-      videos: [...topLive, ...topNonLive],
-      live_videos: topLive,
-      popular_videos: topNonLive,
-    });
+    // 10분 캐시: YouTube 데이터는 서버 인메모리 캐시(30분)도 있으므로 브라우저/CDN에서도 캐시
+    return NextResponse.json(
+      {
+        videos: [...topLive, ...topNonLive],
+        live_videos: topLive,
+        popular_videos: topNonLive,
+      },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=600, max-age=600",
+        },
+      }
+    );
   } catch (err) {
     console.error("[youtube] Error:", err);
     return NextResponse.json(

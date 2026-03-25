@@ -23,11 +23,14 @@ export async function GET() {
       prisma.user.count(),
     ]);
 
-    return apiSuccess({
+    // 5분 캐시: 통계는 자주 변하지 않으므로 CDN/브라우저 캐시 활용
+    const response = apiSuccess({
       teamCount,
       matchCount,
       userCount,
     });
+    response.headers.set("Cache-Control", "public, s-maxage=300, max-age=300");
+    return response;
   } catch (error) {
     console.error("[GET /api/web/stats] Error:", error);
     return apiError("통계를 불러올 수 없습니다.", 500, "INTERNAL_ERROR");

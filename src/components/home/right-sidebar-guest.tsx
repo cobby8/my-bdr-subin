@@ -15,8 +15,8 @@
  * 6. 커뮤니티 미리보기 -- /api/web/community
  * ============================================================ */
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
+import useSWR from "swr";
 
 /* ---------- 타입 정의 ---------- */
 
@@ -27,13 +27,13 @@ interface TeamData {
   wins: number;
 }
 
-// /api/web/community 응답의 게시글 하나
+// /api/web/community 응답의 게시글 하나 (apiSuccess가 snake_case로 변환)
 interface PostData {
   id: string;
-  publicId: string | null;
+  public_id: string | null;
   title: string;
-  viewCount: number;
-  createdAt: string | null;
+  view_count: number;
+  created_at: string | null;
 }
 
 /* ---------- Fallback 데이터 (API 실패 시 표시) ---------- */
@@ -44,8 +44,8 @@ const FALLBACK_TEAMS: TeamData[] = [
 ];
 
 const FALLBACK_POSTS: PostData[] = [
-  { id: "1", publicId: null, title: "이번 윈터 챌린지 룰 변경사항 있나요?", viewCount: 120, createdAt: null },
-  { id: "2", publicId: null, title: "Storm FC 팀원 모집합니다 (수비수)", viewCount: 90, createdAt: null },
+  { id: "1", public_id: null, title: "이번 윈터 챌린지 룰 변경사항 있나요?", view_count: 120, created_at: null },
+  { id: "2", public_id: null, title: "Storm FC 팀원 모집합니다 (수비수)", view_count: 90, created_at: null },
 ];
 
 // 플랫폼 통계 타입 (/api/web/stats 응답)
@@ -56,56 +56,32 @@ interface StatsData {
 }
 
 export function RightSidebarGuest() {
-  // 실시간 랭킹 상위 3팀
-  const [topTeams, setTopTeams] = useState<TeamData[]>(FALLBACK_TEAMS);
-  // 커뮤니티 최신글 2개
-  const [recentPosts, setRecentPosts] = useState<PostData[]>(FALLBACK_POSTS);
-  // 플랫폼 통계 (null이면 아직 로딩 중 또는 실패)
-  const [stats, setStats] = useState<StatsData | null>(null);
+  // 3개의 독립 API를 각각 useSWR로 호출
+  // SWR이 자동으로 중복 제거: notable-teams와 같은 /api/web/teams URL은 1회만 요청됨
+  const { data: teamsData } = useSWR<{ teams: TeamData[] }>("/api/web/teams");
+  const { data: communityData } = useSWR<{ posts: PostData[] }>("/api/web/community");
+  const { data: statsData } = useSWR<{ team_count: number; match_count: number; user_count: number }>("/api/web/stats");
 
-  useEffect(() => {
-    // 3개의 API를 병렬 호출하여 로딩 시간 최소화
-    const fetchAll = async () => {
-      const results = await Promise.allSettled([
-        // 1) 팀 목록 (인증 불필요, wins DESC 정렬)
-        fetch("/api/web/teams").then((r) => r.json()),
-        // 2) 커뮤니티 게시글 (인증 불필요, created_at DESC)
-        fetch("/api/web/community").then((r) => r.json()),
-        // 3) 플랫폼 통계 (팀 수, 매치 수, 유저 수)
-        fetch("/api/web/stats").then((r) => r.json()),
-      ]);
+  // 팀 랭킹: 상위 3팀 (API 데이터 없으면 fallback)
+  const topTeams: TeamData[] = (() => {
+    const teams = teamsData?.teams;
+    return teams && teams.length > 0 ? teams.slice(0, 3) : FALLBACK_TEAMS;
+  })();
 
-      // 팀 랭킹: 상위 3팀만 사용
-      // apiSuccess()는 data 래핑 없이 직접 반환 → .value.teams로 접근
-      if (results[0].status === "fulfilled" && results[0].value?.teams) {
-        const teams = results[0].value.teams as TeamData[];
-        if (teams.length > 0) {
-          setTopTeams(teams.slice(0, 3));
-        }
+  // 커뮤니티: 최신글 2개 (API 데이터 없으면 fallback)
+  const recentPosts: PostData[] = (() => {
+    const posts = communityData?.posts;
+    return posts && posts.length > 0 ? posts.slice(0, 2) : FALLBACK_POSTS;
+  })();
+
+  // 플랫폼 통계 (snake_case -> camelCase 변환)
+  const stats: StatsData | null = statsData?.team_count !== undefined
+    ? {
+        teamCount: statsData.team_count ?? 0,
+        matchCount: statsData.match_count ?? 0,
+        userCount: statsData.user_count ?? 0,
       }
-
-      // 커뮤니티: 최신글 2개만 사용
-      // apiSuccess()는 data 래핑 없이 직접 반환 → .value.posts로 접근
-      if (results[1].status === "fulfilled" && results[1].value?.posts) {
-        const posts = results[1].value.posts as PostData[];
-        if (posts.length > 0) {
-          setRecentPosts(posts.slice(0, 2));
-        }
-      }
-
-      // 플랫폼 통계: apiSuccess()가 직접 { team_count, match_count, user_count } 반환
-      if (results[2].status === "fulfilled" && results[2].value?.team_count !== undefined) {
-        const d = results[2].value;
-        setStats({
-          teamCount: d.team_count ?? 0,
-          matchCount: d.match_count ?? 0,
-          userCount: d.user_count ?? 0,
-        });
-      }
-    };
-
-    fetchAll();
-  }, []);
+    : null;
 
   // 숫자를 읽기 쉽게 포맷 (예: 1234 -> "1,234", 12500 -> "12.5k+")
   const formatNumber = (n: number): string => {
@@ -113,9 +89,9 @@ export function RightSidebarGuest() {
     return n.toLocaleString("ko-KR");
   };
 
-  // 게시글 상세 링크 생성
+  // 게시글 상세 링크 생성 (API 응답이 snake_case이므로 public_id로 접근)
   const getPostLink = (post: PostData): string => {
-    return `/community/${post.publicId || post.id}`;
+    return `/community/${post.public_id || post.id}`;
   };
 
   return (

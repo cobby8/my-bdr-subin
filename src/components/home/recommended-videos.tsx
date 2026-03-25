@@ -12,7 +12,7 @@
  * - 비디오 카드: aspect-video 썸네일 + play_circle 호버 + 재생시간 + 제목 + 조회수
  * ============================================================ */
 
-import { useState, useEffect } from "react";
+import useSWR from "swr";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface VideoItem {
@@ -61,16 +61,11 @@ const DUMMY_VIDEOS = [
 ];
 
 export function RecommendedVideos() {
-  const [videos, setVideos] = useState<VideoItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/web/youtube/recommend", { credentials: "include" })
-      .then(async (r) => (r.ok ? r.json() : null))
-      .then((data) => setVideos(data?.videos ?? []))
-      .catch(() => null)
-      .finally(() => setLoading(false));
-  }, []);
+  // useSWR로 YouTube 추천 API 호출 (hero-bento와 같은 URL → SWR이 자동 중복 제거)
+  const { data: apiData, isLoading: loading } = useSWR<{ videos: VideoItem[] }>(
+    "/api/web/youtube/recommend"
+  );
+  const videos = apiData?.videos ?? [];
 
   if (loading) {
     return (

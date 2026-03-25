@@ -13,17 +13,10 @@
  * 4. 커뮤니티 (최신글 + 조회수 높은 글) -- /api/web/community
  * ============================================================ */
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
+import useSWR from "swr";
 
 /* ---------- 타입 정의 ---------- */
-
-// /api/web/profile/stats 응답에서 사용하는 필드
-interface ProfileStats {
-  careerAverages: {
-    gamesPlayed: number;
-  } | null;
-}
 
 // /api/web/teams 응답의 팀 하나
 interface TeamData {
@@ -32,13 +25,13 @@ interface TeamData {
   wins: number;
 }
 
-// /api/web/community 응답의 게시글 하나
+// /api/web/community 응답의 게시글 하나 (apiSuccess가 snake_case로 변환)
 interface PostData {
   id: string;
-  publicId: string | null;
+  public_id: string | null;
   title: string;
-  viewCount: number;
-  createdAt: string | null;
+  view_count: number;
+  created_at: string | null;
 }
 
 /* ---------- 경기수 기반 티어 계산 ---------- */
@@ -60,72 +53,47 @@ const FALLBACK_TEAMS: TeamData[] = [
 ];
 
 const FALLBACK_RECENT_POSTS: PostData[] = [
-  { id: "1", publicId: null, title: "이번 윈터 챌린지 룰 변경사항 있나요?", viewCount: 120, createdAt: null },
-  { id: "2", publicId: null, title: "Storm FC 팀원 모집합니다 (수비수)", viewCount: 90, createdAt: null },
-  { id: "3", publicId: null, title: "신규 업데이트 패치노트 요약", viewCount: 80, createdAt: null },
+  { id: "1", public_id: null, title: "이번 윈터 챌린지 룰 변경사항 있나요?", view_count: 120, created_at: null },
+  { id: "2", public_id: null, title: "Storm FC 팀원 모집합니다 (수비수)", view_count: 90, created_at: null },
+  { id: "3", public_id: null, title: "신규 업데이트 패치노트 요약", view_count: 80, created_at: null },
 ];
 
 const FALLBACK_POPULAR_POSTS: PostData[] = [
-  { id: "4", publicId: null, title: "11월 랭킹 보상 공지 확인하세요", viewCount: 1200, createdAt: null },
-  { id: "5", publicId: null, title: "초보자를 위한 경기 운영 팁 5가지", viewCount: 850, createdAt: null },
+  { id: "4", public_id: null, title: "11월 랭킹 보상 공지 확인하세요", view_count: 1200, created_at: null },
+  { id: "5", public_id: null, title: "초보자를 위한 경기 운영 팁 5가지", view_count: 850, created_at: null },
 ];
 
 export function RightSidebarLoggedIn() {
-  // 나의 통계
-  const [gamesPlayed, setGamesPlayed] = useState<number>(0);
-  // 실시간 랭킹 상위 3팀
-  const [topTeams, setTopTeams] = useState<TeamData[]>(FALLBACK_TEAMS);
+  // 3개의 독립 API를 각각 useSWR로 호출
+  // SWR이 자동으로 중복 제거: /api/web/teams, /api/web/community는 다른 컴포넌트와 공유됨
+  const { data: profileData } = useSWR<{ career_averages: { games_played: number } | null }>(
+    "/api/web/profile/stats"
+  );
+  const { data: teamsData } = useSWR<{ teams: TeamData[] }>("/api/web/teams");
+  const { data: communityData } = useSWR<{ posts: PostData[] }>("/api/web/community");
+
+  // 나의 통계: career_averages.games_played (snake_case API 응답)
+  const gamesPlayed = profileData?.career_averages?.games_played ?? 0;
+
+  // 팀 랭킹: 상위 3팀 (API 데이터 없으면 fallback)
+  const topTeams: TeamData[] = (() => {
+    const teams = teamsData?.teams;
+    return teams && teams.length > 0 ? teams.slice(0, 3) : FALLBACK_TEAMS;
+  })();
+
   // 커뮤니티: 최신글 3개 + 조회수 높은 글 2개
-  const [recentPosts, setRecentPosts] = useState<PostData[]>(FALLBACK_RECENT_POSTS);
-  const [popularPosts, setPopularPosts] = useState<PostData[]>(FALLBACK_POPULAR_POSTS);
+  const recentPosts: PostData[] = (() => {
+    const posts = communityData?.posts;
+    return posts && posts.length > 0 ? posts.slice(0, 3) : FALLBACK_RECENT_POSTS;
+  })();
 
-  useEffect(() => {
-    // 3개의 API를 병렬로 호출하여 로딩 시간을 최소화
-    const fetchAll = async () => {
-      const results = await Promise.allSettled([
-        // 1) 나의 통계 (인증 필요 -> 쿠키 자동 전송)
-        fetch("/api/web/profile/stats").then((r) => r.json()),
-        // 2) 팀 목록 (이미 wins DESC 정렬, 상위 3개만 사용)
-        fetch("/api/web/teams").then((r) => r.json()),
-        // 3) 커뮤니티 게시글 (created_at DESC 30개 반환)
-        fetch("/api/web/community").then((r) => r.json()),
-      ]);
-
-      // 나의 통계 처리
-      // apiSuccess()는 data 래핑 없이 직접 반환 → .value가 곧 stats 객체
-      // 단, snake_case 자동 변환이 적용되므로 career_averages / games_played로 접근
-      if (results[0].status === "fulfilled" && results[0].value?.career_averages) {
-        const careerAvg = results[0].value.career_averages;
-        if (careerAvg.games_played) {
-          setGamesPlayed(careerAvg.games_played);
-        }
-      }
-
-      // 팀 랭킹 처리 (상위 3팀만 slice)
-      // apiSuccess()는 data 래핑 없이 직접 반환 → .value.teams로 접근
-      if (results[1].status === "fulfilled" && results[1].value?.teams) {
-        const teams = results[1].value.teams as TeamData[];
-        if (teams.length > 0) {
-          setTopTeams(teams.slice(0, 3));
-        }
-      }
-
-      // 커뮤니티 처리: 최신글 3개 + 조회수 높은 글 2개
-      // apiSuccess()는 data 래핑 없이 직접 반환 → .value.posts로 접근
-      if (results[2].status === "fulfilled" && results[2].value?.posts) {
-        const posts = results[2].value.posts as PostData[];
-        if (posts.length > 0) {
-          // 최신글: API가 이미 created_at DESC로 반환하므로 앞 3개
-          setRecentPosts(posts.slice(0, 3));
-          // 조회수 높은 글: 전체를 viewCount 내림차순 정렬 후 상위 2개
-          const byViews = [...posts].sort((a, b) => b.viewCount - a.viewCount);
-          setPopularPosts(byViews.slice(0, 2));
-        }
-      }
-    };
-
-    fetchAll();
-  }, []);
+  const popularPosts: PostData[] = (() => {
+    const posts = communityData?.posts;
+    if (!posts || posts.length === 0) return FALLBACK_POPULAR_POSTS;
+    // 조회수 내림차순 정렬 후 상위 2개
+    const byViews = [...posts].sort((a, b) => b.view_count - a.view_count);
+    return byViews.slice(0, 2);
+  })();
 
   // 경기수 기반 티어 계산
   const tier = getTier(gamesPlayed);
@@ -136,9 +104,9 @@ export function RightSidebarLoggedIn() {
     return count.toString();
   };
 
-  // 게시글 상세 링크 생성
+  // 게시글 상세 링크 생성 (API 응답이 snake_case이므로 public_id로 접근)
   const getPostLink = (post: PostData): string => {
-    return `/community/${post.publicId || post.id}`;
+    return `/community/${post.public_id || post.id}`;
   };
 
   return (
@@ -256,7 +224,7 @@ export function RightSidebarLoggedIn() {
                     <p className="text-sm text-text-secondary group-hover:text-text-primary line-clamp-1">
                       {post.title}
                     </p>
-                    <span className="text-xs text-text-muted">{formatViews(post.viewCount)} views</span>
+                    <span className="text-xs text-text-muted">{formatViews(post.view_count)} views</span>
                   </Link>
                 </li>
               ))}
