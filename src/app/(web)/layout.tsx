@@ -270,7 +270,7 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
        * ======================================== */}
       {/* 데스크탑 상단 헤더바: 배경+blur로 콘텐츠와 구분, sticky 효과 */}
       <div
-        className="pointer-events-none fixed right-0 top-0 z-40 hidden items-center justify-end gap-3 border-b border-[var(--color-border)] px-6 py-4 backdrop-blur-xl lg:flex"
+        className="pointer-events-none fixed right-0 top-0 z-40 hidden items-center justify-end gap-3 border-b border-[var(--color-border)] px-6 py-2 backdrop-blur-xl lg:flex"
         style={{ left: "16rem", backgroundColor: "color-mix(in srgb, var(--color-background) 80%, transparent)" }}
       >
         {/* 다크/라이트 모드 토글 */}
