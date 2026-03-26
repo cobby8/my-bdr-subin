@@ -115,7 +115,19 @@ function resolveAccent(primary: string | null, secondary?: string | null): strin
   return primary;
 }
 
-// -- 스켈레톤 UI: 새 디자인 기준 --
+// -- 팀 색상 기반 그라디언트 생성 (notable-teams.tsx와 동일 패턴) --
+function getTeamGradient(color: string | null): string {
+  if (!color) return "linear-gradient(135deg, #374151 0%, #1f2937 100%)";
+  return `linear-gradient(135deg, ${color}33 0%, ${color} 50%, ${color}cc 100%)`;
+}
+
+// -- 팀명에서 이니셜 추출 (한글: 첫 2글자, 영문: 각 단어 첫 글자) --
+function getInitials(name: string): string {
+  if (/^[가-힣]/.test(name)) return name.slice(0, 2);
+  return name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+}
+
+// -- 스켈레톤 UI: 컴팩트 카드 디자인 기준 --
 function TeamsGridSkeleton() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -125,26 +137,18 @@ function TeamsGridSkeleton() {
           className="rounded-lg border overflow-hidden"
           style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-surface)" }}
         >
-          {/* 배너 스켈레톤 */}
-          <Skeleton className="h-24 w-full rounded-none" />
-          <div className="px-6 pb-6 pt-4 space-y-4">
-            {/* 아이콘 영역 */}
-            <div className="flex justify-center -mt-12">
-              <Skeleton className="h-16 w-16 rounded-xl" />
+          {/* 이미지 영역 스켈레톤 (h-20 lg:h-28) */}
+          <Skeleton className="h-20 lg:h-28 w-full rounded-none" />
+          {/* 정보 영역 스켈레톤 (p-3, 2행) */}
+          <div className="p-3 space-y-2">
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-4 w-24 rounded" />
+              <Skeleton className="h-3 w-14 rounded" />
             </div>
-            {/* 팀명 */}
-            <div className="flex flex-col items-center gap-2">
-              <Skeleton className="h-5 w-28 rounded" />
-              <Skeleton className="h-3 w-20 rounded" />
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-3 w-16 rounded" />
+              <Skeleton className="h-3 w-12 rounded" />
             </div>
-            {/* 통계 3칸 */}
-            <div className="grid grid-cols-3 gap-2">
-              <Skeleton className="h-12 rounded" />
-              <Skeleton className="h-12 rounded" />
-              <Skeleton className="h-12 rounded" />
-            </div>
-            {/* 버튼 */}
-            <Skeleton className="h-10 w-full rounded-lg" />
           </div>
         </div>
       ))}
@@ -152,7 +156,7 @@ function TeamsGridSkeleton() {
   );
 }
 
-// -- 새 디자인 팀 카드 --
+// -- 컴팩트 팀 카드 (경기/대회 카드와 동일 패턴: h-20 이미지 + p-3 정보) --
 function TeamCardRedesigned({
   team,
   badge,
@@ -170,217 +174,98 @@ function TeamCardRedesigned({
   const badgeStyle = getBadgeStyle(badge);
 
   return (
-    <Link href={`/teams/${team.id}`} className="block">
-      {/* 카드: 배경/보더 CSS 변수 사용, 호버 시 프라이머리 보더 */}
-      <div
-        className="group rounded-lg border overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg flex flex-col h-full"
-        style={{
-          borderColor: "var(--color-border)",
-          backgroundColor: "var(--color-surface)",
-        }}
-      >
-        {/* 상단 배너: 팀 고유색 그라디언트 + 팀명 워터마크 */}
+    <Link href={`/teams/${team.id}`}>
+      <div className="group rounded-lg border overflow-hidden transition-all hover:-translate-y-1 hover:shadow-lg h-full border-[var(--color-border)] bg-[var(--color-surface)]">
+        {/* 이미지 영역: 팀 색상 그라디언트 + 반투명 이니셜 */}
         <div
-          className="h-24 relative overflow-hidden"
-          style={{
-            background: `linear-gradient(135deg, ${accent}66 0%, var(--color-background) 100%)`,
-          }}
+          className="relative h-20 lg:h-28 flex items-center justify-center overflow-hidden"
+          style={{ background: getTeamGradient(team.primary_color) }}
         >
-          {/* 도트 패턴 오버레이 */}
-          <div
-            className="absolute inset-0 opacity-20"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.1) 1px, transparent 0)",
-              backgroundSize: "16px 16px",
-            }}
-          />
-          {/* 팀명 워터마크 */}
-          <div
-            className="absolute inset-0 flex items-center justify-center opacity-10 font-black text-4xl italic tracking-tighter"
-            style={{ fontFamily: "var(--font-heading)" }}
-          >
-            {team.name}
-          </div>
+          {/* 팀 이니셜 (큰 반투명 텍스트, 배경 장식용) */}
+          <span className="text-4xl lg:text-5xl font-black text-white/30 select-none">
+            {getInitials(team.name)}
+          </span>
+
+          {/* 좌상단: shield 아이콘 뱃지 */}
+          <span className="absolute top-2 left-2 flex items-center gap-1 rounded bg-black/50 px-1.5 py-0.5 text-xs text-white backdrop-blur-sm">
+            <span className="material-symbols-outlined text-xs">shield</span>
+          </span>
+
+          {/* 우상단: 디비전/특수 배지 (TOP1/인기/신규 등) */}
+          {badge && (
+            <span
+              className="absolute top-2 right-2 rounded px-2 py-0.5 text-xs font-black uppercase"
+              style={{ backgroundColor: badgeStyle.bg, color: badgeStyle.text }}
+            >
+              {badge}
+            </span>
+          )}
+
+          {/* 우하단: 도시 뱃지 (경기 카드의 location 뱃지와 동일 패턴) */}
+          {location && (
+            <span className="absolute bottom-2 right-2 flex items-center gap-1 rounded bg-black/50 px-1.5 py-0.5 text-xs text-white backdrop-blur-sm">
+              <span className="material-symbols-outlined text-xs">location_on</span>
+              <span className="line-clamp-1 max-w-[120px]">{location}</span>
+            </span>
+          )}
         </div>
 
-        {/* 카드 본문: 배너 위로 올라오는 아이콘 */}
-        <div className="px-6 pb-6 -mt-8 flex-1 flex flex-col">
-          {/* 팀 아이콘 (이니셜) */}
-          <div className="flex justify-center mb-4">
-            <div
-              className="w-16 h-16 border-4 rounded-xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform text-2xl font-black text-white"
-              style={{
-                backgroundColor: "var(--color-elevated)",
-                borderColor: "var(--color-surface)",
-              }}
-            >
-              {/* 팀 아이콘: Material Symbol groups 사용 */}
-              <span
-                className="material-symbols-outlined text-3xl"
-                style={{ color: accent }}
-              >
-                groups
+        {/* 정보 영역: p-3, 2행 */}
+        <div className="p-3">
+          {/* 1행: 팀명 + 전적 */}
+          <div className="flex items-center justify-between gap-2 mb-1">
+            <h3 className="text-sm font-bold line-clamp-1 flex-1 text-[var(--color-text-primary)]">
+              {team.name}
+            </h3>
+            {/* 전적 NW NL 또는 모집중 표시 */}
+            {total > 0 ? (
+              <span className="shrink-0 text-xs font-bold text-[var(--color-text-secondary)]">
+                {wins}W {losses}L
               </span>
-            </div>
+            ) : team.accepting_members ? (
+              <span className="shrink-0 text-xs font-bold px-1.5 py-0.5 rounded bg-[var(--color-primary)] text-white">
+                모집중
+              </span>
+            ) : null}
           </div>
 
-          {/* 팀명 + 배지 + 지역 */}
-          <div className="text-center mb-6">
-            <div className="flex items-center justify-center gap-2 mb-1">
-              <h3
-                className="text-xl font-bold truncate"
-                style={{ color: "var(--color-text-primary)" }}
-              >
-                {team.name}
-              </h3>
-              {/* 배지: TOP1/HOT/NEW 또는 디비전 */}
-              {badge && (
-                <span
-                  className="text-xs px-2 py-0.5 rounded font-black uppercase whitespace-nowrap"
-                  style={{
-                    backgroundColor: badgeStyle.bg,
-                    color: badgeStyle.text,
-                  }}
-                >
-                  {badge}
-                </span>
-              )}
-            </div>
-            {/* 지역 */}
-            {location && (
-              <p
-                className="text-xs flex items-center justify-center gap-1"
-                style={{ color: "var(--color-text-muted)" }}
-              >
-                <span className="material-symbols-outlined text-xs">
-                  location_on
-                </span>
-                {location}
-              </p>
+          {/* 2행: 멤버 수 + 승률 */}
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-[var(--color-text-muted)]">
+              멤버 {team.member_count}명
+            </span>
+            {total > 0 ? (
+              <span className="text-xs font-bold text-[var(--color-primary)]">
+                승률 {winRate}%
+              </span>
+            ) : (
+              <span className="text-xs text-[var(--color-text-disabled)]">
+                전적 없음
+              </span>
             )}
           </div>
-
-          {/* 통계 3칸: 멤버 / 전적 / 승률 */}
-          <div
-            className="grid grid-cols-3 gap-1 py-4 mb-6 text-center"
-            style={{
-              borderTop: "1px solid var(--color-border)",
-              borderBottom: "1px solid var(--color-border)",
-            }}
-          >
-            <div>
-              <p
-                className="text-xs mb-1 uppercase tracking-wider font-bold"
-                style={{ color: "var(--color-text-disabled)" }}
-              >
-                멤버
-              </p>
-              <p
-                className="text-sm font-bold"
-                style={{ color: "var(--color-text-primary)" }}
-              >
-                {team.member_count}
-              </p>
-            </div>
-            <div style={{ borderLeft: "1px solid var(--color-border)", borderRight: "1px solid var(--color-border)" }}>
-              <p
-                className="text-xs mb-1 uppercase tracking-wider font-bold"
-                style={{ color: "var(--color-text-disabled)" }}
-              >
-                전적
-              </p>
-              <p
-                className="text-sm font-bold"
-                style={{ color: "var(--color-text-primary)" }}
-              >
-                {total > 0 ? `${wins}승 ${losses}패` : "-"}
-              </p>
-            </div>
-            <div>
-              <p
-                className="text-xs mb-1 uppercase tracking-wider font-bold"
-                style={{ color: "var(--color-text-disabled)" }}
-              >
-                승률
-              </p>
-              <p
-                className="text-sm font-bold"
-                style={{ color: "var(--color-primary)" }}
-              >
-                {total > 0 ? `${winRate}%` : "-"}
-              </p>
-            </div>
-          </div>
-
-          {/* "팀 상세 보기" 버튼 */}
-          <button
-            className="mt-auto w-full py-3 text-xs font-bold rounded-lg transition-all active:scale-[0.98]"
-            style={{
-              backgroundColor: "var(--color-elevated)",
-              color: "var(--color-text-primary)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--color-primary)";
-              e.currentTarget.style.color = "var(--color-on-primary)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--color-elevated)";
-              e.currentTarget.style.color = "var(--color-text-primary)";
-            }}
-          >
-            팀 상세 보기
-          </button>
         </div>
       </div>
     </Link>
   );
 }
 
-// -- "새로운 팀 만들기" 카드 --
+// -- "새로운 팀 만들기" 카드 (컴팩트: 다른 팀 카드와 동일 높이) --
 function CreateTeamCard() {
   return (
     <Link href="/teams/new" className="block h-full">
-      <div
-        className="border-2 border-dashed rounded-lg overflow-hidden flex flex-col items-center justify-center p-8 transition-all cursor-pointer group h-full"
-        style={{
-          borderColor: "var(--color-border)",
-          backgroundColor: "var(--color-background)",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = "var(--color-primary)";
-          e.currentTarget.style.backgroundColor = "var(--color-surface)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = "var(--color-border)";
-          e.currentTarget.style.backgroundColor = "var(--color-background)";
-        }}
-      >
-        {/* + 아이콘 원형 */}
-        <div
-          className="w-16 h-16 rounded-full border flex items-center justify-center mb-6 group-hover:scale-110 transition-all"
-          style={{ borderColor: "var(--color-border)" }}
-        >
-          <span
-            className="material-symbols-outlined text-4xl"
-            style={{ color: "var(--color-text-muted)" }}
-          >
+      <div className="border-2 border-dashed rounded-lg overflow-hidden flex flex-col items-center justify-center h-full transition-all cursor-pointer group border-[var(--color-border)] bg-[var(--color-background)] hover:border-[var(--color-primary)] hover:bg-[var(--color-surface)]">
+        {/* + 아이콘 (축소: 32px) */}
+        <div className="w-8 h-8 rounded-full border flex items-center justify-center mb-2 group-hover:scale-110 transition-all border-[var(--color-border)]">
+          <span className="material-symbols-outlined text-xl text-[var(--color-text-muted)]">
             add
           </span>
         </div>
-        <h3
-          className="text-lg font-bold mb-2"
-          style={{ color: "var(--color-text-primary)" }}
-        >
-          새로운 팀 만들기
+        <h3 className="text-sm font-bold text-[var(--color-text-primary)]">
+          팀 만들기
         </h3>
-        <p
-          className="text-xs text-center leading-relaxed"
-          style={{ color: "var(--color-text-disabled)" }}
-        >
-          직접 팀을 창설하고
-          <br />
-          BDR 리그에 도전하세요.
+        <p className="text-xs text-[var(--color-text-disabled)]">
+          BDR 리그에 도전
         </p>
       </div>
     </Link>
