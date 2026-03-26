@@ -55,49 +55,57 @@ const FORMAT_LABEL: Record<string, string> = {
 
 // -- 날짜 포맷: 공통 유틸 사용 (format-date.ts의 formatShortDate) --
 
-// -- 대회 이름 기반 그라디언트 색상 생성 (이미지 대체용) --
-function getGradient(name: string): string {
-  // 이름의 해시값으로 색상 결정 (일관된 결과를 위해)
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const gradients = [
-    "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
-    "linear-gradient(135deg, #0d1b2a 0%, #1b2838 50%, #2c3e50 100%)",
-    "linear-gradient(135deg, #1a1a1a 0%, #2d1f1f 50%, #4a2020 100%)",
-    "linear-gradient(135deg, #0a192f 0%, #172a45 50%, #203a5c 100%)",
-    "linear-gradient(135deg, #1c1c2e 0%, #2a1f3d 50%, #3d2b5a 100%)",
-    "linear-gradient(135deg, #1a2332 0%, #1e3a4a 50%, #1e5162 100%)",
-  ];
-  return gradients[Math.abs(hash) % gradients.length];
-}
+// -- 대회 유형별 그라디언트 (경기 카드와 동일한 패턴) --
+const FORMAT_GRADIENT: Record<string, { gradient: string; icon: string }> = {
+  // 토너먼트 계열: 빨강→진빨강
+  single_elimination: {
+    gradient: "linear-gradient(135deg, #7f1d1d, #dc2626, #b91c1c)",
+    icon: "emoji_events",
+  },
+  double_elimination: {
+    gradient: "linear-gradient(135deg, #7f1d1d, #dc2626, #b91c1c)",
+    icon: "emoji_events",
+  },
+  // 리그 계열: 파랑→네이비
+  round_robin: {
+    gradient: "linear-gradient(135deg, #1e3a5f, #1d4ed8, #312e81)",
+    icon: "leaderboard",
+  },
+  // 풀리그+토너먼트 혼합: 보라→남색
+  hybrid: {
+    gradient: "linear-gradient(135deg, #312e81, #6d28d9, #4338ca)",
+    icon: "hub",
+  },
+};
 
-// -- 스켈레톤 UI: 새 디자인에 맞춘 카드형 스켈레톤 --
+// 기본값 (유형 미지정 시): 빨강 계열
+const DEFAULT_FORMAT_STYLE = {
+  gradient: "linear-gradient(135deg, #7f1d1d, #dc2626, #b91c1c)",
+  icon: "emoji_events",
+};
+
+// -- 스켈레톤 UI: 경기 카드와 동일한 컴팩트 스켈레톤 --
 function TournamentGridSkeleton() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {Array.from({ length: 6 }).map((_, i) => (
         <div
           key={i}
-          className="rounded overflow-hidden"
-          style={{
-            backgroundColor: "var(--color-card)",
-            border: "1px solid var(--color-border)",
-          }}
+          className="rounded-xl overflow-hidden bg-[var(--color-card)] border border-[var(--color-border)]"
         >
-          {/* 이미지 배너 스켈레톤 */}
-          {/* 이미지 배너 스켈레톤 -- 모바일 가독성 위해 h-36으로 축소 */}
-          <Skeleton className="h-36 w-full" />
-          <div className="p-6 space-y-3">
+          {/* 이미지 영역 스켈레톤: h-20 lg:h-28 (경기 카드와 동일) */}
+          <Skeleton className="h-20 lg:h-28 w-full rounded-none" />
+          <div className="p-3 space-y-2">
+            {/* 제목 + 팀수 한 줄 */}
             <div className="flex justify-between">
-              <Skeleton className="h-5 w-3/5" />
-              <Skeleton className="h-5 w-16" />
+              <Skeleton className="h-4 w-3/5 rounded" />
+              <Skeleton className="h-4 w-12 rounded" />
             </div>
-            <Skeleton className="h-4 w-2/3" />
-            <Skeleton className="h-4 w-1/2" />
-            <Skeleton className="h-1.5 w-full rounded-full" />
-            <Skeleton className="h-10 w-full rounded" />
+            {/* 참가비 + 버튼 한 줄 */}
+            <div className="flex justify-between">
+              <Skeleton className="h-4 w-16 rounded" />
+              <Skeleton className="h-6 w-12 rounded" />
+            </div>
           </div>
         </div>
       ))}
@@ -105,153 +113,82 @@ function TournamentGridSkeleton() {
   );
 }
 
-// -- 대회 카드: 시안의 이미지 배너 + 정보 + 프로그레스 + JOIN 버튼 --
+// -- 대회 카드: 경기 카드와 동일한 컴팩트 스타일 --
+// 구조: 이미지(h-20 lg:h-28) + 정보(p-3) 2행
 function TournamentCard({ tournament: t }: { tournament: TournamentFromApi }) {
   const st = t.status ?? "draft";
   const badge = STATUS_BADGE[st] ?? { label: st.toUpperCase(), bg: "var(--color-text-disabled)" };
-  const maxTeams = t.max_teams ?? 16;
-  const location = [t.city, t.venue_name].filter(Boolean).join(" ");
+  const maxTeams = t.max_teams ?? 0;
+  const location = t.venue_name ?? t.city ?? "";
   const hasFee = t.entry_fee && Number(t.entry_fee) > 0;
-  const feeText = hasFee ? `\u20A9${Number(t.entry_fee).toLocaleString()}` : "FREE";
+  const feeText = hasFee ? `\u20A9${Number(t.entry_fee).toLocaleString()}` : "무료";
+  const isFull = maxTeams > 0 && t.team_count >= maxTeams;
 
-  // 참가팀 프로그레스바 계산
-  const pct = maxTeams > 0 ? Math.min((t.team_count / maxTeams) * 100, 100) : 0;
+  // 대회 유형에 따른 그라디언트+아이콘 결정
+  const formatStyle = FORMAT_GRADIENT[t.format ?? ""] ?? DEFAULT_FORMAT_STYLE;
 
   return (
     <Link href={`/tournaments/${t.id}`} prefetch={true}>
-      {/* 카드 컨테이너: 호버 시 그림자 강화 */}
-      <div
-        className="group flex flex-col rounded overflow-hidden transition-all duration-300 h-full"
-        style={{
-          backgroundColor: "var(--color-card)",
-          border: "1px solid var(--color-border)",
-        }}
-      >
-        {/* 상단 이미지 배너: DB에 이미지가 없으므로 그라디언트 배경 + 대회 이니셜 */}
+      <div className={`group rounded-xl overflow-hidden border border-[var(--color-border)] bg-[var(--color-card)] hover:shadow-lg transition-all h-full ${isFull ? "opacity-70 grayscale" : ""}`}>
+        {/* 이미지 영역: 유형별 그라디언트 + 반투명 아이콘 */}
         <div
-          className="relative h-36 overflow-hidden flex items-center justify-center"
-          style={{ background: getGradient(t.name) }}
+          className="relative h-20 lg:h-28 flex items-center justify-center"
+          style={{ background: formatStyle.gradient }}
         >
-          {/* 대회명 이니셜 (배경 장식) */}
-          <span
-            className="text-6xl font-bold opacity-20 select-none"
-            style={{ fontFamily: "var(--font-heading)", color: "white" }}
-          >
-            {t.name.charAt(0)}
+          {/* 반투명 대형 아이콘 (배경 장식) */}
+          <span className="material-symbols-outlined text-5xl text-white/20">
+            {formatStyle.icon}
           </span>
-          {/* 스포츠 아이콘 오버레이 */}
+
+          {/* 상태 배지 (좌상단) */}
           <span
-            className="material-symbols-outlined absolute bottom-4 right-4 text-4xl opacity-10"
-            style={{ color: "white" }}
-          >
-            emoji_events
-          </span>
-          {/* 상태 배지 */}
-          <div
-            className="absolute top-4 left-4 text-white text-xs font-bold px-2 py-1 rounded tracking-wider"
+            className="absolute top-2 left-2 rounded px-2 py-0.5 text-xs font-bold text-white"
             style={{ backgroundColor: badge.bg }}
           >
             {badge.label}
+          </span>
+
+          {/* 장소 + 날짜 뱃지 (우하단, 경기 카드와 동일 패턴) */}
+          <div className="absolute bottom-2 right-2 flex flex-col items-end gap-1">
+            {location && (
+              <span className="flex items-center gap-1 rounded bg-black/50 px-1.5 py-0.5 text-xs text-white backdrop-blur-sm">
+                <span className="material-symbols-outlined text-xs">location_on</span>
+                <span className="line-clamp-1 max-w-[140px]">{location}</span>
+              </span>
+            )}
+            {t.start_date && (
+              <span className="flex items-center gap-1 rounded bg-black/50 px-1.5 py-0.5 text-xs text-white backdrop-blur-sm">
+                <span className="material-symbols-outlined text-xs">calendar_today</span>
+                {formatShortDate(t.start_date)}
+              </span>
+            )}
           </div>
-          {/* 형식 배지 (우측 상단) */}
-          {t.format && (
-            <div
-              className="absolute top-4 right-4 text-xs font-bold px-2 py-1 rounded tracking-wider"
-              style={{
-                backgroundColor: "rgba(255,255,255,0.15)",
-                backdropFilter: "blur(4px)",
-                color: "white",
-              }}
-            >
-              {FORMAT_LABEL[t.format] ?? t.format}
-            </div>
-          )}
         </div>
 
-        {/* 카드 본문 */}
-        <div className="p-6 flex-1 flex flex-col">
-          {/* 대회명 + 참가비 */}
-          <div className="flex justify-between items-start mb-3">
-            <h3
-              className="font-semibold text-lg line-clamp-1 leading-tight"
-              style={{ color: "var(--color-text-primary)" }}
-            >
+        {/* 정보 영역: 제목+팀수 한 줄, 참가비+버튼 한 줄 */}
+        <div className="p-3">
+          {/* 1행: 대회 제목 + 참가팀 현황 */}
+          <div className="flex items-start justify-between gap-2 mb-1.5">
+            <h3 className="text-sm font-bold line-clamp-1 text-[var(--color-text-primary)] flex-1">
               {t.name}
             </h3>
-            <span
-              className="font-bold text-sm shrink-0 ml-2"
-              style={{
-                fontFamily: "var(--font-heading)",
-                color: "var(--color-primary)",
-              }}
-            >
-              {feeText}
-            </span>
-          </div>
-
-          {/* 날짜 + 장소 정보 */}
-          <div className="space-y-2 mb-6">
-            {t.start_date && (
-              <div
-                className="flex items-center gap-2 text-sm"
-                style={{ color: "var(--color-text-muted)" }}
-              >
-                <span className="material-symbols-outlined text-base">calendar_today</span>
-                {formatShortDate(t.start_date)}
-              </div>
-            )}
-            {location && (
-              <div
-                className="flex items-center gap-2 text-sm"
-                style={{ color: "var(--color-text-muted)" }}
-              >
-                <span className="material-symbols-outlined text-base">location_on</span>
-                <span className="line-clamp-1">{location}</span>
-              </div>
-            )}
-          </div>
-
-          {/* 하단 영역: 프로그레스바 + JOIN 버튼 */}
-          <div className="mt-auto">
-            {/* Recruitment 프로그레스 */}
             {maxTeams > 0 && (
-              <>
-                <div className="flex justify-between items-end mb-2">
-                  <span
-                    className="text-xs font-medium"
-                    style={{ color: "var(--color-text-secondary)" }}
-                  >
-                    모집현황: {Math.round(pct)}%
-                  </span>
-                  <span
-                    className="text-xs font-bold"
-                    style={{ color: "var(--color-text-primary)" }}
-                  >
-                    {t.team_count}/{maxTeams} 팀
-                  </span>
-                </div>
-                <div
-                  className="w-full h-1.5 rounded-full mb-6 overflow-hidden"
-                  style={{ backgroundColor: "var(--color-border)" }}
-                >
-                  <div
-                    className="h-full rounded-full transition-all"
-                    style={{
-                      width: `${pct}%`,
-                      backgroundColor: "var(--color-primary)",
-                    }}
-                  />
-                </div>
-              </>
+              <span className="shrink-0 text-xs font-bold text-[var(--color-primary)]">
+                {t.team_count}/{maxTeams}팀
+              </span>
             )}
+          </div>
 
-            {/* JOIN TOURNAMENT 버튼 */}
-            <button
-              className="w-full font-bold py-3 rounded text-sm uppercase tracking-tight transition-colors text-white"
-              style={{ backgroundColor: "var(--color-primary)" }}
-            >
-              대회 참여
-            </button>
+          {/* 2행: 참가비 + 참여 버튼 */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-bold text-[var(--color-text-primary)]">
+              {hasFee ? feeText : <span className="text-xs text-[var(--color-text-muted)]">무료</span>}
+            </span>
+            {isFull ? (
+              <span className="text-xs font-bold text-[var(--color-text-muted)] bg-[var(--color-border)] px-3 py-1 rounded">마감</span>
+            ) : (
+              <span className="text-xs font-bold text-white bg-[var(--color-primary)] px-3 py-1 rounded">참여</span>
+            )}
           </div>
         </div>
       </div>
