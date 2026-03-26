@@ -127,14 +127,17 @@ function GameCard({ game }: { game: GameFromApi }) {
   return (
     <Link href={href}>
       <div className={`group rounded-xl overflow-hidden border border-[var(--color-border)] bg-[var(--color-card)] hover:shadow-lg transition-all h-full ${isFullyBooked ? "opacity-70 grayscale" : ""}`}>
-        {/* 이미지 영역: 장소 사진이 있으면 표시, 없으면 basketball 아이콘 placeholder */}
+        {/* 이미지 영역: 장소 사진 → 유형별 그라디언트+아이콘 fallback */}
         <div
-          className="relative h-20 lg:h-28 bg-[var(--color-surface)] flex items-center justify-center bg-cover bg-center"
-          style={photoUrl ? { backgroundImage: `url(${photoUrl})` } : undefined}
+          className="relative h-20 lg:h-28 flex items-center justify-center bg-cover bg-center"
+          style={photoUrl
+            ? { backgroundImage: `url(${photoUrl})` }
+            : { background: badge.gradient }
+          }
         >
-          {/* 사진이 없을 때만 placeholder 아이콘 표시 */}
+          {/* 사진이 없을 때: 유형별 아이콘 (반투명) */}
           {!photoUrl && (
-            <span className="material-symbols-outlined text-4xl text-[var(--color-text-muted)] opacity-30">sports_basketball</span>
+            <span className="material-symbols-outlined text-5xl text-white/20">{badge.icon}</span>
           )}
 
           {/* FULLY BOOKED 오버레이 */}

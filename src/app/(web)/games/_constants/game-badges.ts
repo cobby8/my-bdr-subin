@@ -4,11 +4,11 @@
  * 모든 색상은 CSS 변수 참조 (하드코딩 금지)
  */
 
-// 경기 유형별 뱃지 (픽업/게스트/연습)
-export const TYPE_BADGE: Record<number, { label: string; color: string; bg: string }> = {
-  0: { label: "PICKUP",   color: "var(--color-on-primary)", bg: "var(--color-badge-blue)" },
-  1: { label: "GUEST",    color: "var(--color-on-primary)", bg: "var(--color-badge-green)" },
-  2: { label: "PRACTICE", color: "var(--color-on-primary)", bg: "var(--color-badge-amber)" },
+// 경기 유형별 뱃지 (픽업/게스트/연습) + placeholder 그라디언트
+export const TYPE_BADGE: Record<number, { label: string; color: string; bg: string; gradient: string; icon: string }> = {
+  0: { label: "PICKUP",   color: "var(--color-on-primary)", bg: "var(--color-badge-blue)",  gradient: "linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #7c3aed 100%)", icon: "sports_basketball" },
+  1: { label: "GUEST",    color: "var(--color-on-primary)", bg: "var(--color-badge-green)", gradient: "linear-gradient(135deg, #1a3c2a 0%, #16a34a 50%, #0d9488 100%)", icon: "group_add" },
+  2: { label: "PRACTICE", color: "var(--color-on-primary)", bg: "var(--color-badge-amber)", gradient: "linear-gradient(135deg, #4a2c0a 0%, #d97706 50%, #ea580c 100%)", icon: "fitness_center" },
 };
 
 // 경기 상태 라벨 (모집중/확정/완료/취소)
