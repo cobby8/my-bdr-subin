@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TOURNAMENT_STATUS_LABEL } from "@/lib/constants/tournament-status";
 import { usePreferFilter } from "@/contexts/prefer-filter-context";
+import { formatShortDate } from "@/lib/utils/format-date";
 
 // API 응답 타입 (snake_case로 자동 변환됨)
 interface TournamentFromApi {
@@ -52,16 +53,7 @@ const FORMAT_LABEL: Record<string, string> = {
   hybrid: "혼합",
 };
 
-// -- 날짜 포맷 (시안의 "2024.12.15 (Sun)" 형식) --
-function formatDate(isoStr: string | null): string {
-  if (!isoStr) return "";
-  const d = new Date(isoStr);
-  const days = ["일", "월", "화", "수", "목", "금", "토"];
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${yyyy}.${mm}.${dd} (${days[d.getDay()]})`;
-}
+// -- 날짜 포맷: 공통 유틸 사용 (format-date.ts의 formatShortDate) --
 
 // -- 대회 이름 기반 그라디언트 색상 생성 (이미지 대체용) --
 function getGradient(name: string): string {
@@ -205,7 +197,7 @@ function TournamentCard({ tournament: t }: { tournament: TournamentFromApi }) {
                 style={{ color: "var(--color-text-muted)" }}
               >
                 <span className="material-symbols-outlined text-base">calendar_today</span>
-                {formatDate(t.start_date)}
+                {formatShortDate(t.start_date)}
               </div>
             )}
             {location && (

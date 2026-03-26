@@ -14,6 +14,7 @@
 import Link from "next/link";
 import useSWR from "swr";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatShortDate, formatShortTime } from "@/lib/utils/format-date";
 
 /* 세션 정보: 서버에서 getWebSession()으로 받은 JwtPayload를 전달받는다 */
 interface UserSession {
@@ -67,20 +68,7 @@ const DEFAULT_TYPE_CONFIG = {
   gradient: "linear-gradient(135deg, var(--color-primary), #1e40af)",
 };
 
-/* ---- 날짜/시간 포맷 헬퍼 ---- */
-/* ISO 문자열을 "MM.DD" 형태로 변환 */
-function formatDate(iso: string | null): string {
-  if (!iso) return "--";
-  const d = new Date(iso);
-  return `${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
-}
-
-/* ISO 문자열을 "HH:MM" 형태로 변환 */
-function formatTime(iso: string | null): string {
-  if (!iso) return "--:--";
-  const d = new Date(iso);
-  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
-}
+/* ---- 날짜/시간 포맷: 공통 유틸 사용 (format-date.ts) ---- */
 
 /* ---- API 실패 시 보여줄 fallback 더미 데이터 ---- */
 const FALLBACK_GAMES: RecommendedGame[] = [
@@ -228,12 +216,12 @@ function GameCard({ game }: { game: RecommendedGame }) {
           {/* 날짜 */}
           <span className="flex items-center gap-1">
             <span className="material-symbols-outlined text-base">calendar_today</span>
-            {formatDate(game.scheduled_at)}
+            {formatShortDate(game.scheduled_at) || "--"}
           </span>
           {/* 시간 */}
           <span className="flex items-center gap-1">
             <span className="material-symbols-outlined text-base">schedule</span>
-            {formatTime(game.scheduled_at)}
+            {formatShortTime(game.scheduled_at)}
           </span>
           {/* 장소 (있을 때만) */}
           {location && (

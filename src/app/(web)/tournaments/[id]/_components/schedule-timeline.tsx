@@ -9,6 +9,7 @@
 
 import { useState, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
+import { formatShortTime, formatGroupDate } from "@/lib/utils/format-date";
 
 // -- 타입 정의: 서버에서 넘겨받을 경기 데이터 구조 --
 export interface ScheduleMatch {
@@ -38,15 +39,8 @@ function groupByDate(matches: ScheduleMatch[]): Map<string, ScheduleMatch[]> {
   const groups = new Map<string, ScheduleMatch[]>();
 
   for (const match of matches) {
-    // 날짜가 없으면 "미정" 그룹으로
-    const dateKey = match.scheduledAt
-      ? new Date(match.scheduledAt).toLocaleDateString("ko-KR", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-          weekday: "short",
-        })
-      : "일정 미정";
+    // 날짜가 없으면 "일정 미정" 그룹으로, 있으면 간결한 포맷 사용
+    const dateKey = formatGroupDate(match.scheduledAt);
 
     if (!groups.has(dateKey)) {
       groups.set(dateKey, []);
@@ -57,12 +51,7 @@ function groupByDate(matches: ScheduleMatch[]): Map<string, ScheduleMatch[]> {
   return groups;
 }
 
-// -- 시간 포맷 유틸 (HH:MM) --
-function formatTime(isoString: string | null): string {
-  if (!isoString) return "--:--";
-  const d = new Date(isoString);
-  return d.toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false });
-}
+// -- 시간 포맷: 공통 유틸 사용 (format-date.ts의 formatShortTime) --
 
 // -- 상태 배지 렌더링 --
 function StatusBadge({ status }: { status: string | null }) {
@@ -188,7 +177,7 @@ export function ScheduleTimeline({ matches, teams }: Props) {
                       className="w-14 flex-shrink-0 pt-4 text-right text-sm font-medium"
                       style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-heading)" }}
                     >
-                      {formatTime(match.scheduledAt)}
+                      {formatShortTime(match.scheduledAt)}
                     </div>
 
                     {/* 가운데: 타임라인 점 + 선 */}

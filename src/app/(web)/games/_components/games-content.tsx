@@ -3,8 +3,14 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import useSWR from "swr";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePreferFilter } from "@/contexts/prefer-filter-context";
+import { formatRelativeDateTime } from "@/lib/utils/format-date";
+
+// SWR fetcher: JSON 응답에서 photo_url 추출
+const photoFetcher = (url: string) =>
+  fetch(url).then((res) => res.json()).then((data) => data.photo_url as string | null);
 
 // API에서 내려오는 경기 데이터 타입 (snake_case로 자동 변환됨) - 기존 유지
 interface GameFromApi {
@@ -108,21 +114,28 @@ function GameCard({ game }: { game: GameFromApi }) {
     ? `\u20A9${Number(game.fee_per_person).toLocaleString()}`
     : null;
 
-  // ISO string -> 한국 시간 포맷
-  const timeStr = game.scheduled_at
-    ? new Date(game.scheduled_at).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Seoul" })
-    : "";
+  // ISO string -> 간결한 상대 시간 포맷 ("오늘 19:00" / "내일 14:00" / "3/22 19:00")
+  const scheduleStr = formatRelativeDateTime(game.scheduled_at);
 
-  const dateStr = game.scheduled_at
-    ? new Date(game.scheduled_at).toLocaleDateString("ko-KR", { month: "short", day: "numeric", timeZone: "Asia/Seoul" })
-    : "";
+  // 장소명이 있으면 Google Places API로 사진 조회 (SWR 캐시로 중복 호출 방지)
+  const { data: photoUrl } = useSWR(
+    location ? `/api/web/place-photo?query=${encodeURIComponent(location)}` : null,
+    photoFetcher,
+    { revalidateOnFocus: false, dedupingInterval: 3600000 } // 1시간 동안 같은 요청 중복 방지
+  );
 
   return (
     <Link href={href}>
       <div className={`group rounded-xl overflow-hidden border border-[var(--color-border)] bg-[var(--color-card)] hover:shadow-lg transition-all h-full ${isFullyBooked ? "opacity-70 grayscale" : ""}`}>
-        {/* 이미지 영역: 유형 뱃지 + 위치/시간 뱃지 */}
-        <div className="relative h-20 lg:h-28 bg-[var(--color-surface)] flex items-center justify-center">
-          <span className="material-symbols-outlined text-4xl text-[var(--color-text-muted)] opacity-30">sports_basketball</span>
+        {/* 이미지 영역: 장소 사진이 있으면 표시, 없으면 basketball 아이콘 placeholder */}
+        <div
+          className="relative h-20 lg:h-28 bg-[var(--color-surface)] flex items-center justify-center bg-cover bg-center"
+          style={photoUrl ? { backgroundImage: `url(${photoUrl})` } : undefined}
+        >
+          {/* 사진이 없을 때만 placeholder 아이콘 표시 */}
+          {!photoUrl && (
+            <span className="material-symbols-outlined text-4xl text-[var(--color-text-muted)] opacity-30">sports_basketball</span>
+          )}
 
           {/* FULLY BOOKED 오버레이 */}
           {isFullyBooked && (
@@ -147,10 +160,10 @@ function GameCard({ game }: { game: GameFromApi }) {
                 <span className="line-clamp-1 max-w-[140px]">{location}</span>
               </span>
             )}
-            {(dateStr || timeStr) && (
+            {scheduleStr && (
               <span className="flex items-center gap-1 rounded bg-black/50 px-1.5 py-0.5 text-xs text-white backdrop-blur-sm">
                 <span className="material-symbols-outlined text-xs">schedule</span>
-                {dateStr} {timeStr}
+                {scheduleStr}
               </span>
             )}
           </div>

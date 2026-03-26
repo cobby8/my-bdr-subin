@@ -7,6 +7,7 @@
  */
 
 import { Badge } from "@/components/ui/badge";
+import { formatDateRange } from "@/lib/utils/format-date";
 
 // 대회 포맷 한글 매핑
 const FORMAT_LABEL: Record<string, string> = {
@@ -59,10 +60,8 @@ export function TournamentHero({
   // 포맷 한글 변환
   const formatLabel = FORMAT_LABEL[format ?? ""] ?? FORMAT_LABEL[(format ?? "").toLowerCase()] ?? format ?? "";
 
-  // 날짜 포맷: 간결하게 표시
-  const dateStr = startDate
-    ? `${startDate.toLocaleDateString("ko-KR")}${endDate && endDate.getTime() !== startDate.getTime() ? ` ~ ${endDate.toLocaleDateString("ko-KR")}` : ""}`
-    : null;
+  // 날짜 포맷: "3/22(토) ~ 3/24(월)" 간결 표시
+  const dateStr = formatDateRange(startDate, endDate) || null;
 
   // 장소 문자열
   const venueStr = [city, venueName].filter(Boolean).join(" ");
