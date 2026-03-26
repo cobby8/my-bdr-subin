@@ -68,7 +68,7 @@ export function TournamentDashboardHeader({
             className="px-4 py-2 rounded text-sm font-semibold transition-opacity hover:opacity-90"
             style={{
               backgroundColor: "var(--color-secondary)",
-              color: "#fff",
+              color: "var(--color-on-primary)",
             }}
           >
             <span className="material-symbols-outlined text-base align-middle mr-1">

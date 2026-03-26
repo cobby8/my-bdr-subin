@@ -309,7 +309,7 @@ export default async function CommunityPostPage({ params }: { params: Promise<{ 
                           {c.user_id === post.user_id && (
                             <span
                               className="text-[8px] px-1 py-0.5 rounded font-bold uppercase tracking-tighter"
-                              style={{ backgroundColor: "var(--color-primary)", color: "#fff" }}
+                              style={{ backgroundColor: "var(--color-primary)", color: "var(--color-on-primary)" }}
                             >
                               작성자
                             </span>

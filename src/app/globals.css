@@ -82,6 +82,35 @@
   --color-gradient-end: #1B3C87;     /* CTA 그라디언트 끝 (Red→Navy) */
   --color-glass-bg: rgba(26, 26, 26, 0.7); /* 글래스 배경 (쿨 그레이 톤) */
   --color-glass-blur: 20px;          /* 글래스 블러 값 */
+
+  /* --- 경기 유형별 색상 (Game Type Colors) --- */
+  --color-game-pickup: #E31B23;      /* 픽업 = Primary Red */
+  --color-game-guest: #60A5FA;       /* 게스트 모집 = 밝은 파랑 */
+  --color-game-team: #4ADE80;        /* 팀 대결 = 밝은 초록 */
+
+  /* --- 경기 뱃지 색상 (Badge Colors) --- */
+  --color-badge-blue: #2563EB;       /* 픽업/확정 뱃지 */
+  --color-badge-green: #16A34A;      /* 게스트/모집중 뱃지 */
+  --color-badge-amber: #D97706;      /* 연습 뱃지 */
+  --color-badge-red: #DC2626;        /* 상급/에러 뱃지 */
+  --color-badge-gray: #6B7280;       /* 완료/비활성 뱃지 */
+
+  /* --- 상태 색상 (Status Semantic) --- */
+  --color-status-live: #E31B23;      /* 라이브/진행중 */
+  --color-status-open: #16A34A;      /* 모집중 */
+  --color-status-confirmed: #2563EB; /* 확정 */
+  --color-status-closed: #6B7280;    /* 완료/마감 */
+  --color-status-cancelled: #EF4444; /* 취소 */
+
+  /* --- 티어 색상 (Tier Colors) --- */
+  --color-tier-bronze: #CD7F32;
+  --color-tier-silver: #C0C0C0;
+  --color-tier-gold: #FFD700;
+  --color-tier-platinum: #A78BFA;
+  --color-tier-trophy: #F4A261;      /* 대회 트로피/하이라이트 */
+
+  /* --- AI/특수 기능 색상 --- */
+  --color-ai-purple: #7C3AED;       /* AI 기능 버튼 */
 }
 
 /* ---- Dark Mode ---- */

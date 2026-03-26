@@ -376,7 +376,7 @@ export function CommunityContent() {
                     className="w-10 h-10 flex items-center justify-center rounded font-bold text-sm transition-colors"
                     style={
                       page === currentPage
-                        ? { backgroundColor: "var(--color-primary)", color: "#fff" }
+                        ? { backgroundColor: "var(--color-primary)", color: "var(--color-on-primary)" }
                         : {
                             border: "1px solid var(--color-border)",
                             backgroundColor: "var(--color-card)",
@@ -482,7 +482,7 @@ function PostCard({ post }: { post: PostFromApi }) {
             className="text-[10px] px-2 py-0.5 rounded font-bold uppercase"
             style={{
               backgroundColor: "var(--color-primary)",
-              color: "#fff",
+              color: "var(--color-on-primary)",
               opacity: 0.9,
             }}
           >

@@ -46,7 +46,7 @@ function getStatusBadge(game: GameFromApi): { text: string; className: string } 
 
   // 인원 가득 -> FULLY BOOKED (회색)
   if (pct >= 100) {
-    return { text: "만석", className: "bg-[#555555] text-white" };
+    return { text: "만석", className: "bg-[var(--color-text-disabled)] text-white" };
   }
 
   // 모집중이고 24시간 이내 시작 -> STARTS SOON (노란색)

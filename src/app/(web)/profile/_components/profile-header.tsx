@@ -39,9 +39,9 @@ const POSITION_FULL: Record<string, string> = {
  */
 function getTierBadge(totalGames: number): { label: string; color: string } {
   if (totalGames >= 100) return { label: "PLATINUM", color: "var(--color-tertiary)" };
-  if (totalGames >= 60) return { label: "GOLD", color: "#F59E0B" };
-  if (totalGames >= 30) return { label: "SILVER", color: "#9CA3AF" };
-  if (totalGames >= 10) return { label: "BRONZE", color: "#CD7F32" };
+  if (totalGames >= 60) return { label: "GOLD", color: "var(--color-tier-gold)" };
+  if (totalGames >= 30) return { label: "SILVER", color: "var(--color-tier-silver)" };
+  if (totalGames >= 10) return { label: "BRONZE", color: "var(--color-tier-bronze)" };
   return { label: "ROOKIE", color: "var(--color-text-muted)" };
 }
 

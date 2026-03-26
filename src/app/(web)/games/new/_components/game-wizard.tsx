@@ -627,7 +627,7 @@ function SummaryCard({
 }) {
   return (
     // sticky로 스크롤 시에도 고정, 네이비 배경
-    <div className="sticky top-24 bg-[#1B3C87] text-white p-6 rounded-xl shadow-lg">
+    <div className="sticky top-24 bg-[var(--color-accent)] text-white p-6 rounded-xl shadow-lg">
       <h3 className="font-bold text-xl mb-4" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
         Summary
       </h3>

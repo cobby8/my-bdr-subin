@@ -39,10 +39,10 @@ interface PostData {
 // DB에 별도 랭크 시스템이 없으므로 총 경기수로 임시 티어 부여
 function getTier(gamesPlayed: number): { label: string; color: string } {
   if (gamesPlayed >= 200) return { label: "Diamond", color: "var(--color-primary)" };
-  if (gamesPlayed >= 100) return { label: "Platinum", color: "#A78BFA" };
-  if (gamesPlayed >= 50) return { label: "Gold", color: "#F59E0B" };
-  if (gamesPlayed >= 20) return { label: "Silver", color: "#94A3B8" };
-  return { label: "Bronze", color: "#CD7F32" };
+  if (gamesPlayed >= 100) return { label: "Platinum", color: "var(--color-tier-platinum)" };
+  if (gamesPlayed >= 50) return { label: "Gold", color: "var(--color-tier-gold)" };
+  if (gamesPlayed >= 20) return { label: "Silver", color: "var(--color-tier-silver)" };
+  return { label: "Bronze", color: "var(--color-tier-bronze)" };
 }
 
 /* ---------- Fallback 데이터 (API 실패 시 표시) ---------- */

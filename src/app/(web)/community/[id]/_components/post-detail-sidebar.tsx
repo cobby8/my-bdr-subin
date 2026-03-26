@@ -208,13 +208,13 @@ export async function PostDetailSidebar({
         <div className="relative z-10">
           <span
             className="text-[10px] font-bold px-2 py-1 rounded w-fit mb-3 inline-block"
-            style={{ backgroundColor: "var(--color-primary)", color: "#fff" }}
+            style={{ backgroundColor: "var(--color-primary)", color: "var(--color-on-primary)" }}
           >
             HOT EVENT
           </span>
           <h4
             className="text-xl font-bold mb-2 leading-tight"
-            style={{ color: "#fff" }}
+            style={{ color: "var(--color-on-primary)" }}
           >
             BDR 3x3 아마추어 챔피언십 모집
           </h4>
@@ -223,7 +223,7 @@ export async function PostDetailSidebar({
           </p>
           <button
             className="py-2 px-4 rounded text-xs font-bold uppercase transition-colors"
-            style={{ backgroundColor: "#fff", color: "#000" }}
+            style={{ backgroundColor: "var(--color-on-primary)", color: "var(--color-text-primary)" }}
           >
             View Detail
           </button>

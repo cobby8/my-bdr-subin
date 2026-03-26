@@ -1,6 +1,5 @@
 import { type ReactNode } from "react";
 import Link from "next/link";
-// lucide-react 제거 → Material Symbols Outlined 사용
 
 interface SectionWrapperProps {
   title: string;

@@ -71,7 +71,7 @@ export function FinalsSidebar({
           <button
             className="w-full mt-8 py-4 font-bold text-sm rounded uppercase tracking-widest transition-colors"
             style={{
-              backgroundColor: "#fff",
+              backgroundColor: "var(--color-on-primary)",
               color: "var(--color-primary)",
             }}
           >
@@ -136,7 +136,7 @@ export function FinalsSidebar({
             style={{
               fontSize: "128px",
               fontVariationSettings: "'FILL' 1",
-              color: "#fff",
+              color: "var(--color-on-primary)",
             }}
           >
             shopping_bag
