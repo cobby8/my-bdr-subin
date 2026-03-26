@@ -27,28 +27,8 @@ interface GamesApiResponse {
   cities: string[];
 }
 
-// -- 경기 유형 뱃지 매핑 (기존 유지) --
-const TYPE_BADGE: Record<number, { label: string; color: string; bg: string }> = {
-  0: { label: "PICKUP",   color: "#FFFFFF", bg: "#2563EB" },
-  1: { label: "GUEST",    color: "#FFFFFF", bg: "#16A34A" },
-  2: { label: "PRACTICE", color: "#FFFFFF", bg: "#D97706" },
-};
-
-// -- 경기 상태 라벨 매핑 (기존 유지) --
-const STATUS_LABEL: Record<number, { text: string; color: string }> = {
-  1: { text: "모집중", color: "#16A34A" },
-  2: { text: "확정",   color: "#2563EB" },
-  3: { text: "완료",   color: "#6B7280" },
-  4: { text: "취소",   color: "#EF4444" },
-};
-
-// -- 실력 뱃지 매핑 (기존 유지) --
-const SKILL_BADGE: Record<string, { label: string; color: string; bg: string }> = {
-  beginner:               { label: "초급",   color: "#16A34A", bg: "rgba(22,163,74,0.10)" },
-  intermediate:           { label: "중급",   color: "#2563EB", bg: "rgba(37,99,235,0.10)" },
-  intermediate_advanced:  { label: "중상",   color: "#D97706", bg: "rgba(217,119,6,0.10)" },
-  advanced:               { label: "상급",   color: "#DC2626", bg: "rgba(220,38,38,0.10)" },
-};
+// 경기 뱃지/라벨 상수 (공통 파일에서 import)
+import { TYPE_BADGE, SKILL_BADGE } from "../_constants/game-badges";
 
 /**
  * 상태 배지 계산 - 디자인 시안 기반

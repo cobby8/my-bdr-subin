@@ -20,7 +20,7 @@ const sideNavItems = [
   { href: "/games", label: "경기찾기", icon: "sports_basketball" },
   { href: "/tournaments", label: "대회", icon: "emoji_events" },
   { href: "/teams", label: "팀", icon: "groups" },
-  { href: "#", label: "랭킹", icon: "leaderboard" },
+  { href: "/rankings", label: "랭킹", icon: "leaderboard" },
   { href: "/community", label: "커뮤니티", icon: "forum" },
 ];
 
