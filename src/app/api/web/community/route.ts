@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
         id: true,
         public_id: true,
         title: true,
-        content: true,           // 120자 미리보기용 (DB 레벨에서 제한 불가)
+        // content 제외: 목록에서는 본문이 불필요, 상세 페이지에서 별도 조회
         category: true,
         created_at: true,
         view_count: true,
@@ -104,7 +104,7 @@ export async function GET(request: NextRequest) {
       createdAt: p.created_at?.toISOString() ?? null,          // Date -> ISO string
       authorNickname: p.users?.nickname ?? "익명",              // 작성자 닉네임 추출
       authorProfileImage: p.users?.profile_image_url ?? null,  // 작성자 프로필 이미지 URL
-      contentPreview: p.content?.slice(0, 120) ?? "",          // 본문 미리보기 (앞 120자)
+      contentPreview: "",                                        // 목록에서 본문 미리보기 제거 (성능 최적화)
     }));
 
     // 선호 카테고리 목록도 함께 반환 (프론트엔드에서 하이라이트 표시용)

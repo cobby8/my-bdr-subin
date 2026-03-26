@@ -114,21 +114,34 @@ function CommunityGridSkeleton() {
   );
 }
 
+// 서버 프리페치 데이터를 받기 위한 props 타입
+interface CommunityContentProps {
+  // 서버에서 프리페치한 게시글 목록 (optional: 없으면 기존대로 API fetch)
+  fallbackPosts?: PostFromApi[];
+}
+
 /**
  * CommunityContent - 게시판 목록 클라이언트 컴포넌트
  *
  * 2열 레이아웃 (좌: 카테고리탭 + 게시글카드 + 페이지네이션 / 우: 사이드바)
  * 시안(bdr_2/bdr_4) 기반 리디자인
+ *
+ * fallbackPosts가 있으면 초기 로딩 없이 즉시 표시 (서버 프리페치)
+ * 카테고리 변경/검색 시에는 기존대로 클라이언트 API fetch
  */
-export function CommunityContent() {
+export function CommunityContent({ fallbackPosts }: CommunityContentProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
   // 게시글 데이터 + 로딩 상태 + 선호 카테고리 목록
-  const [posts, setPosts] = useState<PostFromApi[]>([]);
-  const [loading, setLoading] = useState(true);
+  // fallbackPosts가 있으면 초기값으로 사용 → 로딩 스켈레톤 없이 즉시 표시
+  const [posts, setPosts] = useState<PostFromApi[]>(fallbackPosts ?? []);
+  const [loading, setLoading] = useState(!fallbackPosts);
   const [preferredCategories, setPreferredCategories] = useState<string[]>([]);
+
+  // 서버 프리페치 데이터를 이미 사용했는지 추적 (첫 fetch를 건너뛰기 위함)
+  const [initialLoadDone, setInitialLoadDone] = useState(!!fallbackPosts);
 
   // 클라이언트 사이드 페이지네이션
   const [currentPage, setCurrentPage] = useState(1);
@@ -155,6 +168,16 @@ export function CommunityContent() {
 
   // API 호출: searchParams 또는 preferFilter 변경 시
   useEffect(() => {
+    // 서버 프리페치 데이터가 있고 첫 렌더링이면 fetch 건너뛰기
+    // (기본 목록은 이미 서버에서 가져왔으므로 중복 요청 방지)
+    // 단, 카테고리/검색/prefer 파라미터가 있으면 프리페치와 조건이 다르므로 fetch 필요
+    const hasFiltersInUrl = searchParams.get("category") || searchParams.get("q") || preferFilter;
+    if (initialLoadDone && !hasFiltersInUrl) {
+      setInitialLoadDone(false); // 다음 변경부터는 정상 fetch
+      return;
+    }
+    setInitialLoadDone(false);
+
     const controller = new AbortController();
     setLoading(true);
 

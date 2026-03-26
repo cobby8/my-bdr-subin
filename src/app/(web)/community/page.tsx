@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { CommunityContent } from "./_components/community-content";
 import CommunityLoading from "./loading";
+import { prefetchCommunity } from "@/lib/services/home";
 
 // SEO: 커뮤니티 페이지 메타데이터
 export const metadata: Metadata = {
@@ -9,20 +10,32 @@ export const metadata: Metadata = {
   description: "농구 이야기를 나누고, 팀원을 모집하고, 정보를 공유하세요.",
 };
 
+// 60초 캐시: 홈 페이지와 동일한 revalidate 설정
+export const revalidate = 60;
+
 /**
- * /community 페이지
+ * /community 페이지 — 서버 프리페치 패턴
  *
- * 서버 컴포넌트는 래퍼 역할만 수행.
- * 실제 데이터 로딩은 CommunityContent (클라이언트 컴포넌트)에서
- * /api/web/community API를 호출하여 처리한다.
+ * 기존: 빈 HTML 전송 후 클라이언트에서 fetch (폭포수 패턴, 체감 느림)
+ * 개선: 서버에서 DB 직접 조회 -> fallbackPosts로 전달 -> 즉시 렌더링
+ *       카테고리 변경/검색 시에는 기존대로 클라이언트 API fetch
  *
- * 기존의 force-dynamic + prisma 직접 호출을 제거하여
- * 서버 렌더링 시 DB 대기로 인한 무한 로딩 문제를 해결.
+ * 패턴 참고: src/app/(web)/page.tsx의 prefetchCommunity -> NotableTeams 전달 방식
  */
-export default function CommunityPage() {
+export default async function CommunityPage() {
+  // 서버에서 기본 게시글 목록 프리페치 (카테고리=전체, 검색=없음)
+  // 실패해도 undefined → 클라이언트가 기존대로 API fetch
+  let fallbackData: Awaited<ReturnType<typeof prefetchCommunity>> | undefined;
+  try {
+    fallbackData = await prefetchCommunity();
+  } catch {
+    fallbackData = undefined;
+  }
+
   return (
     <Suspense fallback={<CommunityLoading />}>
-      <CommunityContent />
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any -- 서버 프리페치 타입과 클라이언트 타입의 null 허용 차이를 맞추기 위한 단언 */}
+      <CommunityContent fallbackPosts={fallbackData?.posts as any} />
     </Suspense>
   );
 }
