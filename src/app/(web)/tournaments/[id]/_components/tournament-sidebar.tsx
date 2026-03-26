@@ -73,13 +73,13 @@ export function TournamentSidebar({
         style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-card)" }}
       >
         <div className="p-4">
-          {/* 얼리버드 안내: 접수 중 + 참가비 있을 때만 */}
+          {/* 얼리버드 안내: 접수 중 + 참가비 있을 때만 (파랑 계열 — 정보성 배지) */}
           {isRegistrationOpen && hasFee && (
             <div
               className="mb-4 rounded-lg px-3 py-2 text-center text-xs font-medium"
               style={{
-                backgroundColor: "color-mix(in srgb, var(--color-primary) 10%, transparent)",
-                color: "var(--color-primary)",
+                backgroundColor: "color-mix(in srgb, var(--color-info) 10%, transparent)",
+                color: "var(--color-info)",
               }}
             >
               <span className="material-symbols-outlined mr-1 align-middle text-sm">local_offer</span>
@@ -119,10 +119,10 @@ export function TournamentSidebar({
               </div>
             )}
 
-            {/* 상금 규모 (DB에 없음 -- placeholder) */}
+            {/* 상금 규모 (DB에 없음 -- placeholder, 파랑 강조) */}
             <div className="flex items-center justify-between">
               <span style={{ color: "var(--color-text-secondary)" }}>상금 규모 (우승)</span>
-              <span className="font-bold" style={{ color: "var(--color-primary)" }}>-</span>
+              <span className="font-bold" style={{ color: "var(--color-info)" }}>-</span>
             </div>
 
             {/* 참가팀 현황 + 프로그레스바 */}
@@ -184,7 +184,7 @@ export function TournamentSidebar({
             className="flex w-full items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:opacity-80"
             style={{ borderColor: "var(--color-border)", color: "var(--color-text)" }}
           >
-            <span className="material-symbols-outlined text-base">share</span>
+            <span className="material-symbols-outlined text-base" style={{ color: "var(--color-info)" }}>share</span>
             대회 공유하기
           </a>
 
@@ -209,13 +209,13 @@ export function TournamentSidebar({
         <h3 className="mb-2.5 text-xs font-bold">도움이 필요하신가요?</h3>
         <div className="space-y-2.5">
           <div className="flex items-center gap-2.5 text-xs">
-            <span className="material-symbols-outlined text-base" style={{ color: "var(--color-primary)" }}>
+            <span className="material-symbols-outlined text-base" style={{ color: "var(--color-info)" }}>
               chat_bubble
             </span>
             <span style={{ color: "var(--color-text-secondary)" }}>1:1 실시간 문의</span>
           </div>
           <div className="flex items-center gap-2.5 text-xs">
-            <span className="material-symbols-outlined text-base" style={{ color: "var(--color-primary)" }}>
+            <span className="material-symbols-outlined text-base" style={{ color: "var(--color-info)" }}>
               mail
             </span>
             <span style={{ color: "var(--color-text-secondary)" }}>support@bdrsports.com</span>

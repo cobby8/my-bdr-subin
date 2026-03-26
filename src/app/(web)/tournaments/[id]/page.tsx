@@ -429,11 +429,11 @@ export default async function TournamentDetailPage({ params }: { params: Promise
             </div>
           </div>
 
-          {/* 주소 표시 */}
+          {/* 주소 표시 (장소 아이콘: 파랑 — 정보성 표시) */}
           <div className="flex items-center gap-2 text-sm">
             <span
               className="material-symbols-outlined text-lg"
-              style={{ color: "var(--color-primary)" }}
+              style={{ color: "var(--color-info)" }}
             >
               location_on
             </span>

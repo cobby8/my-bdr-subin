@@ -148,14 +148,14 @@ export function TournamentAbout({
         >
           <SectionTitle>대회 소개</SectionTitle>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-            {/* 포맷 카드 */}
+            {/* 포맷 카드 (아이콘: 파랑 — 정보성 카테고리 아이콘) */}
             <div
               className="rounded-lg p-4 text-center"
               style={{ backgroundColor: "var(--color-elevated)" }}
             >
               <span
                 className="material-symbols-outlined mb-2 block text-3xl"
-                style={{ color: "var(--color-primary)" }}
+                style={{ color: "var(--color-info)" }}
               >
                 emoji_events
               </span>
@@ -171,7 +171,7 @@ export function TournamentAbout({
               >
                 <span
                   className="material-symbols-outlined mb-2 block text-3xl"
-                  style={{ color: "var(--color-primary)" }}
+                  style={{ color: "var(--color-info)" }}
                 >
                   sports_basketball
                 </span>
