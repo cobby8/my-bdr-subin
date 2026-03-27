@@ -186,7 +186,7 @@ export function TournamentsFilter({
         className="flex h-9 w-9 items-center justify-center rounded-full transition-colors"
         style={{
           backgroundColor: showSearch ? "var(--color-primary)" : "var(--color-accent)",
-          color: showSearch ? "var(--color-on-primary)" : "var(--color-text-primary)",
+          color: "#fff",
         }}
         title="검색"
       >

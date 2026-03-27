@@ -298,7 +298,7 @@ export function GamesContent({
             <Link
               href="/games/my-games"
               prefetch={true}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-xs font-black transition-colors bg-[var(--color-accent)] text-[var(--color-text-primary)] shrink-0"
+              className="flex h-9 w-9 items-center justify-center rounded-full text-xs font-black transition-colors bg-[var(--color-accent)] text-white shrink-0"
               title="내 경기"
             >
               MY

@@ -80,7 +80,7 @@ export function FloatingFilterPanel({
         className="relative flex h-9 w-9 items-center justify-center rounded-full transition-colors"
         style={{
           backgroundColor: "var(--color-accent)",
-          color: "var(--color-text-primary)",
+          color: "#fff",
         }}
         aria-label="필터 열기"
         title="필터"
