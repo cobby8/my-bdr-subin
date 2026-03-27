@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { getWebSession } from "@/lib/auth/web-session";
 
 // SEO: 홈 페이지 메타데이터
 export const metadata: Metadata = {
@@ -10,8 +9,7 @@ import { HeroBento } from "@/components/home/hero-bento";
 import { RecommendedGames } from "@/components/home/recommended-games";
 import { NotableTeams } from "@/components/home/notable-teams";
 import { RecommendedVideos } from "@/components/home/recommended-videos";
-import { RightSidebarLoggedIn } from "@/components/home/right-sidebar-logged-in";
-import { RightSidebarGuest } from "@/components/home/right-sidebar-guest";
+import { HomeSidebar } from "@/components/home/home-sidebar";
 import {
   prefetchTeams,
   prefetchStats,
@@ -19,6 +17,9 @@ import {
   prefetchRecommendedGames,
 } from "@/lib/services/home";
 
+/* ISR: 60초마다 재생성. getWebSession() 제거로 cookies() 호출이 없어져
+ * Next.js가 이 페이지를 정적으로 캐시할 수 있다.
+ * 캐시 히트 시 TTFB 50-100ms (DB 왕복 3초 -> CDN에서 즉시 응답) */
 export const revalidate = 60;
 
 /* ============================================================
@@ -28,29 +29,31 @@ export const revalidate = 60;
  * 서버에서 미리 DB 데이터를 가져와 클라이언트 컴포넌트에 초기값으로 전달.
  * 이러면 화면이 로딩 없이 즉시 표시되고, SWR이 백그라운드에서 최신 데이터를 갱신.
  *
+ * ISR 활성화를 위해 getWebSession() 제거:
+ * - 세션(cookies()) 호출이 있으면 Next.js가 매 요청마다 SSR → ISR 불가
+ * - 비로그인 공통 데이터만 프리페치하고, 로그인 개인화는 클라이언트에서 처리
+ *
  * 프리페치 대상 (내부 DB만, 빠르게 조회 가능):
  * 1. teams — 주목 팀 + 사이드바 랭킹
  * 2. stats — 플랫폼 통계 (비로그인 사이드바)
  * 3. community — 최근 게시글 (사이드바)
- * 4. recommended-games — 추천 경기
+ * 4. recommended-games — 추천 경기 (비로그인 버전)
  *
  * 프리페치 제외 (기존 SWR 유지):
  * - YouTube (외부 API라 서버 응답 느려짐)
  * - profile/stats (로그인 시에만, 복잡도 대비 효과 작음)
  * ============================================================ */
 export default async function HomePage() {
-  /* 서버에서 세션 확인: JWT 쿠키 기반 */
-  const session = await getWebSession();
-
   /* 4개 데이터를 서버에서 병렬 프리페치
    * Promise.allSettled를 사용하여 일부 실패해도 나머지는 정상 전달
-   * (하나의 DB 쿼리 실패가 페이지 전체를 깨뜨리면 안 되므로) */
+   * (하나의 DB 쿼리 실패가 페이지 전체를 깨뜨리면 안 되므로)
+   * 비로그인 버전만 프리페치 (userId 없이 호출) */
   const [teamsResult, statsResult, communityResult, gamesResult] =
     await Promise.allSettled([
       prefetchTeams(),
       prefetchStats(),
       prefetchCommunity(),
-      prefetchRecommendedGames(session?.sub),
+      prefetchRecommendedGames(), // userId 없이 → 비로그인 공통 데이터
     ]);
 
   /* 성공한 결과만 추출, 실패하면 undefined (컴포넌트가 기존처럼 SWR로 직접 요청) */
@@ -68,27 +71,22 @@ export default async function HomePage() {
           {/* 히어로 벤토 그리드: LIVE NOW 배너 + 보조 카드 (YouTube — 프리페치 안 함) */}
           <HeroBento />
 
-          {/* 추천/인기 경기: fallbackData로 즉시 렌더링, SWR이 뒤에서 갱신 */}
-          <RecommendedGames session={session} fallbackData={gamesData} />
+          {/* 추천/인기 경기: fallbackData로 즉시 렌더링, SWR이 뒤에서 갱신
+           * 로그인 개인화는 클라이언트에서 /api/web/recommended-games 재호출로 처리 */}
+          <RecommendedGames fallbackData={gamesData} />
 
           {/* 주목할만한 팀: fallbackData로 즉시 렌더링 */}
           <NotableTeams fallbackData={teamsData} />
         </div>
 
-        {/* 우측 사이드바: 로그인 상태에 따라 다른 위젯 */}
+        {/* 우측 사이드바: 클라이언트에서 로그인 확인 후 분기
+         * (서버에서 session을 안 읽으므로 ISR 캐시 유지) */}
         <aside className="space-y-8">
-          {session ? (
-            <RightSidebarLoggedIn
-              fallbackTeams={teamsData}
-              fallbackCommunity={communityData}
-            />
-          ) : (
-            <RightSidebarGuest
-              fallbackTeams={teamsData}
-              fallbackCommunity={communityData}
-              fallbackStats={statsData}
-            />
-          )}
+          <HomeSidebar
+            fallbackTeams={teamsData}
+            fallbackCommunity={communityData}
+            fallbackStats={statsData}
+          />
         </aside>
       </div>
 

@@ -33,14 +33,6 @@ const batchPhotoFetcher = (key: string) => {
     .then((data) => (data.results ?? {}) as Record<string, string | null>);
 };
 
-/* 세션 정보: 서버에서 getWebSession()으로 받은 JwtPayload를 전달받는다 */
-interface UserSession {
-  sub: string;
-  name: string;
-  email: string;
-  role: string;
-}
-
 /* API 응답의 각 경기 항목 (apiSuccess가 snake_case로 변환) */
 interface RecommendedGame {
   id: string;
@@ -61,8 +53,9 @@ interface RecommendedData {
 }
 
 interface RecommendedGamesProps {
-  session: UserSession | null;
-  /* 서버에서 미리 가져온 데이터 (있으면 로딩 없이 즉시 표시, 없으면 기존처럼 SWR이 API 호출) */
+  /* 서버에서 미리 가져온 데이터 (있으면 로딩 없이 즉시 표시, 없으면 기존처럼 SWR이 API 호출)
+   * ISR 활성화를 위해 session prop 제거 — 개인화는 SWR이 /api/web/recommended-games 호출 시
+   * 쿠키가 자동 포함되어 서버에서 로그인 여부를 판단 */
   fallbackData?: RecommendedData;
 }
 
@@ -94,20 +87,21 @@ const FALLBACK_GAMES: RecommendedGame[] = [
   },
 ];
 
-export function RecommendedGames({ session, fallbackData }: RecommendedGamesProps) {
+export function RecommendedGames({ fallbackData }: RecommendedGamesProps) {
   // useSWR로 추천 경기 API 호출
-  // fallbackData가 있으면 초기값으로 사용 → 로딩 스켈레톤 없이 즉시 렌더링
-  // fallbackData가 있으면 마운트 시 재요청 안 함 (서버에서 이미 가져온 데이터 재활용)
+  // fallbackData가 있으면 초기값으로 사용 -> 로딩 스켈레톤 없이 즉시 렌더링
+  // revalidateOnMount: true로 항상 재요청 -> 로그인 사용자는 쿠키 포함으로 개인화 응답 수신
+  // (ISR 프리페치는 비로그인 데이터, SWR 재호출 시 쿠키가 붙어 개인화 데이터로 갱신)
   const { data, isLoading: loading } = useSWR<RecommendedData>(
     "/api/web/recommended-games",
     null,
-    { fallbackData, revalidateOnMount: !fallbackData }
+    { fallbackData, revalidateOnMount: true }
   );
 
-  /* 로그인 시 "~님을 위한 추천", 비로그인 시 "인기 경기 및 토너먼트" */
-  const userName = data?.user_name ?? session?.name;
-  const title = session
-    ? `"${userName ?? "Player"}"님을 위한 추천`
+  /* user_name이 있으면 로그인 → 개인화 제목, 없으면 비로그인 → 일반 제목 */
+  const userName = data?.user_name;
+  const title = userName
+    ? `"${userName}"님을 위한 추천`
     : "인기 경기 및 토너먼트";
 
   /* API 응답이 없거나 games 배열이 비어있으면 fallback 사용 */
