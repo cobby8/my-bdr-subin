@@ -238,23 +238,23 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
           <Image
             src="/images/logo.png"
             alt="BDR"
-            width={120}
-            height={32}
-            className="h-8 w-auto"
+            width={144}
+            height={38}
+            className="h-10 w-auto"
             priority
           />
         </Link>
 
         {/* 우: 다크모드 + 큰글씨 + 검색 + 알림 */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <ThemeToggle />
           <TextSizeToggle />
           <Link href="/games" className="rounded p-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-surface)]">
-            <span className="material-symbols-outlined text-xl">search</span>
+            <span className="material-symbols-outlined text-2xl">search</span>
           </Link>
           {user && (
             <Link href="/notifications" className="relative rounded p-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-surface)]">
-              <span className="material-symbols-outlined text-xl">notifications</span>
+              <span className="material-symbols-outlined text-2xl">notifications</span>
               {unreadCount > 0 && (
                 <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-[var(--color-primary)]" />
               )}
