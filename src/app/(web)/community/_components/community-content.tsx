@@ -5,7 +5,8 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePreferFilter } from "@/contexts/prefer-filter-context";
-import { CommunitySidebar } from "./community-sidebar";
+import { TossCard } from "@/components/toss/toss-card";
+import { TossSectionHeader } from "@/components/toss/toss-section-header";
 
 // API에서 내려오는 게시글 데이터 타입 (apiSuccess가 snake_case로 자동 변환)
 interface PostFromApi {
@@ -18,8 +19,8 @@ interface PostFromApi {
   likes_count: number;
   created_at: string | null;
   author_nickname: string;
-  author_profile_image: string | null;   // 작성자 프로필 이미지 URL (신규)
-  content_preview: string;               // 본문 미리보기 (신규)
+  author_profile_image: string | null;   // 작성자 프로필 이미지 URL
+  content_preview: string;               // 본문 미리보기
 }
 
 interface CommunityApiResponse {
@@ -68,80 +69,54 @@ function formatRelativeTime(isoString: string | null): string {
   }
 }
 
-// -- 스켈레톤 UI (2열 레이아웃) --
-function CommunityGridSkeleton() {
+// -- 스켈레톤 UI (토스 스타일 카드형) --
+function CommunityListSkeleton() {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-      {/* 좌측: 게시글 리스트 스켈레톤 (컴팩트) */}
-      <div className="lg:col-span-8 space-y-2">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div
-            key={i}
-            className="border-b py-3 px-1"
-            style={{ borderColor: "var(--color-border)" }}
-          >
-            <div className="flex items-center gap-2">
-              <Skeleton className="h-4 w-12 rounded" />
-              <Skeleton className="h-4 w-3/5 rounded" />
-              <div className="flex-1" />
-              <Skeleton className="h-3 w-20 rounded" />
-            </div>
-            <div className="flex items-center gap-1.5 mt-1">
-              <Skeleton className="h-4 w-4 rounded-full" />
-              <Skeleton className="h-3 w-16 rounded" />
-            </div>
-          </div>
-        ))}
-      </div>
-      {/* 우측: 사이드바 스켈레톤 */}
-      <div className="lg:col-span-4 space-y-6">
+    <div className="space-y-3">
+      {Array.from({ length: 6 }).map((_, i) => (
         <div
-          className="rounded-lg border p-6"
-          style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-card)" }}
+          key={i}
+          className="bg-[var(--color-card)] rounded-2xl p-5"
+          style={{ boxShadow: "var(--shadow-card)" }}
         >
-          <Skeleton className="h-5 w-32 mb-4 rounded" />
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="flex gap-3 mb-3">
-              <Skeleton className="h-5 w-5 rounded" />
-              <Skeleton className="h-4 w-full rounded" />
-            </div>
-          ))}
+          <div className="flex items-center gap-2 mb-3">
+            <Skeleton className="h-5 w-14 rounded" />
+            <Skeleton className="h-4 w-3/5 rounded" />
+          </div>
+          <Skeleton className="h-3 w-full rounded mb-2" />
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-5 w-5 rounded-full" />
+            <Skeleton className="h-3 w-20 rounded" />
+          </div>
         </div>
-      </div>
+      ))}
     </div>
   );
 }
 
 // 서버 프리페치 데이터를 받기 위한 props 타입
 interface CommunityContentProps {
-  // 서버에서 프리페치한 게시글 목록 (optional: 없으면 기존대로 API fetch)
   fallbackPosts?: PostFromApi[];
 }
 
 /**
- * CommunityContent - 게시판 목록 클라이언트 컴포넌트
+ * CommunityContent - 게시판 목록 (토스 스타일)
  *
- * 2열 레이아웃 (좌: 카테고리탭 + 게시글카드 + 페이지네이션 / 우: 사이드바)
- * 시안(bdr_2/bdr_4) 기반 리디자인
- *
- * fallbackPosts가 있으면 초기 로딩 없이 즉시 표시 (서버 프리페치)
- * 카테고리 변경/검색 시에는 기존대로 클라이언트 API fetch
+ * 변경: 2열 레이아웃 -> 1열 세로 스택 (max-w-640px)
+ * 카테고리 탭: pill 스타일
+ * 게시글: TossCard로 카드 형태
+ * 사이드바: 제거 (1열 레이아웃이므로 불필요)
  */
 export function CommunityContent({ fallbackPosts }: CommunityContentProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  // 게시글 데이터 + 로딩 상태 + 선호 카테고리 목록
-  // fallbackPosts가 있으면 초기값으로 사용 → 로딩 스켈레톤 없이 즉시 표시
+  // 게시글 데이터 + 로딩 상태
   const [posts, setPosts] = useState<PostFromApi[]>(fallbackPosts ?? []);
   const [loading, setLoading] = useState(!fallbackPosts);
   const [preferredCategories, setPreferredCategories] = useState<string[]>([]);
-
-  // 서버 프리페치 데이터를 이미 사용했는지 추적 (첫 fetch를 건너뛰기 위함)
   const [initialLoadDone, setInitialLoadDone] = useState(!!fallbackPosts);
-
-  // 클라이언트 사이드 페이지네이션
   const [currentPage, setCurrentPage] = useState(1);
 
   // 전역 선호 필터 Context
@@ -166,12 +141,9 @@ export function CommunityContent({ fallbackPosts }: CommunityContentProps) {
 
   // API 호출: searchParams 또는 preferFilter 변경 시
   useEffect(() => {
-    // 서버 프리페치 데이터가 있고 첫 렌더링이면 fetch 건너뛰기
-    // (기본 목록은 이미 서버에서 가져왔으므로 중복 요청 방지)
-    // 단, 카테고리/검색/prefer 파라미터가 있으면 프리페치와 조건이 다르므로 fetch 필요
     const hasFiltersInUrl = searchParams.get("category") || searchParams.get("q") || preferFilter;
     if (initialLoadDone && !hasFiltersInUrl) {
-      setInitialLoadDone(false); // 다음 변경부터는 정상 fetch
+      setInitialLoadDone(false);
       return;
     }
     setInitialLoadDone(false);
@@ -222,14 +194,6 @@ export function CommunityContent({ fallbackPosts }: CommunityContentProps) {
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  // 검색 초기화
-  const handleClearSearch = () => {
-    setSearchQuery("");
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("q");
-    router.push(`${pathname}?${params.toString()}`);
-  };
-
   // 페이지네이션 계산
   const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
   const paginatedPosts = posts.slice(
@@ -240,84 +204,70 @@ export function CommunityContent({ fallbackPosts }: CommunityContentProps) {
   const hasFilters = category || appliedQuery || preferFilter;
 
   return (
-    <div>
+    /* 토스 스타일: 1열 세로 스택, 최대 640px */
+    <div className="max-w-[640px] mx-auto">
       {/* 페이지 제목 */}
-      <h2
-        className="text-3xl font-bold mb-6 tracking-tight"
-        style={{ fontFamily: "var(--font-heading)", color: "var(--color-text-primary)" }}
-      >
-        커뮤니티
-      </h2>
+      <div className="mb-8">
+        <h1
+          className="text-2xl font-bold mb-1"
+          style={{ color: "var(--color-text-primary)" }}
+        >
+          커뮤니티
+        </h1>
+        <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
+          농구인들의 이야기를 나눠보세요
+        </p>
+      </div>
 
-      {/* 검색바 + 글쓰기 버튼 */}
-      <form onSubmit={handleSearch} className="mb-4">
-        <div className="flex items-center gap-3">
-          <div className="relative flex-1">
-            <span
-              className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sm"
-              style={{ color: "var(--color-text-muted)" }}
-            >
-              search
-            </span>
-            <input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="게시글, 사용자 검색"
-              className="w-full border rounded py-2 pl-10 pr-4 text-sm outline-none"
-              style={{
-                borderColor: "var(--color-border)",
-                backgroundColor: "var(--color-card)",
-                color: "var(--color-text-primary)",
-              }}
-            />
-          </div>
-          <button
-            type="submit"
-            className="rounded px-4 py-2 text-sm font-semibold text-white shrink-0"
-            style={{ backgroundColor: "var(--color-primary)" }}
+      {/* 검색바: 토스 스타일 둥근 검색 인풋 */}
+      <form onSubmit={handleSearch} className="mb-5">
+        <div className="relative">
+          <span
+            className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-lg"
+            style={{ color: "var(--color-text-muted)" }}
           >
-            검색
-          </button>
+            search
+          </span>
+          <input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="게시글, 사용자 검색"
+            className="w-full rounded-xl py-3 pl-11 pr-4 text-sm outline-none"
+            style={{
+              backgroundColor: "var(--color-surface)",
+              color: "var(--color-text-primary)",
+            }}
+          />
         </div>
       </form>
 
-      {/* 카테고리 인라인 탭 (가로 스크롤, 밑줄 스타일) */}
+      {/* 카테고리 탭: 토스 스타일 pill 탭 (가로 스크롤) */}
       <div
         className="mb-6 overflow-x-auto"
-        style={{
-          /* 스크롤바 숨김 */
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-        }}
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
-        <div
-          className="flex gap-1 border-b min-w-max"
-          style={{ borderColor: "var(--color-border)" }}
-        >
+        <div className="flex gap-2 min-w-max">
           {categoryTabs.map((tab) => {
-            // 현재 선택된 탭인지 확인
             const isActive = category === tab.key;
             return (
               <button
                 key={tab.key ?? "all"}
                 type="button"
                 onClick={() => handleCategoryChange(tab.key)}
-                className="px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors relative"
-                style={{
-                  color: isActive
-                    ? "var(--color-primary)"
-                    : "var(--color-text-muted)",
-                  fontWeight: isActive ? 700 : 500,
-                }}
+                className="px-4 py-2 text-sm font-semibold rounded-full whitespace-nowrap transition-all"
+                style={
+                  isActive
+                    ? {
+                        backgroundColor: "var(--color-primary)",
+                        color: "#FFFFFF",
+                      }
+                    : {
+                        backgroundColor: "var(--color-surface)",
+                        color: "var(--color-text-muted)",
+                      }
+                }
               >
                 {tab.label}
-                {/* 선택된 탭 하단 밑줄 (빨간색 2px) */}
-                {isActive && (
-                  <span
-                    className="absolute bottom-0 left-0 right-0 h-0.5"
-                    style={{ backgroundColor: "var(--color-primary)" }}
-                  />
-                )}
               </button>
             );
           })}
@@ -341,105 +291,101 @@ export function CommunityContent({ fallbackPosts }: CommunityContentProps) {
         </p>
       )}
 
-      {/* 로딩 중이면 스켈레톤, 아니면 2열 레이아웃 */}
+      {/* 로딩 중이면 스켈레톤 */}
       {loading ? (
-        <CommunityGridSkeleton />
+        <CommunityListSkeleton />
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* 좌측: 게시글 리스트 */}
-          <div className="lg:col-span-8">
-            {/* 카드 간격 축소: space-y-4 -> space-y-2 */}
-            <div className="space-y-2">
-              {paginatedPosts.map((p) => (
-                <PostCard key={p.id} post={p} />
-              ))}
+        <>
+          {/* 게시글 카드 리스트: TossCard 스타일 */}
+          <div className="space-y-3">
+            {paginatedPosts.map((p) => (
+              <PostCard key={p.id} post={p} />
+            ))}
 
-              {/* 빈 상태 */}
-              {posts.length === 0 && (
-                <div
-                  className="text-center py-12 rounded-lg border"
-                  style={{
-                    borderColor: "var(--color-border)",
-                    backgroundColor: "var(--color-card)",
-                    color: "var(--color-text-secondary)",
-                  }}
+            {/* 빈 상태 */}
+            {posts.length === 0 && (
+              <div className="py-16 text-center">
+                <span
+                  className="material-symbols-outlined text-5xl mb-3 block"
+                  style={{ color: "var(--color-text-disabled)" }}
                 >
+                  forum
+                </span>
+                <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
                   {hasFilters
-                    ? "조건에 맞는 게시글이 없습니다."
-                    : "게시글이 없습니다."}
-                </div>
-              )}
-            </div>
-
-            {/* 페이지네이션: 시안 기준 숫자형 */}
-            {totalPages > 1 && (
-              <div className="mt-12 flex justify-center items-center gap-2">
-                {/* 이전 페이지 */}
-                <button
-                  type="button"
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                  className="w-10 h-10 flex items-center justify-center rounded border transition-colors disabled:opacity-30"
-                  style={{
-                    borderColor: "var(--color-border)",
-                    backgroundColor: "var(--color-card)",
-                    color: "var(--color-text-muted)",
-                  }}
-                >
-                  <span className="material-symbols-outlined">chevron_left</span>
-                </button>
-
-                {/* 페이지 번호 */}
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <button
-                    key={page}
-                    type="button"
-                    onClick={() => setCurrentPage(page)}
-                    className="w-10 h-10 flex items-center justify-center rounded font-bold text-sm transition-colors"
-                    style={
-                      page === currentPage
-                        ? { backgroundColor: "var(--color-primary)", color: "var(--color-on-primary)" }
-                        : {
-                            border: "1px solid var(--color-border)",
-                            backgroundColor: "var(--color-card)",
-                            color: "var(--color-text-secondary)",
-                          }
-                    }
-                  >
-                    {page}
-                  </button>
-                ))}
-
-                {/* 다음 페이지 */}
-                <button
-                  type="button"
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
-                  className="w-10 h-10 flex items-center justify-center rounded border transition-colors disabled:opacity-30"
-                  style={{
-                    borderColor: "var(--color-border)",
-                    backgroundColor: "var(--color-card)",
-                    color: "var(--color-text-muted)",
-                  }}
-                >
-                  <span className="material-symbols-outlined">chevron_right</span>
-                </button>
+                    ? "조건에 맞는 게시글이 없습니다"
+                    : "아직 게시글이 없어요"}
+                </p>
               </div>
             )}
           </div>
 
-          {/* 우측: 사이드바 */}
-          <div className="lg:col-span-4">
-            <CommunitySidebar posts={posts} />
-          </div>
-        </div>
+          {/* 글쓰기 CTA: 토스 스타일 풀와이드 버튼 */}
+          <Link
+            href="/community/new"
+            className="block mt-6 w-full py-4 text-center text-sm font-bold text-white rounded-xl transition-all active:scale-[0.98]"
+            style={{ backgroundColor: "var(--color-primary)" }}
+          >
+            글쓰기
+          </Link>
+
+          {/* 페이지네이션 */}
+          {totalPages > 1 && (
+            <div className="mt-10 flex justify-center items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="w-10 h-10 flex items-center justify-center rounded-xl transition-colors disabled:opacity-30"
+                style={{
+                  backgroundColor: "var(--color-surface)",
+                  color: "var(--color-text-muted)",
+                }}
+              >
+                <span className="material-symbols-outlined">chevron_left</span>
+              </button>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  type="button"
+                  onClick={() => setCurrentPage(page)}
+                  className="w-10 h-10 flex items-center justify-center rounded-xl font-bold text-sm transition-colors"
+                  style={
+                    page === currentPage
+                      ? { backgroundColor: "var(--color-primary)", color: "#FFFFFF" }
+                      : {
+                          backgroundColor: "var(--color-surface)",
+                          color: "var(--color-text-secondary)",
+                        }
+                  }
+                >
+                  {page}
+                </button>
+              ))}
+
+              <button
+                type="button"
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="w-10 h-10 flex items-center justify-center rounded-xl transition-colors disabled:opacity-30"
+                style={{
+                  backgroundColor: "var(--color-surface)",
+                  color: "var(--color-text-muted)",
+                }}
+              >
+                <span className="material-symbols-outlined">chevron_right</span>
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
 }
 
-// -- 게시글 카드 컴포넌트 (컴팩트 2줄 레이아웃) --
-// 기존 3행(아바타+제목+미리보기+메타)을 2줄로 압축하여 한 화면에 더 많은 게시글 표시
+// -- 게시글 카드 컴포넌트 (토스 스타일 TossCard) --
+// 둥근 카드 안에 카테고리 배지 + 제목 + 미리보기 + 작성자 + 통계
 function PostCard({ post }: { post: PostFromApi }) {
   const cat = categoryMap[post.category ?? ""];
   const categoryLabel = cat?.label ?? post.category ?? "기타";
@@ -448,36 +394,70 @@ function PostCard({ post }: { post: PostFromApi }) {
 
   return (
     <Link href={`/community/${post.public_id}`}>
-      <article
-        className="border-b py-3 px-1 transition-all group cursor-pointer"
-        style={{
-          borderColor: "var(--color-border)",
-        }}
+      <div
+        className="bg-[var(--color-card)] rounded-2xl p-5 transition-all duration-200 hover:scale-[1.01] hover:shadow-[var(--shadow-elevated)] cursor-pointer"
+        style={{ boxShadow: "var(--shadow-card)" }}
       >
-        {/* 1행: 카테고리 배지 + 제목 + 우측 통계 */}
-        <div className="flex items-center gap-2">
-          {/* 카테고리 배지 (카테고리별 고유 색상) */}
+        {/* 1행: 카테고리 배지 + 시간 */}
+        <div className="flex items-center justify-between mb-2">
           <span
-            className="text-xs px-1.5 py-0.5 rounded font-bold shrink-0"
-            style={{
-              backgroundColor: badgeBg,
-              color: badgeColor,
-            }}
+            className="text-[11px] font-bold px-2 py-0.5 rounded-full"
+            style={{ backgroundColor: badgeBg, color: badgeColor }}
           >
             {categoryLabel}
           </span>
+          <span className="text-xs" style={{ color: "var(--color-text-muted)" }}>
+            {formatRelativeTime(post.created_at)}
+          </span>
+        </div>
 
-          {/* 제목: 한 줄로 잘림 처리, 남은 공간 채움 */}
-          <h3
-            className="text-sm font-bold leading-snug line-clamp-1 flex-1 min-w-0 transition-colors group-hover:underline"
-            style={{ color: "var(--color-text-primary)" }}
+        {/* 2행: 제목 */}
+        <h3
+          className="text-sm font-bold leading-snug line-clamp-2 mb-2"
+          style={{ color: "var(--color-text-primary)" }}
+        >
+          {post.title}
+        </h3>
+
+        {/* 3행: 본문 미리보기 (있으면 표시) */}
+        {post.content_preview && (
+          <p
+            className="text-xs line-clamp-2 mb-3"
+            style={{ color: "var(--color-text-muted)" }}
           >
-            {post.title}
-          </h3>
+            {post.content_preview}
+          </p>
+        )}
 
-          {/* 통계 아이콘: 우측 정렬, 모바일에서도 축소 표시 */}
+        {/* 4행: 작성자 + 통계 */}
+        <div className="flex items-center justify-between">
+          {/* 좌: 아바타 + 닉네임 */}
+          <div className="flex items-center gap-2">
+            {post.author_profile_image ? (
+              <img
+                src={post.author_profile_image}
+                alt={post.author_nickname}
+                className="w-5 h-5 rounded-full object-cover shrink-0"
+              />
+            ) : (
+              <div
+                className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white shrink-0"
+                style={{ backgroundColor: "var(--color-primary)" }}
+              >
+                {post.author_nickname.charAt(0)}
+              </div>
+            )}
+            <span
+              className="text-xs font-medium"
+              style={{ color: "var(--color-text-secondary)" }}
+            >
+              {post.author_nickname}
+            </span>
+          </div>
+
+          {/* 우: 통계 아이콘들 */}
           <div
-            className="flex items-center gap-3 text-[11px] shrink-0"
+            className="flex items-center gap-3 text-[11px]"
             style={{ color: "var(--color-text-muted)" }}
           >
             <span className="flex items-center gap-0.5">
@@ -494,38 +474,7 @@ function PostCard({ post }: { post: PostFromApi }) {
             </span>
           </div>
         </div>
-
-        {/* 2행: 아바타(작게) + 닉네임 + 시간 */}
-        <div className="flex items-center gap-1.5 mt-1">
-          {/* 아바타 축소: w-4 h-4 */}
-          {post.author_profile_image ? (
-            <img
-              src={post.author_profile_image}
-              alt={post.author_nickname}
-              className="w-4 h-4 rounded-full object-cover shrink-0"
-            />
-          ) : (
-            <div
-              className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white shrink-0"
-              style={{ backgroundColor: "var(--color-primary)" }}
-            >
-              {post.author_nickname.charAt(0)}
-            </div>
-          )}
-          <span
-            className="text-xs"
-            style={{ color: "var(--color-text-secondary)" }}
-          >
-            {post.author_nickname}
-          </span>
-          <span
-            className="text-[11px]"
-            style={{ color: "var(--color-text-muted)" }}
-          >
-            · {formatRelativeTime(post.created_at)}
-          </span>
-        </div>
-      </article>
+      </div>
     </Link>
   );
 }

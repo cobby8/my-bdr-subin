@@ -1,26 +1,25 @@
 "use client";
 
 /**
- * 내 프로필 페이지 (/profile)
+ * 내 프로필 페이지 (/profile) - 토스 스타일
+ *
+ * 변경: 기존 2열 레이아웃 -> 1열 세로 스택 (max-w-640px)
+ * - 상단: 큰 아바타 + 이름 + 레벨
+ * - 통계: TossCard에 숫자 크게 표시 (토스의 숫자 강조 패턴)
+ * - 팀/경기: TossListItem 리스트
+ * - 하단: 설정 메뉴 TossListItem
  *
  * API/데이터 패칭 100% 유지 - UI만 교체
- * - useSWR로 /api/web/profile + /api/web/profile/stats 호출
- * - 레이아웃: 헤더 → PPG/RPG/APG 3칸 → 능력치 분석(2열) + 팀 카드 → 최근 경기
  */
 
 import useSWR from "swr";
 import Link from "next/link";
-import { ProfileHeader } from "./_components/profile-header";
-import { StatBars } from "./_components/stat-bars";
-import { AbilitySection } from "./_components/ability-section";
-import { CurrentTeamCard } from "./_components/current-team-card";
-import { RecentGamesSection } from "./_components/recent-games-section";
+import Image from "next/image";
+import { TossCard } from "@/components/toss/toss-card";
+import { TossListItem } from "@/components/toss/toss-list-item";
+import { TossSectionHeader } from "@/components/toss/toss-section-header";
 
 // 기존 컴포넌트는 import 제거하되 파일은 삭제하지 않음
-// import { ActivityRing } from "./_components/activity-ring";
-// import { TeamsSection } from "./_components/teams-section";
-// import { TournamentsSection } from "./_components/tournaments-section";
-// import { PlayerInfoSection } from "./_components/player-info-section";
 
 interface ProfileData {
   user: {
@@ -32,7 +31,6 @@ interface ProfileData {
     bio: string | null;
     profile_image_url: string | null;
     total_games_participated: number | null;
-    /** 가입일 ISO 문자열 */
     created_at: string | null;
   };
   teams?: { id: string; name: string; role: string }[];
@@ -55,8 +53,35 @@ interface StatsData {
     max_assists: number;
   } | null;
   monthly_games: number;
-  /** 승률 (0~100, 결과 확정 경기 없으면 null) */
   win_rate: number | null;
+}
+
+// 포지션 한글 매핑
+const POSITION_LABEL: Record<string, string> = {
+  PG: "포인트가드",
+  SG: "슈팅가드",
+  SF: "스몰포워드",
+  PF: "파워포워드",
+  C: "센터",
+};
+
+// 티어 배지 계산 (총 경기수 기반)
+function getTierInfo(totalGames: number): { label: string; color: string; icon: string } {
+  if (totalGames >= 100) return { label: "플래티넘", color: "var(--color-tertiary)", icon: "diamond" };
+  if (totalGames >= 60) return { label: "골드", color: "var(--color-tier-gold)", icon: "workspace_premium" };
+  if (totalGames >= 30) return { label: "실버", color: "var(--color-tier-silver)", icon: "military_tech" };
+  if (totalGames >= 10) return { label: "브론즈", color: "var(--color-tier-bronze)", icon: "shield" };
+  return { label: "루키", color: "var(--color-text-muted)", icon: "star" };
+}
+
+// 경기 상태 라벨
+function getGameStatus(status: number): string {
+  switch (status) {
+    case 0: return "예정";
+    case 1: return "진행중";
+    case 2: return "종료";
+    default: return "예정";
+  }
 }
 
 export default function ProfilePage() {
@@ -70,38 +95,15 @@ export default function ProfilePage() {
     dedupingInterval: 60000,
   });
 
-  // snake_case API 응답 → camelCase 변환 (기존 로직 유지)
-  const stats = statsRaw
-    ? {
-        careerAverages: statsRaw.career_averages
-          ? {
-              gamesPlayed: statsRaw.career_averages.games_played,
-              avgPoints: statsRaw.career_averages.avg_points,
-              avgRebounds: statsRaw.career_averages.avg_rebounds,
-              avgAssists: statsRaw.career_averages.avg_assists,
-              avgSteals: statsRaw.career_averages.avg_steals,
-              avgBlocks: statsRaw.career_averages.avg_blocks,
-            }
-          : null,
-        seasonHighs: statsRaw.season_highs
-          ? {
-              maxPoints: statsRaw.season_highs.max_points,
-              maxRebounds: statsRaw.season_highs.max_rebounds,
-              maxAssists: statsRaw.season_highs.max_assists,
-            }
-          : null,
-      }
-    : undefined;
-
-  // 로딩 상태
+  // 로딩 상태: 토스 스타일 심플 로더
   if (isLoading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center" style={{ color: "var(--color-text-secondary)" }}>
+      <div className="flex min-h-[60vh] items-center justify-center">
         <div className="text-center">
-          <div className="mb-2">
+          <div className="mb-3">
             <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-8 w-8 animate-spin" style={{ color: "var(--color-primary)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
           </div>
-          <p>로딩 중...</p>
+          <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>불러오는 중...</p>
         </div>
       </div>
     );
@@ -112,8 +114,18 @@ export default function ProfilePage() {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="text-center">
-          <p className="mb-4" style={{ color: "var(--color-text-secondary)" }}>로그인이 필요합니다.</p>
-          <Link href="/login" className="rounded px-6 py-2 text-sm font-semibold text-white" style={{ backgroundColor: "var(--color-primary)" }}>
+          <span
+            className="material-symbols-outlined text-5xl mb-4 block"
+            style={{ color: "var(--color-text-disabled)" }}
+          >
+            person_off
+          </span>
+          <p className="mb-4 text-sm" style={{ color: "var(--color-text-secondary)" }}>로그인이 필요합니다</p>
+          <Link
+            href="/login"
+            className="inline-block rounded-xl px-8 py-3 text-sm font-bold text-white"
+            style={{ backgroundColor: "var(--color-primary)" }}
+          >
             로그인
           </Link>
         </div>
@@ -122,79 +134,250 @@ export default function ProfilePage() {
   }
 
   const { user, teams = [], recent_games: recentGames = [] } = profile;
+  const displayName = user.nickname ?? "사용자";
+  const initial = displayName.trim()[0]?.toUpperCase() || "U";
+  const totalGames = user.total_games_participated ?? 0;
+  const tier = getTierInfo(totalGames);
+  const winRate = statsRaw?.win_rate;
+
+  // 스탯 데이터 추출
+  const avgPoints = statsRaw?.career_averages?.avg_points ?? 0;
+  const avgRebounds = statsRaw?.career_averages?.avg_rebounds ?? 0;
+  const avgAssists = statsRaw?.career_averages?.avg_assists ?? 0;
 
   return (
-    <div className="space-y-6 max-w-7xl">
-      {/* 1. 프로필 헤더: 아바타 + 이름 + 메타 + 통계 */}
-      <ProfileHeader
-        nickname={user.nickname}
-        email={user.email}
-        profileImageUrl={user.profile_image_url}
-        position={user.position}
-        city={user.city}
-        createdAt={user.created_at}
-        totalGames={user.total_games_participated ?? 0}
-        winRate={statsRaw?.win_rate ?? null}
-      />
+    /* 토스 스타일: 1열 세로 스택, 최대 640px */
+    <div className="max-w-[640px] mx-auto space-y-8">
 
-      {/* 2. 핵심 스탯 3칸 카드 (PPG / RPG / APG) */}
-      <StatBars
-        careerAverages={stats?.careerAverages ?? null}
-        seasonHighs={stats?.seasonHighs ?? null}
-      />
-
-      {/* 3. 2열 레이아웃: 능력치 분석 + 현재 팀 */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* 좌측 7칸: 능력치 분석 (레이더 차트 + 바 차트) */}
-        <div className="lg:col-span-8">
-          {stats?.careerAverages ? (
-            <AbilitySection
-              avgPoints={stats.careerAverages.avgPoints}
-              avgRebounds={stats.careerAverages.avgRebounds}
-              avgAssists={stats.careerAverages.avgAssists}
-              avgSteals={stats.careerAverages.avgSteals}
-              avgBlocks={stats.careerAverages.avgBlocks}
+      {/* ==== 1. 프로필 헤더: 큰 아바타 + 이름 + 레벨 ==== */}
+      <div className="flex flex-col items-center text-center pt-4">
+        {/* 큰 원형 아바타 (80px) */}
+        <div
+          className="w-20 h-20 rounded-full overflow-hidden mb-4 relative"
+          style={{ backgroundColor: "var(--color-surface)" }}
+        >
+          {user.profile_image_url ? (
+            <Image
+              src={user.profile_image_url}
+              alt={displayName}
+              width={80}
+              height={80}
+              className="w-full h-full object-cover"
             />
           ) : (
             <div
-              className="rounded-xl border p-8 text-center"
-              style={{
-                borderColor: "var(--color-border)",
-                backgroundColor: "var(--color-surface)",
-              }}
+              className="w-full h-full flex items-center justify-center text-2xl font-bold"
+              style={{ color: "var(--color-primary)", backgroundColor: "var(--color-surface)" }}
             >
-              <span className="material-symbols-outlined text-3xl mb-2" style={{ color: "var(--color-text-muted)" }}>
-                analytics
-              </span>
-              <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
-                경기 기록이 쌓이면 능력치 차트가 표시됩니다
-              </p>
+              {initial}
             </div>
           )}
         </div>
 
-        {/* 우측 5칸: 현재 팀 카드 */}
-        <div className="lg:col-span-4">
-          <CurrentTeamCard teams={teams} />
+        {/* 이름 */}
+        <h1
+          className="text-xl font-bold mb-1"
+          style={{ color: "var(--color-text-primary)" }}
+        >
+          {displayName}
+        </h1>
+
+        {/* 티어 배지 + 포지션 */}
+        <div className="flex items-center gap-2 mb-2">
+          <span
+            className="flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full"
+            style={{ backgroundColor: tier.color, color: "#FFFFFF" }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: "12px" }}>{tier.icon}</span>
+            {tier.label}
+          </span>
+          {user.position && (
+            <span className="text-xs" style={{ color: "var(--color-text-muted)" }}>
+              {POSITION_LABEL[user.position] ?? user.position}
+            </span>
+          )}
         </div>
+
+        {/* 부가 정보: 지역 + 가입일 */}
+        <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>
+          {[
+            user.city,
+            user.created_at ? `${new Date(user.created_at).getFullYear()}년 가입` : null,
+          ].filter(Boolean).join(" · ")}
+        </p>
       </div>
 
-      {/* 4. 최근 경기 전적 */}
-      <RecentGamesSection games={recentGames} />
+      {/* ==== 2. 핵심 통계: 토스 숫자 강조 패턴 ==== */}
+      <div className="grid grid-cols-3 gap-3">
+        {/* 총 경기 */}
+        <TossCard className="text-center">
+          <p
+            className="text-2xl font-bold mb-1"
+            style={{ color: "var(--color-text-primary)" }}
+          >
+            {totalGames}
+          </p>
+          <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>
+            총 경기
+          </p>
+        </TossCard>
 
-      {/* 5. 로그아웃 버튼 */}
-      <div className="mt-8 border-t pt-6" style={{ borderColor: "var(--color-border)" }}>
-        <button
-          onClick={async () => {
-            await fetch("/api/web/logout", { method: "POST", credentials: "include" });
-            window.location.href = "/login";
-          }}
-          className="flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors hover:opacity-80"
-          style={{ color: "var(--color-text-muted)" }}
-        >
-          <span className="material-symbols-outlined text-lg">logout</span>
-          로그아웃
-        </button>
+        {/* 승률 */}
+        <TossCard className="text-center">
+          <p
+            className="text-2xl font-bold mb-1"
+            style={{ color: "var(--color-primary)" }}
+          >
+            {winRate != null ? `${winRate}%` : "-"}
+          </p>
+          <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>
+            승률
+          </p>
+        </TossCard>
+
+        {/* PPG */}
+        <TossCard className="text-center">
+          <p
+            className="text-2xl font-bold mb-1"
+            style={{ color: "var(--color-text-primary)" }}
+          >
+            {avgPoints > 0 ? avgPoints.toFixed(1) : "-"}
+          </p>
+          <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>
+            PPG
+          </p>
+        </TossCard>
+      </div>
+
+      {/* ==== 3. 세부 스탯 카드 ==== */}
+      {statsRaw?.career_averages && (
+        <TossCard>
+          <TossSectionHeader title="커리어 평균" />
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center">
+              <p className="text-lg font-bold" style={{ color: "var(--color-text-primary)" }}>
+                {avgRebounds.toFixed(1)}
+              </p>
+              <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>RPG</p>
+            </div>
+            <div className="text-center">
+              <p className="text-lg font-bold" style={{ color: "var(--color-text-primary)" }}>
+                {avgAssists.toFixed(1)}
+              </p>
+              <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>APG</p>
+            </div>
+            <div className="text-center">
+              <p className="text-lg font-bold" style={{ color: "var(--color-text-primary)" }}>
+                {(statsRaw.career_averages.avg_steals ?? 0).toFixed(1)}
+              </p>
+              <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>SPG</p>
+            </div>
+          </div>
+        </TossCard>
+      )}
+
+      {/* ==== 4. 소속 팀: TossListItem 리스트 ==== */}
+      <div>
+        <TossSectionHeader title="소속 팀" actionLabel="전체보기" actionHref="/teams" />
+        <TossCard className="p-0">
+          {teams.length > 0 ? (
+            teams.map((team) => (
+              <TossListItem
+                key={team.id}
+                icon="groups"
+                iconBg="var(--color-primary)"
+                title={team.name}
+                subtitle={team.role === "owner" ? "팀장" : "팀원"}
+                href={`/teams/${team.id}`}
+              />
+            ))
+          ) : (
+            <div className="py-8 text-center">
+              <span
+                className="material-symbols-outlined text-3xl mb-2 block"
+                style={{ color: "var(--color-text-disabled)" }}
+              >
+                group_add
+              </span>
+              <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
+                소속 팀이 없어요
+              </p>
+              <Link
+                href="/teams"
+                className="inline-block mt-2 text-xs font-bold"
+                style={{ color: "var(--color-primary)" }}
+              >
+                팀 찾아보기
+              </Link>
+            </div>
+          )}
+        </TossCard>
+      </div>
+
+      {/* ==== 5. 최근 경기: TossListItem 리스트 ==== */}
+      <div>
+        <TossSectionHeader title="최근 경기" actionLabel="전체보기" actionHref="/games" />
+        <TossCard className="p-0">
+          {recentGames.length > 0 ? (
+            recentGames.slice(0, 5).map((game) => (
+              <TossListItem
+                key={game.id}
+                icon="sports_basketball"
+                iconBg="var(--color-accent)"
+                title={game.title ?? "경기"}
+                subtitle={game.scheduled_at
+                  ? new Date(game.scheduled_at).toLocaleDateString("ko-KR")
+                  : "일정 미정"}
+                rightText={getGameStatus(game.status)}
+                href={`/games/${game.id}`}
+              />
+            ))
+          ) : (
+            <div className="py-8 text-center">
+              <span
+                className="material-symbols-outlined text-3xl mb-2 block"
+                style={{ color: "var(--color-text-disabled)" }}
+              >
+                sports_basketball
+              </span>
+              <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
+                아직 경기 기록이 없어요
+              </p>
+            </div>
+          )}
+        </TossCard>
+      </div>
+
+      {/* ==== 6. 설정 메뉴: TossListItem 리스트 ==== */}
+      <div>
+        <TossSectionHeader title="설정" />
+        <TossCard className="p-0">
+          <TossListItem
+            icon="edit"
+            iconBg="var(--color-text-secondary)"
+            title="프로필 편집"
+            subtitle="이름, 포지션, 프로필 사진 변경"
+            href="/profile/edit"
+          />
+          <TossListItem
+            icon="tune"
+            iconBg="var(--color-text-secondary)"
+            title="선호 설정"
+            subtitle="관심 카테고리, 알림 설정"
+            href="/profile/preferences"
+          />
+          {/* 로그아웃: 빨간 아이콘으로 구분 */}
+          <TossListItem
+            icon="logout"
+            iconBg="var(--color-error, #EF4444)"
+            title="로그아웃"
+            showArrow={false}
+            onClick={async () => {
+              await fetch("/api/web/logout", { method: "POST", credentials: "include" });
+              window.location.href = "/login";
+            }}
+          />
+        </TossCard>
       </div>
     </div>
   );

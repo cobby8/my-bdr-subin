@@ -4,6 +4,9 @@ import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TossListItem } from "@/components/toss/toss-list-item";
+import { TossSectionHeader } from "@/components/toss/toss-section-header";
+import { TossCard } from "@/components/toss/toss-card";
 
 // API에서 내려오는 팀 데이터 타입 (apiSuccess가 snake_case로 자동 변환)
 interface TeamFromApi {
@@ -85,7 +88,7 @@ function computeBadges(teams: TeamFromApi[]): Map<string, BadgeType> {
   return badgeMap;
 }
 
-// -- 배지 색상 매핑 --
+// -- 배지 색상 매핑 (토스 스타일: 연한 배경 + 진한 텍스트) --
 function getBadgeStyle(badge: BadgeType): { bg: string; text: string } {
   switch (badge) {
     case "TOP1":
@@ -115,164 +118,34 @@ function resolveAccent(primary: string | null, secondary?: string | null): strin
   return primary;
 }
 
-// -- 팀 색상 기반 그라디언트 생성 (notable-teams.tsx와 동일 패턴) --
-function getTeamGradient(color: string | null): string {
-  if (!color) return "linear-gradient(135deg, #374151 0%, #1f2937 100%)";
-  return `linear-gradient(135deg, ${color}33 0%, ${color} 50%, ${color}cc 100%)`;
-}
-
 // -- 팀명에서 이니셜 추출 (한글: 첫 2글자, 영문: 각 단어 첫 글자) --
 function getInitials(name: string): string {
   if (/^[가-힣]/.test(name)) return name.slice(0, 2);
   return name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 }
 
-// -- 스켈레톤 UI: 컴팩트 카드 디자인 기준 --
-function TeamsGridSkeleton() {
+// -- 스켈레톤 UI: 토스 리스트 스타일 --
+function TeamsListSkeleton() {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div className="space-y-2">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div
-          key={i}
-          className="rounded-lg border overflow-hidden"
-          style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-surface)" }}
-        >
-          {/* 이미지 영역 스켈레톤 (h-20 lg:h-28) */}
-          <Skeleton className="h-20 lg:h-28 w-full rounded-none" />
-          {/* 정보 영역 스켈레톤 (p-3, 2행) */}
-          <div className="p-3 space-y-2">
-            <div className="flex items-center justify-between">
-              <Skeleton className="h-4 w-24 rounded" />
-              <Skeleton className="h-3 w-14 rounded" />
-            </div>
-            <div className="flex items-center justify-between">
-              <Skeleton className="h-3 w-16 rounded" />
-              <Skeleton className="h-3 w-12 rounded" />
-            </div>
+        <div key={i} className="flex items-center gap-3 py-4 px-1">
+          {/* 원형 아이콘 스켈레톤 */}
+          <Skeleton className="h-10 w-10 rounded-full shrink-0" />
+          {/* 텍스트 영역 */}
+          <div className="flex-1 space-y-1.5">
+            <Skeleton className="h-4 w-32 rounded" />
+            <Skeleton className="h-3 w-24 rounded" />
           </div>
+          {/* 우측 값 */}
+          <Skeleton className="h-4 w-16 rounded" />
         </div>
       ))}
     </div>
   );
 }
 
-// -- 컴팩트 팀 카드 (경기/대회 카드와 동일 패턴: h-20 이미지 + p-3 정보) --
-function TeamCardRedesigned({
-  team,
-  badge,
-}: {
-  team: TeamFromApi;
-  badge: BadgeType;
-}) {
-  const accent = resolveAccent(team.primary_color, team.secondary_color);
-  const wins = team.wins ?? 0;
-  const losses = team.losses ?? 0;
-  const total = wins + losses;
-  // 승률 계산: 0으로 나누기 방지
-  const winRate = total > 0 ? Math.round((wins / total) * 100) : 0;
-  const location = [team.city, team.district].filter(Boolean).join(" ");
-  const badgeStyle = getBadgeStyle(badge);
-
-  return (
-    <Link href={`/teams/${team.id}`}>
-      <div className="group rounded-lg border overflow-hidden transition-all hover:-translate-y-1 hover:shadow-lg h-full border-[var(--color-border)] bg-[var(--color-surface)]">
-        {/* 이미지 영역: 팀 색상 그라디언트 + 반투명 이니셜 */}
-        <div
-          className="relative h-20 lg:h-28 flex items-center justify-center overflow-hidden"
-          style={{ background: getTeamGradient(team.primary_color) }}
-        >
-          {/* 팀 이니셜 (큰 반투명 텍스트, 배경 장식용) */}
-          <span className="text-4xl lg:text-5xl font-black text-white/30 select-none">
-            {getInitials(team.name)}
-          </span>
-
-          {/* 좌상단: shield 아이콘 뱃지 */}
-          <span className="absolute top-2 left-2 flex items-center gap-1 rounded bg-black/50 px-1.5 py-0.5 text-xs text-white backdrop-blur-sm">
-            <span className="material-symbols-outlined text-xs">shield</span>
-          </span>
-
-          {/* 우상단: 디비전/특수 배지 (TOP1/인기/신규 등) */}
-          {badge && (
-            <span
-              className="absolute top-2 right-2 rounded px-2 py-0.5 text-xs font-black uppercase"
-              style={{ backgroundColor: badgeStyle.bg, color: badgeStyle.text }}
-            >
-              {badge}
-            </span>
-          )}
-
-          {/* 우하단: 도시 뱃지 (경기 카드의 location 뱃지와 동일 패턴) */}
-          {location && (
-            <span className="absolute bottom-2 right-2 flex items-center gap-1 rounded bg-black/50 px-1.5 py-0.5 text-xs text-white backdrop-blur-sm">
-              <span className="material-symbols-outlined text-xs">location_on</span>
-              <span className="line-clamp-1 max-w-[120px]">{location}</span>
-            </span>
-          )}
-        </div>
-
-        {/* 정보 영역: p-3, 2행 */}
-        <div className="p-3">
-          {/* 1행: 팀명 + 전적 */}
-          <div className="flex items-center justify-between gap-2 mb-1">
-            <h3 className="text-sm font-bold line-clamp-1 flex-1 text-[var(--color-text-primary)]">
-              {team.name}
-            </h3>
-            {/* 전적 NW NL 또는 모집중 표시 */}
-            {total > 0 ? (
-              <span className="shrink-0 text-xs font-bold text-[var(--color-text-secondary)]">
-                {wins}W {losses}L
-              </span>
-            ) : team.accepting_members ? (
-              <span className="shrink-0 text-xs font-bold px-1.5 py-0.5 rounded bg-[var(--color-primary)] text-white">
-                모집중
-              </span>
-            ) : null}
-          </div>
-
-          {/* 2행: 멤버 수 + 승률 */}
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-[var(--color-text-muted)]">
-              멤버 {team.member_count}명
-            </span>
-            {total > 0 ? (
-              <span className="text-xs font-bold text-[var(--color-primary)]">
-                승률 {winRate}%
-              </span>
-            ) : (
-              <span className="text-xs text-[var(--color-text-disabled)]">
-                전적 없음
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
-}
-
-// -- "새로운 팀 만들기" 카드 (컴팩트: 다른 팀 카드와 동일 높이) --
-function CreateTeamCard() {
-  return (
-    <Link href="/teams/new" className="block h-full">
-      <div className="border-2 border-dashed rounded-lg overflow-hidden flex flex-col items-center justify-center h-full transition-all cursor-pointer group border-[var(--color-border)] bg-[var(--color-background)] hover:border-[var(--color-primary)] hover:bg-[var(--color-surface)]">
-        {/* + 아이콘 (축소: 32px) */}
-        <div className="w-8 h-8 rounded-full border flex items-center justify-center mb-2 group-hover:scale-110 transition-all border-[var(--color-border)]">
-          <span className="material-symbols-outlined text-xl text-[var(--color-text-muted)]">
-            add
-          </span>
-        </div>
-        <h3 className="text-sm font-bold text-[var(--color-text-primary)]">
-          팀 만들기
-        </h3>
-        <p className="text-xs text-[var(--color-text-disabled)]">
-          BDR 리그에 도전
-        </p>
-      </div>
-    </Link>
-  );
-}
-
-// -- 페이지네이션 컴포넌트 --
+// -- 페이지네이션 컴포넌트 (토스 스타일: 더 둥글고 가벼운 느낌) --
 function Pagination({
   currentPage,
   totalPages,
@@ -284,7 +157,7 @@ function Pagination({
 }) {
   if (totalPages <= 1) return null;
 
-  // 페이지 번호 배열 생성: 1, ..., currentPage-1, currentPage, currentPage+1, ..., totalPages
+  // 페이지 번호 배열 생성
   const pages: (number | "...")[] = [];
   if (totalPages <= 7) {
     for (let i = 1; i <= totalPages; i++) pages.push(i);
@@ -303,21 +176,19 @@ function Pagination({
   }
 
   return (
-    <div className="mt-12 flex items-center justify-center gap-2">
-      {/* 이전 버튼 */}
+    <div className="mt-10 flex items-center justify-center gap-2">
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="w-10 h-10 flex items-center justify-center rounded border transition-colors disabled:opacity-30"
+        className="w-10 h-10 flex items-center justify-center rounded-xl transition-colors disabled:opacity-30"
         style={{
-          borderColor: "var(--color-border)",
+          backgroundColor: "var(--color-surface)",
           color: "var(--color-text-muted)",
         }}
       >
         <span className="material-symbols-outlined">chevron_left</span>
       </button>
 
-      {/* 페이지 번호들 */}
       {pages.map((page, idx) =>
         page === "..." ? (
           <span
@@ -331,16 +202,15 @@ function Pagination({
           <button
             key={page}
             onClick={() => onPageChange(page)}
-            className="w-10 h-10 flex items-center justify-center rounded font-bold text-sm transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-xl font-bold text-sm transition-colors"
             style={
               page === currentPage
                 ? {
                     backgroundColor: "var(--color-primary)",
-                    color: "var(--color-on-primary)",
+                    color: "#FFFFFF",
                   }
                 : {
-                    borderWidth: "1px",
-                    borderColor: "var(--color-border)",
+                    backgroundColor: "var(--color-surface)",
                     color: "var(--color-text-secondary)",
                   }
             }
@@ -350,13 +220,12 @@ function Pagination({
         )
       )}
 
-      {/* 다음 버튼 */}
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="w-10 h-10 flex items-center justify-center rounded border transition-colors disabled:opacity-30"
+        className="w-10 h-10 flex items-center justify-center rounded-xl transition-colors disabled:opacity-30"
         style={{
-          borderColor: "var(--color-border)",
+          backgroundColor: "var(--color-surface)",
           color: "var(--color-text-muted)",
         }}
       >
@@ -367,10 +236,10 @@ function Pagination({
 }
 
 /**
- * TeamsContent - 팀 목록 클라이언트 컴포넌트 (리디자인)
+ * TeamsContent - 팀 목록 (토스 스타일 리스트)
  *
+ * 변경: 2열 그리드 카드 -> TossListItem 리스트 (원형 팀 색상 아이콘 + 팀명/도시 + 멤버수/전적)
  * API 로직은 기존과 100% 동일하게 유지.
- * UI만 새 디자인 시안(bdr_3 다크 / bdr_4 라이트)에 맞춰 교체.
  */
 export function TeamsContent({
   TeamsFilterComponent,
@@ -382,7 +251,6 @@ export function TeamsContent({
   const [teams, setTeams] = useState<TeamFromApi[]>([]);
   const [cities, setCities] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  // 클라이언트 사이드 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
 
   // searchParams가 바뀔 때마다 API 호출 (기존 로직 그대로)
@@ -426,17 +294,18 @@ export function TeamsContent({
   );
 
   return (
-    <>
-      {/* 헤더 영역: "팀 목록" + 부제 */}
-      <div className="mb-6">
+    /* 토스 스타일: 1열 세로 스택, 최대 640px */
+    <div className="max-w-[640px] mx-auto">
+      {/* 헤더 영역: 토스 스타일 간결한 제목 */}
+      <div className="mb-8">
         <h1
-          className="text-3xl font-bold mb-2"
+          className="text-2xl font-bold mb-1"
           style={{ color: "var(--color-text-primary)" }}
         >
           팀 목록
         </h1>
-        <p style={{ color: "var(--color-text-muted)" }}>
-          BDR 플랫폼에 등록된 역동적인 팀들을 만나보세요.
+        <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
+          BDR 플랫폼에 등록된 역동적인 팀들을 만나보세요
         </p>
       </div>
 
@@ -445,39 +314,121 @@ export function TeamsContent({
 
       {/* 로딩 중이면 스켈레톤 표시 */}
       {loading ? (
-        <TeamsGridSkeleton />
+        <TeamsListSkeleton />
       ) : (
         <>
-          {/* 팀 카드 그리드: 4열 */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {paginatedTeams.map((team) => (
-              <TeamCardRedesigned
-                key={team.id}
-                team={team}
-                badge={badgeMap.get(team.id) ?? null}
-              />
-            ))}
+          {/* 팀 리스트: TossListItem 패턴 */}
+          <TossCard className="p-0 mt-4">
+            {paginatedTeams.map((team) => {
+              const accent = resolveAccent(team.primary_color, team.secondary_color);
+              const wins = team.wins ?? 0;
+              const losses = team.losses ?? 0;
+              const total = wins + losses;
+              const winRate = total > 0 ? Math.round((wins / total) * 100) : 0;
+              const location = [team.city, team.district].filter(Boolean).join(" ");
+              const badge = badgeMap.get(team.id) ?? null;
+              const badgeStyle = getBadgeStyle(badge);
 
-            {/* "새로운 팀 만들기" 카드: 항상 마지막에 표시 */}
-            <CreateTeamCard />
+              return (
+                <Link key={team.id} href={`/teams/${team.id}`} className="block">
+                  <div
+                    className="flex items-center gap-3 py-4 px-5 transition-colors hover:bg-[var(--color-surface-bright)] border-b border-[var(--color-border-subtle)] last:border-b-0"
+                  >
+                    {/* 좌: 원형 팀 색상 아이콘 (40px) */}
+                    <div
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                      style={{ backgroundColor: accent }}
+                    >
+                      <span className="text-xs font-bold text-white select-none">
+                        {getInitials(team.name)}
+                      </span>
+                    </div>
+
+                    {/* 중: 팀명 + 부가정보 */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-semibold text-[var(--color-text-primary)] truncate">
+                          {team.name}
+                        </p>
+                        {/* 배지: TOP1/인기/신규 등 */}
+                        {badge && (
+                          <span
+                            className="text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0"
+                            style={{ backgroundColor: badgeStyle.bg, color: badgeStyle.text }}
+                          >
+                            {badge}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-[var(--color-text-muted)] mt-0.5 truncate">
+                        {location || "지역 미설정"} · 멤버 {team.member_count}명
+                      </p>
+                    </div>
+
+                    {/* 우: 전적 + 화살표 */}
+                    <div className="flex items-center gap-2 shrink-0">
+                      {total > 0 ? (
+                        <div className="text-right">
+                          <p className="text-sm font-bold text-[var(--color-text-primary)]">
+                            {wins}W {losses}L
+                          </p>
+                          <p className="text-xs text-[var(--color-primary)]">
+                            {winRate}%
+                          </p>
+                        </div>
+                      ) : team.accepting_members ? (
+                        <span
+                          className="text-xs font-bold px-2 py-1 rounded"
+                          style={{ backgroundColor: "var(--color-primary)", color: "#FFFFFF" }}
+                        >
+                          모집중
+                        </span>
+                      ) : (
+                        <span className="text-xs text-[var(--color-text-disabled)]">
+                          전적 없음
+                        </span>
+                      )}
+                      <span className="material-symbols-outlined text-lg text-[var(--color-text-disabled)]">
+                        chevron_right
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
 
             {/* 빈 상태 */}
             {teams.length === 0 && (
-              <div className="col-span-full py-20 text-center">
+              <div className="py-16 text-center">
                 <span
                   className="material-symbols-outlined text-5xl mb-3 block"
                   style={{ color: "var(--color-text-disabled)" }}
                 >
                   sports_basketball
                 </span>
-                <p style={{ color: "var(--color-text-secondary)" }}>
+                <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
                   {searchParams.get("q") || searchParams.get("city")
-                    ? "조건에 맞는 팀이 없습니다."
-                    : "등록된 팀이 없습니다."}
+                    ? "조건에 맞는 팀이 없습니다"
+                    : "등록된 팀이 없습니다"}
                 </p>
               </div>
             )}
-          </div>
+          </TossCard>
+
+          {/* 새 팀 만들기: 토스 스타일 하단 CTA */}
+          <Link href="/teams/new" className="block mt-6">
+            <div
+              className="flex items-center justify-center gap-2 py-4 rounded-2xl border-2 border-dashed transition-all hover:border-[var(--color-primary)] hover:bg-[var(--color-surface)]"
+              style={{ borderColor: "var(--color-border)" }}
+            >
+              <span className="material-symbols-outlined text-xl text-[var(--color-text-muted)]">
+                add_circle
+              </span>
+              <span className="text-sm font-bold text-[var(--color-text-muted)]">
+                새 팀 만들기
+              </span>
+            </div>
+          </Link>
 
           {/* 페이지네이션 */}
           <Pagination
@@ -485,12 +436,11 @@ export function TeamsContent({
             totalPages={totalPages}
             onPageChange={(page) => {
               setCurrentPage(page);
-              // 페이지 전환 시 스크롤 상단으로
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
           />
         </>
       )}
-    </>
+    </div>
   );
 }
