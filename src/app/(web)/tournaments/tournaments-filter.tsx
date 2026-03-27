@@ -1,14 +1,22 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { FloatingFilterPanel, type FilterConfig } from "@/components/shared/floating-filter-panel";
+import {
+  GENDERS_LIST,
+  CATEGORIES_LIST,
+  DIVISIONS_BY_CATEGORY,
+  type GenderCode,
+  type CategoryCode,
+} from "@/lib/constants/divisions";
 
 /**
  * TournamentsFilter - 대회 필터 (플로팅 패널 방식)
  *
  * 필터 구성: 지역(17개 시도) / 성별 / 종별 / 디비전
- * - 상태 필터는 상단 탭으로 이동했으므로 여기서 제거
- * - 참가비 필터도 제거
+ * - 종별 변경 시 디비전 옵션이 동적으로 바뀜
+ * - 성별이 "여성"이면 디비전 코드에 W 접미사
+ * - 종별이 "전체"면 디비전 필터 숨김 (전체만 표시)
  */
 
 // 17개 시도 + 전체 (행정구역 기준)
@@ -33,38 +41,49 @@ const REGION_OPTIONS = [
   { value: "제주", label: "제주" },
 ];
 
-// 성별 옵션
+// 성별 옵션: divisions.ts 상수에서 생성 (혼성 없음 — BDR에는 남성부/여성부만)
 const GENDER_OPTIONS = [
   { value: "all", label: "전체" },
-  { value: "male", label: "남성" },
-  { value: "female", label: "여성" },
-  { value: "mixed", label: "혼성" },
+  ...GENDERS_LIST.map((g) => ({ value: g.key, label: g.label })),
 ];
 
-// 종별 옵션
+// 종별 옵션: divisions.ts 상수에서 생성
 const CATEGORY_OPTIONS = [
   { value: "all", label: "전체" },
-  { value: "general", label: "일반부" },
-  { value: "university", label: "대학부" },
-  { value: "high_school", label: "고등부" },
-  { value: "middle_school", label: "중등부" },
-  { value: "elementary", label: "초등부" },
-  { value: "masters", label: "마스터즈(40+)" },
-  { value: "senior", label: "시니어(50+)" },
+  ...CATEGORIES_LIST.map((c) => ({ value: c.key, label: c.label })),
 ];
 
-// 디비전 옵션
-const DIVISION_OPTIONS = [
-  { value: "all", label: "전체" },
-  { value: "1", label: "1부" },
-  { value: "2", label: "2부" },
-  { value: "3", label: "3부" },
-  { value: "4", label: "4부" },
-  { value: "5", label: "5부" },
-  { value: "6", label: "6부" },
-  { value: "7", label: "7부" },
-  { value: "open", label: "오픈" },
-];
+/**
+ * 종별+성별 조합에 따라 디비전 옵션을 동적으로 생성
+ * - 종별이 "전체"면 "전체"만 반환 (디비전 선택 불가)
+ * - 성별이 "전체"면 남성부 디비전 코드 사용 (기본)
+ * - 여성부면 W 접미사 디비전 코드 사용
+ */
+function getDivisionOptions(
+  category: string,
+  gender: string
+): { value: string; label: string }[] {
+  // 종별이 "전체"이면 디비전 선택 불가
+  if (category === "all") {
+    return [{ value: "all", label: "전체" }];
+  }
+
+  // 성별 결정: "전체" 또는 "male"이면 남성부 디비전, "female"이면 여성부 디비전
+  const genderKey: GenderCode = gender === "female" ? "female" : "male";
+  const categoryKey = category as CategoryCode;
+
+  // divisions.ts의 DIVISIONS_BY_CATEGORY에서 해당 조합의 디비전 목록 가져옴
+  const divisions = DIVISIONS_BY_CATEGORY[genderKey]?.[categoryKey] ?? [];
+
+  return [
+    { value: "all", label: "전체" },
+    ...divisions.map((d) => ({
+      value: d.key,
+      // subtitle가 있으면 괄호 안에 표시 (예: "D3 (동호회 최강전)")
+      label: d.subtitle ? `${d.label} (${d.subtitle})` : d.label,
+    })),
+  ];
+}
 
 export function TournamentsFilter({
   onSearchChange,
@@ -72,12 +91,18 @@ export function TournamentsFilter({
   onGenderChange,
   onCategoryChange,
   onDivisionChange,
+  // 부모(tournaments-content)에서 현재 선택된 종별/성별을 전달받음
+  // 디비전 옵션을 동적으로 생성하기 위해 필요
+  selectedCategory: externalCategory,
+  selectedGender: externalGender,
 }: {
   onSearchChange: (query: string) => void;
   onRegionChange: (region: string) => void;
   onGenderChange: (gender: string) => void;
   onCategoryChange: (category: string) => void;
   onDivisionChange: (division: string) => void;
+  selectedCategory?: string;
+  selectedGender?: string;
 }) {
   // 각 필터의 로컬 상태 (URL에 반영하지 않는 클라이언트 필터)
   const [selectedRegion, setSelectedRegion] = useState("all");
@@ -85,6 +110,16 @@ export function TournamentsFilter({
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedDivision, setSelectedDivision] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // 실제 사용할 종별/성별: 외부 prop이 있으면 외부 값 사용, 없으면 로컬 상태 사용
+  const activeCat = externalCategory ?? selectedCategory;
+  const activeGender = externalGender ?? selectedGender;
+
+  // 종별+성별에 따른 디비전 옵션 (종별/성별 바뀔 때마다 재계산)
+  const divisionOptions = useMemo(
+    () => getDivisionOptions(activeCat, activeGender),
+    [activeCat, activeGender]
+  );
 
   // 검색어 입력 핸들러
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,16 +133,22 @@ export function TournamentsFilter({
     onRegionChange(region);
   };
 
-  // 성별 필터 변경
+  // 성별 필터 변경 — 성별이 바뀌면 디비전도 초기화
   const handleGenderChange = (gender: string) => {
     setSelectedGender(gender);
     onGenderChange(gender);
+    // 성별 변경 시 디비전 초기화 (여성부 <-> 남성부 전환 시 디비전 코드가 다르므로)
+    setSelectedDivision("all");
+    onDivisionChange("all");
   };
 
-  // 종별 필터 변경
+  // 종별 필터 변경 — 종별이 바뀌면 디비전 자동 초기화
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
     onCategoryChange(category);
+    // 종별 변경 시 디비전 초기화 (각 종별마다 디비전 체계가 다르므로)
+    setSelectedDivision("all");
+    onDivisionChange("all");
   };
 
   // 디비전 필터 변경
@@ -168,7 +209,8 @@ export function TournamentsFilter({
       key: "division",
       label: "디비전",
       type: "select",
-      options: DIVISION_OPTIONS,
+      // 종별+성별에 따라 동적으로 옵션이 바뀜
+      options: divisionOptions,
       value: selectedDivision,
       onChange: handleDivisionChange,
     },

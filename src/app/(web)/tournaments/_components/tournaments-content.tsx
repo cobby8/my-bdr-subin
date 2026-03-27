@@ -362,12 +362,15 @@ export function TournamentsContent({
   TournamentsFilterComponent,
 }: {
   // TournamentsFilter 컴포넌트를 외부에서 주입받음
+  // selectedCategory/selectedGender: 디비전 옵션 동적 변경을 위해 전달
   TournamentsFilterComponent: React.ComponentType<{
     onSearchChange: (query: string) => void;
     onRegionChange: (region: string) => void;
     onGenderChange: (gender: string) => void;
     onCategoryChange: (category: string) => void;
     onDivisionChange: (division: string) => void;
+    selectedCategory?: string;
+    selectedGender?: string;
   }>;
 }) {
   const searchParams = useSearchParams();
@@ -473,11 +476,38 @@ export function TournamentsContent({
       result = result.filter((t) => t.city?.includes(regionFilter));
     }
 
-    // 성별/종별/디비전: 현재 DB에 해당 필드가 없으므로 UI만 구성
-    // TODO: API에 gender, category, division 필드 추가 시 필터링 로직 연동
-    // if (genderFilter !== "all") { ... }
-    // if (categoryFilter !== "all") { ... }
-    // if (divisionFilter !== "all") { ... }
+    // 종별 필터: categories JSON에서 해당 종별 key가 true인지 확인
+    // 예: categoryFilter="general" → t.categories.general === true
+    if (categoryFilter !== "all") {
+      result = result.filter((t) => {
+        const cats = t.categories ?? {};
+        return cats[categoryFilter] === true;
+      });
+    }
+
+    // 디비전 필터: division_tiers 배열에 선택한 디비전 코드가 포함되는지 확인
+    // 예: divisionFilter="D5" → t.division_tiers에 "D5"가 있는지
+    if (divisionFilter !== "all") {
+      result = result.filter((t) => {
+        const tiers = t.division_tiers ?? [];
+        return tiers.includes(divisionFilter);
+      });
+    }
+
+    // 성별 필터: division_tiers의 코드가 W로 끝나는지로 판별
+    // 남성부: W 안 붙은 코드가 하나라도 있으면 매칭
+    // 여성부: W 붙은 코드가 하나라도 있으면 매칭
+    if (genderFilter !== "all") {
+      result = result.filter((t) => {
+        const tiers = t.division_tiers ?? [];
+        if (tiers.length === 0) return true; // 디비전 정보 없으면 필터 통과
+        if (genderFilter === "female") {
+          return tiers.some((code) => code.endsWith("W"));
+        }
+        // male: W로 끝나지 않는 코드가 하나라도 있으면
+        return tiers.some((code) => !code.endsWith("W"));
+      });
+    }
 
     return result;
   }, [tournaments, searchQuery, regionFilter, genderFilter, categoryFilter, divisionFilter, statusTab]);
@@ -543,6 +573,8 @@ export function TournamentsContent({
             onGenderChange={handleGenderChange}
             onCategoryChange={handleCategoryChange}
             onDivisionChange={handleDivisionChange}
+            selectedCategory={categoryFilter}
+            selectedGender={genderFilter}
           />
         </div>
 
