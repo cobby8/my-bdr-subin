@@ -54,3 +54,21 @@
 - **발견자**: developer
 - **내용**: 모바일에서 가로 스크롤(flex overflow-x-auto no-scrollbar), 데스크탑에서 N열 그리드(md:grid md:grid-cols-N md:overflow-visible). 카드 min-w-[Npx] md:min-w-0으로 스크롤/그리드 전환.
 - **참조횟수**: 4
+
+### [2026-03-28] 대회 상태 4종 통일 규칙
+- **분류**: convention
+- **발견자**: pm (사용자 지시)
+- **내용**: 프로젝트 전체에서 대회 상태를 4종으로만 표시: **준비중**(draft/upcoming), **접수중**(registration/active/open 등), **진행중**(in_progress/live/ongoing 등), **종료**(completed/ended/cancelled 등). 공통 상수: src/lib/constants/tournament-status.ts
+- **참조횟수**: 0
+
+### [2026-03-28] admin UI 공통 패턴 (서버page + 클라이언트content)
+- **분류**: convention
+- **발견자**: developer
+- **내용**: admin 페이지는 page.tsx(서버 컴포넌트, Prisma 쿼리+직렬화) + admin-{name}-content.tsx(클라이언트, AdminStatusTabs+테이블+AdminDetailModal) 패턴으로 통일. 테이블 3~4칸, 행 클릭 시 중앙 플로팅 모달, 상태별 탭 필터링. 공통 컴포넌트: AdminPageHeader, AdminDetailModal, AdminStatusTabs.
+- **참조횟수**: 0
+
+### [2026-03-28] 카드 컴팩트화 패턴
+- **분류**: convention
+- **발견자**: developer
+- **내용**: 경기/대회/팀 카드 공통 구조 — 이미지 영역(h-20 lg:h-28, 유형별 그라디언트/Places 사진) + 정보 영역(p-3, 2줄: 제목+현황 / 금액+버튼). 이미지 좌상단 유형뱃지, 우하단 장소+시간 뱃지(bg-black/50 backdrop-blur). 텍스트 최소 text-xs(12px).
+- **참조횟수**: 0

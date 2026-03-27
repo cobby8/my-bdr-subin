@@ -4,9 +4,9 @@
 ## 파일별 요약
 | 파일 | 항목 수 | 최종 업데이트 | 설명 |
 |------|--------|------------|------|
-| architecture.md | 13 | 2026-03-26 | 페이지별 구조 분석, 라우트/컴포넌트/API 매핑 |
-| conventions.md | 9 | 2026-03-28 | 디자인 시스템, 반응형 패턴, 코딩 규칙, 디비전 체계 |
-| decisions.md | 16 | 2026-03-28 | 기술 결정 배경과 이유 (성능/구조/디비전) |
+| architecture.md | 15 | 2026-03-28 | 페이지별 구조, admin 개편, 프론트-백엔드 연결맵 |
+| conventions.md | 11 | 2026-03-28 | 디자인 시스템, 디비전 체계, 대회 상태 4종, admin UI 패턴 |
+| decisions.md | 19 | 2026-03-28 | 기술 결정 (성능/구조/디비전/admin 개편) |
 | errors.md | 5 | 2026-03-28 | 에러 패턴, 함정, 주의사항 |
 | lessons.md | 4 | 2026-03-28 | 삽질 경험, 효과적 접근법 |
 
@@ -39,6 +39,9 @@
 | 리디자인, 2열, API 유지 | 페이지 리디자인 공통 패턴 |
 | DB 없음, placeholder | DB 미지원 기능 처리 규칙 |
 | 스크롤, 그리드, 반응형 | 가로 스크롤 + 그리드 반응형 패턴 |
+| 디비전, 종별, 성별, D3~D8 | BDR 디비전 체계 3단계 표준 규격 |
+| 대회 상태, 준비중/접수중/진행중/종료 | 대회 상태 4종 통일 규칙 |
+| admin, 테이블, 모달, 탭 | admin UI 공통 패턴 (서버page+클라이언트content) |
 
 ### 왜 이렇게 결정했는지 알고 싶을 때 → decisions.md
 | 키워드 | 항목 제목 |
@@ -55,6 +58,12 @@
 | 위자드, fixed, 오버레이 | 경기 생성 위자드 배치 변경 |
 | lucide, Material Symbols | 아이콘 라이브러리 전체 교체 |
 | YouTube, playlistItems | YouTube 인기 영상 API 변경 |
+| ISR, getWebSession, CDN | 홈 ISR 활성화 — getWebSession 분리 |
+| Google Places, 사진, 캐시 | Google Places 사진 연동 3단계 캐시 |
+| 카드, 컴팩트, 그라디언트 | 카드 컴팩트화 + 유형별 그라디언트 |
+| 상수, 통일, 공통파일 | 프론트/admin/API 상수 공통 import 원칙 |
+| 대회 상태, 4종 | 준비중/접수중/진행중/종료 4종 통일 |
+| admin, 모달, 탭, 개편 | admin UI 전면 개편 — 컴팩트 테이블+플로팅 모달 |
 
 ### 에러/함정을 알고 싶을 때 → errors.md
 | 키워드 | 항목 제목 |
@@ -63,12 +72,15 @@
 | 라이트모드, 테마, dark/light | 라이트모드 CSS 변수 미적용 |
 | admin, 레이아웃 이중 | admin 레이아웃 이중 적용 |
 | apiSuccess, .data, 래핑, snake_case | apiSuccess 응답에 .data로 접근하는 버그 |
+| categories, boolean, array, divs.map | categories JSON boolean/array 혼용 에러 |
 
 ### 삽질 교훈을 알고 싶을 때 → lessons.md
 | 키워드 | 항목 제목 |
 |--------|----------|
 | YouTube, 쿼터, API | playlistItems가 Search보다 정확+저렴 |
 | 테마, 다크/라이트, CSS변수 | 테마 전환 시 3가지 동시 처리 |
+| ISR, cookies, getWebSession | ISR 캐시 무효화 — cookies() 호출이 원인 |
+| DB, 리전, Supabase, 인도 | DB 리전이 성능 병목 — 한국으로 이전 |
 
 ## 외부 참고 문서
 | 문서 | 위치 | 설명 |
@@ -77,13 +89,13 @@
 | Stitch 원본 | Dev/design/0. 레이아웃/DESIGN.md | Stitch에서 내보낸 원본 디자인 규격 |
 
 ## 최근 추가된 지식 (최근 10건)
-- [03-28] conventions: BDR 디비전 체계 3단계 (성별→종별→디비전) 표준 규격
+- [03-28] decisions: admin UI 전면 개편 — 컴팩트 테이블 + 플로팅 모달 + 상태 탭
+- [03-28] conventions: admin UI 패턴 — 서버page + 클라이언트content 분리
+- [03-28] conventions: 대회 상태 4종 통일 (준비중/접수중/진행중/종료)
+- [03-28] architecture: admin 누락 관리 기능 4개 추가 (경기/커뮤니티/팀/코트)
 - [03-28] decisions: 프론트/admin/API 상수 통일 — 공통 상수 파일 import 원칙
-- [03-28] errors: categories JSON이 boolean/array 혼용 — Array.isArray 체크 필수
+- [03-28] conventions: BDR 디비전 체계 3단계 (성별→종별→디비전) 표준 규격
+- [03-28] errors: categories JSON boolean/array 혼용 — Array.isArray 체크 필수
 - [03-28] lessons: ISR 캐시 무효화 — getWebSession()의 cookies()가 원인
-- [03-28] lessons: DB 리전이 성능 병목 — ap-south-1(인도)에서 한국 리전으로 이전
 - [03-27] decisions: 홈 ISR 활성화 — getWebSession 분리로 CDN 캐시 가능
 - [03-27] decisions: Google Places 사진 연동 — 서버 proxy + 3단계 캐시
-- [03-27] decisions: 카드 컴팩트화 — 이미지 축소 + 정보 2줄 압축 패턴
-- [03-26] architecture: 외부 BDR 랭킹 연동 구조 설계 (GitHub xlsx + 서버 proxy)
-- [03-26] decisions: 외부 BDR 랭킹 서버사이드 xlsx proxy 결정
