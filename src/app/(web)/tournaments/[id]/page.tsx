@@ -228,15 +228,26 @@ export default async function TournamentDetailPage({ params }: { params: Promise
   }
 
   const divisions = hasCategories
-    ? Object.entries(categories).flatMap(([cat, divs]) =>
-        divs.map((div) => ({
+    ? Object.entries(categories).flatMap(([cat, divs]) => {
+        // divs가 배열이면 각 디비전을 순회, boolean(true)이면 카테고리만 표시
+        if (Array.isArray(divs)) {
+          return divs.map((div) => ({
+            category: cat,
+            division: div,
+            count: divisionCounts.find((d) => d.division === div)?._count.id ?? 0,
+            cap: divCaps[div] ?? null,
+            fee: divFees[div] ?? (tournament.entry_fee ? Number(tournament.entry_fee) : null),
+          }));
+        }
+        // boolean(true) 또는 기타 — 카테고리 자체를 1개 항목으로
+        return [{
           category: cat,
-          division: div,
-          count: divisionCounts.find((d) => d.division === div)?._count.id ?? 0,
-          cap: divCaps[div] ?? null,
-          fee: divFees[div] ?? (tournament.entry_fee ? Number(tournament.entry_fee) : null),
-        }))
-      )
+          division: cat,
+          count: divisionCounts.reduce((sum, d) => sum + d._count.id, 0),
+          cap: 0 as number,
+          fee: tournament.entry_fee ? Number(tournament.entry_fee) : 0,
+        }];
+      })
     : [];
 
   // ========================================

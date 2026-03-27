@@ -176,7 +176,7 @@ export function TournamentAbout({
                   sports_basketball
                 </span>
                 <p className="text-xs" style={{ color: "var(--color-text-secondary)" }}>{cat}</p>
-                <p className="text-sm font-bold">{divs.join(", ")}</p>
+                <p className="text-sm font-bold">{Array.isArray(divs) ? divs.join(", ") : cat}</p>
               </div>
             ))}
           </div>
