@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { Footer } from "@/components/layout/Footer";
 import { SWRProvider } from "@/components/providers/swr-provider";
@@ -100,9 +101,9 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
               <span className="material-symbols-outlined text-xl">arrow_back</span>
             </button>
           )}
-          {/* 로고: 텍스트 "MyBDR" (토스 스타일: 작고 깔끔하게) */}
-          <Link href="/" prefetch={true} className="text-lg font-bold text-[var(--color-text-primary)]">
-            MyBDR
+          {/* 로고: BDR 이미지 */}
+          <Link href="/" prefetch={true}>
+            <Image src="/images/logo.png" alt="BDR" width={100} height={30} className="h-7 w-auto" />
           </Link>
         </div>
 
