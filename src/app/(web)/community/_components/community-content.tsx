@@ -27,21 +27,21 @@ interface CommunityApiResponse {
   preferred_categories: string[];
 }
 
-// 카테고리 맵: DB 키 -> 한글 라벨 (시안 기준 7개 카테고리)
-const categoryMap: Record<string, string> = {
-  general: "자유게시판",
-  recruit: "팀원모집",
-  review: "대회후기",
-  info: "정보공유",
-  qna: "질문답변",
-  notice: "공지사항",
-  marketplace: "농구장터",
+// 카테고리 맵: DB 키 -> 한글 라벨 + 뱃지 색상
+const categoryMap: Record<string, { label: string; bg: string; color: string }> = {
+  general:     { label: "자유게시판", bg: "#2563eb", color: "#fff" },
+  recruit:     { label: "팀원모집",   bg: "#16a34a", color: "#fff" },
+  review:      { label: "대회후기",   bg: "#ea580c", color: "#fff" },
+  info:        { label: "정보공유",   bg: "#7c3aed", color: "#fff" },
+  qna:         { label: "질문답변",   bg: "#0891b2", color: "#fff" },
+  notice:      { label: "공지사항",   bg: "#dc2626", color: "#fff" },
+  marketplace: { label: "농구장터",   bg: "#d97706", color: "#fff" },
 };
 
 // 카테고리 탭 배열 (전체 + 7개 카테고리)
 const categoryTabs = [
   { key: null, label: "전체" },
-  ...Object.entries(categoryMap).map(([key, label]) => ({ key, label })),
+  ...Object.entries(categoryMap).map(([key, { label }]) => ({ key, label })),
 ];
 
 // 페이지당 게시글 수 (클라이언트 사이드 페이지네이션)
@@ -441,7 +441,10 @@ export function CommunityContent({ fallbackPosts }: CommunityContentProps) {
 // -- 게시글 카드 컴포넌트 (컴팩트 2줄 레이아웃) --
 // 기존 3행(아바타+제목+미리보기+메타)을 2줄로 압축하여 한 화면에 더 많은 게시글 표시
 function PostCard({ post }: { post: PostFromApi }) {
-  const categoryLabel = categoryMap[post.category ?? ""] ?? post.category ?? "기타";
+  const cat = categoryMap[post.category ?? ""];
+  const categoryLabel = cat?.label ?? post.category ?? "기타";
+  const badgeBg = cat?.bg ?? "#6b7280";
+  const badgeColor = cat?.color ?? "#fff";
 
   return (
     <Link href={`/community/${post.public_id}`}>
@@ -453,13 +456,12 @@ function PostCard({ post }: { post: PostFromApi }) {
       >
         {/* 1행: 카테고리 배지 + 제목 + 우측 통계 */}
         <div className="flex items-center gap-2">
-          {/* 카테고리 배지 (작은 사이즈) */}
+          {/* 카테고리 배지 (카테고리별 고유 색상) */}
           <span
-            className="text-[10px] px-1.5 py-px rounded font-bold shrink-0"
+            className="text-xs px-1.5 py-0.5 rounded font-bold shrink-0"
             style={{
-              backgroundColor: "var(--color-primary)",
-              color: "var(--color-on-primary)",
-              opacity: 0.9,
+              backgroundColor: badgeBg,
+              color: badgeColor,
             }}
           >
             {categoryLabel}
