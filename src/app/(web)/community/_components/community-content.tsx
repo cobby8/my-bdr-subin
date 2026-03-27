@@ -72,25 +72,23 @@ function formatRelativeTime(isoString: string | null): string {
 function CommunityGridSkeleton() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-      {/* 좌측: 게시글 리스트 스켈레톤 */}
-      <div className="lg:col-span-8 space-y-4">
-        {Array.from({ length: 5 }).map((_, i) => (
+      {/* 좌측: 게시글 리스트 스켈레톤 (컴팩트) */}
+      <div className="lg:col-span-8 space-y-2">
+        {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
-            className="rounded-lg border p-5"
-            style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-card)" }}
+            className="border-b py-3 px-1"
+            style={{ borderColor: "var(--color-border)" }}
           >
-            <div className="flex items-center gap-2 mb-3">
-              <Skeleton className="h-5 w-12 rounded" />
-              <Skeleton className="h-4 w-20 rounded" />
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-4 w-12 rounded" />
+              <Skeleton className="h-4 w-3/5 rounded" />
+              <div className="flex-1" />
+              <Skeleton className="h-3 w-20 rounded" />
             </div>
-            <Skeleton className="h-6 w-3/4 rounded mb-2" />
-            <Skeleton className="h-4 w-full rounded mb-1" />
-            <Skeleton className="h-4 w-2/3 rounded mb-4" />
-            <div className="flex gap-4">
+            <div className="flex items-center gap-1.5 mt-1">
+              <Skeleton className="h-4 w-4 rounded-full" />
               <Skeleton className="h-3 w-16 rounded" />
-              <Skeleton className="h-3 w-12 rounded" />
-              <Skeleton className="h-3 w-12 rounded" />
             </div>
           </div>
         ))}
@@ -350,7 +348,8 @@ export function CommunityContent({ fallbackPosts }: CommunityContentProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* 좌측: 게시글 리스트 */}
           <div className="lg:col-span-8">
-            <div className="space-y-4">
+            {/* 카드 간격 축소: space-y-4 -> space-y-2 */}
+            <div className="space-y-2">
               {paginatedPosts.map((p) => (
                 <PostCard key={p.id} post={p} />
               ))}
@@ -439,70 +438,24 @@ export function CommunityContent({ fallbackPosts }: CommunityContentProps) {
   );
 }
 
-// -- 게시글 카드 컴포넌트 (시안 bdr_2 기반) --
+// -- 게시글 카드 컴포넌트 (컴팩트 2줄 레이아웃) --
+// 기존 3행(아바타+제목+미리보기+메타)을 2줄로 압축하여 한 화면에 더 많은 게시글 표시
 function PostCard({ post }: { post: PostFromApi }) {
   const categoryLabel = categoryMap[post.category ?? ""] ?? post.category ?? "기타";
 
   return (
     <Link href={`/community/${post.public_id}`}>
       <article
-        className="border p-5 rounded-lg transition-all group cursor-pointer"
+        className="border-b py-3 px-1 transition-all group cursor-pointer"
         style={{
           borderColor: "var(--color-border)",
-          backgroundColor: "var(--color-card)",
         }}
       >
-        {/* 작성자 정보: 아바타 + 닉네임 + 시간 */}
-        <div className="flex items-center gap-2 mb-3">
-          {/* 작성자 아바타: 이미지 있으면 img, 없으면 닉네임 첫 글자 */}
-          {post.author_profile_image ? (
-            <img
-              src={post.author_profile_image}
-              alt={post.author_nickname}
-              className="w-6 h-6 rounded-full object-cover shrink-0"
-            />
-          ) : (
-            <div
-              className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-              style={{ backgroundColor: "var(--color-primary)" }}
-            >
-              {post.author_nickname.charAt(0)}
-            </div>
-          )}
+        {/* 1행: 카테고리 배지 + 제목 + 우측 통계 */}
+        <div className="flex items-center gap-2">
+          {/* 카테고리 배지 (작은 사이즈) */}
           <span
-            className="text-sm font-semibold"
-            style={{ color: "var(--color-text-primary)" }}
-          >
-            {post.author_nickname}
-          </span>
-          <span className="text-xs" style={{ color: "var(--color-text-muted)" }}>
-            {formatRelativeTime(post.created_at)}
-          </span>
-        </div>
-
-        {/* 제목 */}
-        <h3
-          className="text-lg font-bold mb-2 leading-snug transition-colors"
-          style={{ color: "var(--color-text-primary)" }}
-        >
-          {post.title}
-        </h3>
-
-        {/* 본문 미리보기 */}
-        {post.content_preview && (
-          <p
-            className="text-sm line-clamp-2 leading-relaxed mb-4"
-            style={{ color: "var(--color-text-secondary)" }}
-          >
-            {post.content_preview}
-          </p>
-        )}
-
-        {/* 메타 정보: 카테고리 + 조회수/좋아요/댓글수 */}
-        <div className="flex items-center justify-between">
-          {/* 카테고리 배지 */}
-          <span
-            className="text-xs px-2 py-0.5 rounded font-bold uppercase"
+            className="text-[10px] px-1.5 py-px rounded font-bold shrink-0"
             style={{
               backgroundColor: "var(--color-primary)",
               color: "var(--color-on-primary)",
@@ -512,21 +465,63 @@ function PostCard({ post }: { post: PostFromApi }) {
             {categoryLabel}
           </span>
 
-          {/* 메타 수치: 조회수 + 좋아요 + 댓글 */}
-          <div className="flex items-center gap-4 text-xs" style={{ color: "var(--color-text-muted)" }}>
-            <span className="flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-base">visibility</span>
+          {/* 제목: 한 줄로 잘림 처리, 남은 공간 채움 */}
+          <h3
+            className="text-sm font-bold leading-snug line-clamp-1 flex-1 min-w-0 transition-colors group-hover:underline"
+            style={{ color: "var(--color-text-primary)" }}
+          >
+            {post.title}
+          </h3>
+
+          {/* 통계 아이콘: 우측 정렬, 모바일에서도 축소 표시 */}
+          <div
+            className="flex items-center gap-3 text-[11px] shrink-0"
+            style={{ color: "var(--color-text-muted)" }}
+          >
+            <span className="flex items-center gap-0.5">
+              <span className="material-symbols-outlined" style={{ fontSize: "14px" }}>visibility</span>
               {post.view_count.toLocaleString()}
             </span>
-            <span className="flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-base">thumb_up</span>
+            <span className="flex items-center gap-0.5">
+              <span className="material-symbols-outlined" style={{ fontSize: "14px" }}>thumb_up</span>
               {post.likes_count}
             </span>
-            <span className="flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-base">chat_bubble</span>
+            <span className="flex items-center gap-0.5">
+              <span className="material-symbols-outlined" style={{ fontSize: "14px" }}>chat_bubble</span>
               {post.comments_count}
             </span>
           </div>
+        </div>
+
+        {/* 2행: 아바타(작게) + 닉네임 + 시간 */}
+        <div className="flex items-center gap-1.5 mt-1">
+          {/* 아바타 축소: w-4 h-4 */}
+          {post.author_profile_image ? (
+            <img
+              src={post.author_profile_image}
+              alt={post.author_nickname}
+              className="w-4 h-4 rounded-full object-cover shrink-0"
+            />
+          ) : (
+            <div
+              className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white shrink-0"
+              style={{ backgroundColor: "var(--color-primary)" }}
+            >
+              {post.author_nickname.charAt(0)}
+            </div>
+          )}
+          <span
+            className="text-xs"
+            style={{ color: "var(--color-text-secondary)" }}
+          >
+            {post.author_nickname}
+          </span>
+          <span
+            className="text-[11px]"
+            style={{ color: "var(--color-text-muted)" }}
+          >
+            · {formatRelativeTime(post.created_at)}
+          </span>
         </div>
       </article>
     </Link>
