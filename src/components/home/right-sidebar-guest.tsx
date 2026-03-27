@@ -65,9 +65,10 @@ interface RightSidebarGuestProps {
 export function RightSidebarGuest({ fallbackTeams, fallbackCommunity, fallbackStats }: RightSidebarGuestProps = {}) {
   // 3개의 독립 API를 각각 useSWR로 호출
   // fallbackData가 있으면 로딩 없이 즉시 표시, SWR이 뒤에서 최신 데이터 갱신
-  const { data: teamsData } = useSWR<{ teams: TeamData[] }>("/api/web/teams", null, { fallbackData: fallbackTeams });
-  const { data: communityData } = useSWR<{ posts: PostData[] }>("/api/web/community", null, { fallbackData: fallbackCommunity });
-  const { data: statsData } = useSWR<{ team_count: number; match_count: number; user_count: number }>("/api/web/stats", null, { fallbackData: fallbackStats });
+  // fallbackData가 있으면 마운트 시 재요청 안 함 (서버에서 이미 가져온 데이터 재활용)
+  const { data: teamsData } = useSWR<{ teams: TeamData[] }>("/api/web/teams", null, { fallbackData: fallbackTeams, revalidateOnMount: !fallbackTeams });
+  const { data: communityData } = useSWR<{ posts: PostData[] }>("/api/web/community", null, { fallbackData: fallbackCommunity, revalidateOnMount: !fallbackCommunity });
+  const { data: statsData } = useSWR<{ team_count: number; match_count: number; user_count: number }>("/api/web/stats", null, { fallbackData: fallbackStats, revalidateOnMount: !fallbackStats });
 
   // 팀 랭킹: 상위 3팀 (API 데이터 없으면 fallback)
   const topTeams: TeamData[] = (() => {

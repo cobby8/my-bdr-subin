@@ -76,8 +76,9 @@ export function RightSidebarLoggedIn({ fallbackTeams, fallbackCommunity }: Right
   const { data: profileData } = useSWR<{ career_averages: { games_played: number } | null }>(
     "/api/web/profile/stats"
   );
-  const { data: teamsData } = useSWR<{ teams: TeamData[] }>("/api/web/teams", null, { fallbackData: fallbackTeams });
-  const { data: communityData } = useSWR<{ posts: PostData[] }>("/api/web/community", null, { fallbackData: fallbackCommunity });
+  // fallbackData가 있으면 마운트 시 재요청 안 함 (서버에서 이미 가져온 데이터 재활용)
+  const { data: teamsData } = useSWR<{ teams: TeamData[] }>("/api/web/teams", null, { fallbackData: fallbackTeams, revalidateOnMount: !fallbackTeams });
+  const { data: communityData } = useSWR<{ posts: PostData[] }>("/api/web/community", null, { fallbackData: fallbackCommunity, revalidateOnMount: !fallbackCommunity });
 
   // 나의 통계: career_averages.games_played (snake_case API 응답)
   const gamesPlayed = profileData?.career_averages?.games_played ?? 0;

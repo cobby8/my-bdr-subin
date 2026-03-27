@@ -97,10 +97,11 @@ const FALLBACK_GAMES: RecommendedGame[] = [
 export function RecommendedGames({ session, fallbackData }: RecommendedGamesProps) {
   // useSWR로 추천 경기 API 호출
   // fallbackData가 있으면 초기값으로 사용 → 로딩 스켈레톤 없이 즉시 렌더링
+  // fallbackData가 있으면 마운트 시 재요청 안 함 (서버에서 이미 가져온 데이터 재활용)
   const { data, isLoading: loading } = useSWR<RecommendedData>(
     "/api/web/recommended-games",
     null,
-    { fallbackData }
+    { fallbackData, revalidateOnMount: !fallbackData }
   );
 
   /* 로그인 시 "~님을 위한 추천", 비로그인 시 "인기 경기 및 토너먼트" */

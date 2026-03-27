@@ -1,5 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Redis } from "@upstash/redis";
 import { checkRateLimit, RATE_LIMITS } from "@/lib/security/rate-limit";
+
+// --- Redis 캐시 설정 (YouTube route와 동일 패턴) ---
+// Upstash Redis: 서버리스 인스턴스 간 캐시 공유용
+// 환경변수 미설정 시 null -> 기존 인메모리 캐시로 fallback
+const hasRedisConfig =
+  !!process.env.UPSTASH_REDIS_REST_URL && !!process.env.UPSTASH_REDIS_REST_TOKEN;
+
+let redisClient: Redis | null = null;
+function getRedis(): Redis | null {
+  if (!hasRedisConfig) return null;
+  if (!redisClient) {
+    redisClient = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL!,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+    });
+  }
+  return redisClient;
+}
+
+// Redis 캐시 키 접두사 + TTL (24시간: 장소 사진은 자주 변하지 않으므로 길게)
+const REDIS_KEY_PREFIX = "mybdr:place-photo:";
+const REDIS_TTL = 86400; // 24시간 (초)
 
 /**
  * Place Photos Batch API — 여러 장소 사진을 한번에 조회
@@ -37,18 +60,37 @@ if (typeof globalThis !== "undefined") {
   }
 }
 
-// 단일 장소 사진 조회 (캐시 확인 → Google API 호출)
+// 단일 장소 사진 조회 (3단계 캐시: 인메모리 → Redis → Google API)
 async function fetchPlacePhoto(query: string, apiKey: string): Promise<string | null> {
   const cacheKey = query.toLowerCase();
 
-  // 캐시 히트 시 즉시 반환
+  // 1단계: 인메모리 캐시 확인 (가장 빠름, 같은 서버리스 인스턴스 내)
   const cached = photoCache.get(cacheKey);
   if (cached && cached.expiresAt > Date.now()) {
     return cached.photoUrl;
   }
 
+  // 2단계: Redis 캐시 확인 (서버리스 인스턴스 간 공유, cold start 시에도 히트)
+  const redis = getRedis();
+  if (redis) {
+    try {
+      const redisCached = await redis.get<string | null>(REDIS_KEY_PREFIX + cacheKey);
+      // Redis에 키가 존재하면 (값이 null이든 string이든) 캐시 히트
+      if (redisCached !== undefined && redisCached !== null) {
+        // "null" 문자열은 사진 없음을 의미 (Redis에 null 직접 저장 불가)
+        const photoUrl = redisCached === "null" ? null : redisCached;
+        // 인메모리에도 저장 (다음 요청은 Redis 안 거치고 바로 반환)
+        photoCache.set(cacheKey, { photoUrl, expiresAt: Date.now() + CACHE_TTL });
+        return photoUrl;
+      }
+    } catch (err) {
+      // Redis 장애 시 무시하고 Google API로 진행 (graceful degradation)
+      console.error("[place-photos] Redis get failed:", err);
+    }
+  }
+
+  // 3단계: Google API 직접 호출 (캐시 모두 미적중 시)
   try {
-    // 1단계: Google Places Text Search로 장소 검색
     const searchUrl = new URL("https://maps.googleapis.com/maps/api/place/textsearch/json");
     searchUrl.searchParams.set("query", query);
     searchUrl.searchParams.set("key", apiKey);
@@ -56,7 +98,7 @@ async function fetchPlacePhoto(query: string, apiKey: string): Promise<string | 
 
     const searchRes = await fetch(searchUrl.toString());
     if (!searchRes.ok) {
-      photoCache.set(cacheKey, { photoUrl: null, expiresAt: Date.now() + CACHE_TTL });
+      saveToAllCaches(cacheKey, null, redis);
       return null;
     }
 
@@ -65,20 +107,34 @@ async function fetchPlacePhoto(query: string, apiKey: string): Promise<string | 
 
     if (!photoRef) {
       // 사진 없음도 캐시 (불필요한 재조회 방지)
-      photoCache.set(cacheKey, { photoUrl: null, expiresAt: Date.now() + CACHE_TTL });
+      saveToAllCaches(cacheKey, null, redis);
       return null;
     }
 
-    // 2단계: Place Photo URL → redirect 따라가서 최종 URL 획득
+    // Place Photo URL → redirect 따라가서 최종 URL 획득
     const photoUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${photoRef}&key=${apiKey}`;
     const photoRes = await fetch(photoUrl, { redirect: "follow" });
     const finalUrl = photoRes.url;
 
-    photoCache.set(cacheKey, { photoUrl: finalUrl, expiresAt: Date.now() + CACHE_TTL });
+    saveToAllCaches(cacheKey, finalUrl, redis);
     return finalUrl;
   } catch {
-    photoCache.set(cacheKey, { photoUrl: null, expiresAt: Date.now() + CACHE_TTL });
+    saveToAllCaches(cacheKey, null, redis);
     return null;
+  }
+}
+
+// 인메모리 + Redis 동시에 캐시 저장하는 헬퍼
+function saveToAllCaches(cacheKey: string, photoUrl: string | null, redis: Redis | null): void {
+  // 인메모리 저장
+  photoCache.set(cacheKey, { photoUrl, expiresAt: Date.now() + CACHE_TTL });
+
+  // Redis에도 저장 (fire-and-forget: 응답 지연 방지)
+  if (redis) {
+    // null은 "null" 문자열로 저장 (사진 없음도 캐시하여 Google API 재호출 방지)
+    redis.set(REDIS_KEY_PREFIX + cacheKey, photoUrl ?? "null", { ex: REDIS_TTL }).catch((err) => {
+      console.error("[place-photos] Redis set failed:", err);
+    });
   }
 }
 

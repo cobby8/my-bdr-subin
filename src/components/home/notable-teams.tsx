@@ -65,10 +65,11 @@ function getInitials(name: string): string {
 
 export function NotableTeams({ fallbackData }: NotableTeamsProps = {}) {
   // useSWR로 팀 API 호출 (SWR이 자동 중복 제거)
+  // fallbackData가 있으면 마운트 시 재요청 안 함 (서버에서 이미 가져온 데이터 재활용)
   const { data: json, isLoading } = useSWR<{ teams: TeamData[] }>(
     "/api/web/teams",
     null,
-    { fallbackData }
+    { fallbackData, revalidateOnMount: !fallbackData }
   );
 
   // API 응답에서 상위 4팀 추출, 데이터 없으면 fallback 사용
