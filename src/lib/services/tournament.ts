@@ -24,6 +24,8 @@ export const TOURNAMENT_LIST_SELECT = {
   venue_name: true,
   maxTeams: true,
   divisions: true,  // 목록에서 종별 표시용
+  categories: true,       // 종별 뱃지 표시용 (Json)
+  division_tiers: true,   // 디비전 뱃지 표시용 (Json)
   _count: { select: { tournamentTeams: true } },
 } as const;
 

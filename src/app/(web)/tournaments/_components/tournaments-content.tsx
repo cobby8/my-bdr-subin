@@ -6,6 +6,7 @@ import Link from "next/link";
 import useSWR from "swr";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TOURNAMENT_STATUS_LABEL } from "@/lib/constants/tournament-status";
+import { CATEGORIES } from "@/lib/constants/divisions";
 import { usePreferFilter } from "@/contexts/prefer-filter-context";
 import { formatShortDate } from "@/lib/utils/format-date";
 
@@ -35,6 +36,8 @@ interface TournamentFromApi {
   max_teams: number | null;
   team_count: number;
   divisions: string[];         // 종별 목록
+  categories: Record<string, boolean>;  // 종별 정보 { "general": true, ... }
+  division_tiers: string[];             // 디비전 코드 배열 ["D5", "D6"]
 }
 
 interface TournamentsApiResponse {
@@ -52,8 +55,8 @@ const STATUS_BADGE: Record<string, { label: string; bg: string }> = {
   registration:        { label: "곧 모집", bg: "var(--color-primary)" },
   registration_open:   { label: "곧 모집", bg: "var(--color-primary)" },
   registration_closed: { label: "마감", bg: "#D97706" },
-  in_progress:         { label: "라이브", bg: "var(--color-info)" },
-  ongoing:             { label: "라이브", bg: "var(--color-info)" },
+  in_progress:         { label: "진행중", bg: "var(--color-primary)" },
+  ongoing:             { label: "진행중", bg: "var(--color-primary)" },
   completed:           { label: "종료", bg: "var(--color-text-disabled)" },
   cancelled:           { label: "취소됨", bg: "#EF4444" },
 };
@@ -138,6 +141,20 @@ function TournamentCard({ tournament: t, photoUrl }: { tournament: TournamentFro
   const feeText = hasFee ? `\u20A9${Number(t.entry_fee).toLocaleString()}` : "무료";
   const isFull = maxTeams > 0 && t.team_count >= maxTeams;
 
+  // 종별 라벨 배열: categories 객체에서 true인 키만 추출하여 한글 라벨로 변환
+  const categoryLabels = Object.entries(t.categories ?? {})
+    .filter(([, v]) => v === true)
+    .map(([key]) => CATEGORIES[key as keyof typeof CATEGORIES]?.label ?? key)
+    .filter(Boolean);
+
+  // 디비전 코드 배열: division_tiers에서 가져와서 중간점(·)으로 연결
+  const divisionTiers = (t.division_tiers ?? []).filter(Boolean);
+  const divisionLabel = divisionTiers.join("\u00B7"); // "D5·D6·D7"
+
+  // 종별/디비전 뱃지가 하나라도 있는지 확인
+  const hasCategoryBadge = categoryLabels.length > 0;
+  const hasDivisionBadge = divisionTiers.length > 0;
+
   // 대회 유형에 따른 그라디언트+아이콘 결정
   const formatStyle = FORMAT_GRADIENT[t.format ?? ""] ?? DEFAULT_FORMAT_STYLE;
 
@@ -167,6 +184,25 @@ function TournamentCard({ tournament: t, photoUrl }: { tournament: TournamentFro
           >
             {badge.label}
           </span>
+
+          {/* 종별 + 디비전 뱃지 (좌하단) */}
+          {(hasCategoryBadge || hasDivisionBadge) && (
+            <div className="absolute bottom-2 left-2 flex items-center gap-1">
+              {categoryLabels.map((label) => (
+                <span
+                  key={label}
+                  className="rounded-full bg-black/50 px-1.5 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm"
+                >
+                  {label}
+                </span>
+              ))}
+              {hasDivisionBadge && (
+                <span className="rounded-full bg-black/50 px-1.5 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
+                  {divisionLabel}
+                </span>
+              )}
+            </div>
+          )}
 
           {/* 장소 + 날짜 뱃지 (우하단, 경기 카드와 동일 패턴) */}
           <div className="absolute bottom-2 right-2 flex flex-col items-end gap-1">

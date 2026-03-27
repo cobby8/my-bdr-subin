@@ -72,6 +72,8 @@ export async function GET(request: NextRequest) {
       venueName: t.venue_name,
       maxTeams: t.maxTeams,
       divisions: t.divisions ?? [],                      // 종별 목록 (Json 배열)
+      categories: t.categories ?? {},                    // 종별 정보 (Json 객체)
+      divisionTiers: t.division_tiers ?? [],             // 디비전 목록 (Json 배열)
       teamCount: t._count.tournamentTeams,              // 참가팀 수
     }));
 
