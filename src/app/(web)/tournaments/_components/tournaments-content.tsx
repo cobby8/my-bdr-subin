@@ -343,6 +343,9 @@ export function TournamentsContent({
   const [regionFilter, setRegionFilter] = useState("all");
   const [feeFilter, setFeeFilter] = useState("all");
 
+  // 상태별 탭 필터: 모집중 / 진행중 / 완료
+  const [statusTab, setStatusTab] = useState<"recruiting" | "active" | "ended">("recruiting");
+
   // 클라이언트 사이드 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -384,7 +387,7 @@ export function TournamentsContent({
   // 필터가 바뀌면 1페이지로 리셋
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchParams, searchQuery, regionFilter, feeFilter]);
+  }, [searchParams, searchQuery, regionFilter, feeFilter, statusTab]);
 
   // API 응답에서 도시 목록 추출 (지역 필터 드롭다운용)
   const cities = useMemo(() => {
@@ -395,9 +398,36 @@ export function TournamentsContent({
     return Array.from(citySet).sort();
   }, [tournaments]);
 
-  // 클라이언트 사이드 필터 적용 (검색 + 지역 + 참가비)
+  // 상태 탭별 status 매핑: DB status 값을 3개 그룹으로 분류
+  // 모집중: open, published, registration, registration_open, draft 등 모집 가능한 상태
+  // 진행중: active, in_progress, ongoing, live 등 경기 진행 중인 상태
+  // 완료: completed, ended, closed, cancelled 등 종료된 상태
+  const STATUS_TAB_MAP: Record<string, "recruiting" | "active" | "ended"> = {
+    draft: "recruiting",
+    published: "recruiting",
+    registration: "recruiting",
+    registration_open: "recruiting",
+    registration_closed: "recruiting",
+    active: "active",
+    in_progress: "active",
+    ongoing: "active",
+    live: "active",
+    completed: "ended",
+    ended: "ended",
+    closed: "ended",
+    cancelled: "ended",
+  };
+
+  // 클라이언트 사이드 필터 적용 (상태 탭 + 검색 + 지역 + 참가비)
   const filteredTournaments = useMemo(() => {
     let result = tournaments;
+
+    // 상태 탭 필터 (모집중 / 진행중 / 완료)
+    result = result.filter((t) => {
+      const st = t.status ?? "draft";
+      const group = STATUS_TAB_MAP[st] ?? "recruiting";
+      return group === statusTab;
+    });
 
     // 검색어 필터 (대회명)
     if (searchQuery.trim()) {
@@ -418,7 +448,7 @@ export function TournamentsContent({
     }
 
     return result;
-  }, [tournaments, searchQuery, regionFilter, feeFilter]);
+  }, [tournaments, searchQuery, regionFilter, feeFilter, statusTab]);
 
   // 페이지네이션 계산
   const totalPages = Math.max(1, Math.ceil(filteredTournaments.length / TOURNAMENTS_PER_PAGE));
@@ -447,10 +477,8 @@ export function TournamentsContent({
     { revalidateOnFocus: false, dedupingInterval: 3600000 }
   );
 
-  // 필터 활성 여부 확인
-  const status = searchParams.get("status");
+  // 필터 활성 여부 확인 (상태 탭은 항상 선택되므로 검색/지역/참가비만 체크)
   const hasFilters =
-    (status && status !== "all") ||
     preferFilter ||
     searchQuery.trim() !== "" ||
     regionFilter !== "all" ||
@@ -458,36 +486,68 @@ export function TournamentsContent({
 
   return (
     <>
-      {/* 헤더: 제목 + 필터 */}
-      <div className="mb-10 space-y-4">
-        <div className="flex items-center justify-between">
-          {/* 좌측: 제목 + 부제 */}
-          <div>
-            <span
-              className="font-bold text-sm tracking-widest uppercase mb-2 block"
-              style={{ color: "var(--color-primary)" }}
-            >
-              프리미엄 리그
-            </span>
-            <h1
-              className="text-4xl sm:text-5xl font-bold leading-tight"
-              style={{
-                fontFamily: "var(--font-heading)",
-                color: "var(--color-text-primary)",
-              }}
-            >
-              대회 찾기
-            </h1>
-          </div>
+      {/* 헤더 영역 - 1행 통합: 제목(좌) + 검색/필터 아이콘(우) */}
+      <div className="mb-6">
+        <div className="flex items-center gap-3">
+          {/* 제목 (왼쪽 고정) */}
+          <h1
+            className="text-2xl font-bold text-[var(--color-text-primary)] shrink-0"
+            style={{ fontFamily: "var(--font-heading)" }}
+          >
+            대회 찾기
+          </h1>
+
+          {/* 가운데 여백 */}
+          <div className="flex-1" />
+
+          {/* 검색 + 필터 아이콘 (오른쪽 정렬) */}
+          <TournamentsFilterComponent
+            cities={cities}
+            onSearchChange={handleSearchChange}
+            onRegionChange={handleRegionChange}
+            onFeeChange={handleFeeChange}
+          />
         </div>
 
-        {/* 검색 + 플로팅 필터 트리거 */}
-        <TournamentsFilterComponent
-          cities={cities}
-          onSearchChange={handleSearchChange}
-          onRegionChange={handleRegionChange}
-          onFeeChange={handleFeeChange}
-        />
+        {/* 상태별 탭: 모집중 / 진행중 / 완료 (커뮤니티 카테고리 탭과 동일한 밑줄 스타일) */}
+        <div
+          className="mt-4 overflow-x-auto"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          <div
+            className="flex gap-1 border-b min-w-max"
+            style={{ borderColor: "var(--color-border)" }}
+          >
+            {([
+              { key: "recruiting" as const, label: "모집중" },
+              { key: "active" as const, label: "진행중" },
+              { key: "ended" as const, label: "완료" },
+            ]).map((tab) => {
+              const isActive = statusTab === tab.key;
+              return (
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => setStatusTab(tab.key)}
+                  className="px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors relative"
+                  style={{
+                    color: isActive ? "var(--color-primary)" : "var(--color-text-muted)",
+                    fontWeight: isActive ? 700 : 500,
+                  }}
+                >
+                  {tab.label}
+                  {/* 선택된 탭 하단 밑줄 (primary 색상 2px) */}
+                  {isActive && (
+                    <span
+                      className="absolute bottom-0 left-0 right-0 h-0.5"
+                      style={{ backgroundColor: "var(--color-primary)" }}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {/* 로딩 중이면 스켈레톤 표시 */}

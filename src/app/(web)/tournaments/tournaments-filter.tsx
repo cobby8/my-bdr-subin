@@ -134,31 +134,41 @@ export function TournamentsFilter({
     },
   ];
 
+  // 검색창 토글 상태 (아이콘 클릭 시 검색 input 표시/숨김)
+  const [showSearch, setShowSearch] = useState(false);
+
   return (
-    <div className="flex items-center gap-3">
-      {/* 검색바: 인라인 유지 (패널 밖) */}
-      <div
-        className="flex items-center gap-2 rounded px-3 py-2 flex-1 min-w-[200px]"
+    <div className="flex items-center gap-2">
+      {/* 검색 아이콘 버튼 (클릭 시 검색창 토글) */}
+      <button
+        type="button"
+        onClick={() => setShowSearch((prev) => !prev)}
+        className="flex h-9 w-9 items-center justify-center rounded-full transition-colors"
         style={{
-          backgroundColor: "var(--color-card)",
-          border: "1px solid var(--color-border)",
+          backgroundColor: showSearch ? "var(--color-primary)" : "var(--color-accent)",
+          color: showSearch ? "var(--color-on-primary)" : "var(--color-text-primary)",
         }}
+        title="검색"
       >
-        <span
-          className="material-symbols-outlined text-lg"
-          style={{ color: "var(--color-text-disabled)" }}
-        >
-          search
-        </span>
+        <span className="material-symbols-outlined text-lg">search</span>
+      </button>
+
+      {/* 검색 input: 토글 시 슬라이드 표시 */}
+      {showSearch && (
         <input
           type="text"
           placeholder="대회 검색..."
           value={searchQuery}
           onChange={handleSearch}
-          className="flex-1 bg-transparent border-none outline-none text-sm"
-          style={{ color: "var(--color-text-primary)" }}
+          autoFocus
+          className="h-9 rounded px-3 text-sm outline-none border transition-all w-40 sm:w-56"
+          style={{
+            backgroundColor: "var(--color-card)",
+            borderColor: "var(--color-border)",
+            color: "var(--color-text-primary)",
+          }}
         />
-      </div>
+      )}
 
       {/* 플로팅 필터 트리거 버튼 */}
       <FloatingFilterPanel
