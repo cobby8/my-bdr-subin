@@ -181,9 +181,9 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
               <Image src="/images/logo.png" alt="BDR" width={100} height={30} className="h-7 w-auto" />
             </Link>
           </div>
-          {/* PC: 검색바 (넓은 입력 필드) */}
-          <div className="hidden lg:flex items-center gap-2 flex-1">
-            <div className="relative w-full max-w-md">
+          {/* PC: 검색바 */}
+          <div className="hidden lg:flex items-center gap-2">
+            <div className="relative w-72">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-lg" style={{ color: "var(--color-text-muted)" }}>search</span>
               <input
                 placeholder="경기, 대회, 팀 검색..."
@@ -194,8 +194,8 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        {/* 우측: 모바일=테마+검색+알림+프로필, PC=테마+알림+프로필 */}
-        <div className="flex items-center gap-1">
+        {/* 우측: 테마+검색+알림+프로필 */}
+        <div className="flex items-center gap-1 shrink-0">
           <ThemeToggle />
           <TextSizeToggle />
           {/* 모바일 검색 아이콘 (PC에서는 좌측 검색바 사용) */}
