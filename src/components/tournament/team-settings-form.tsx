@@ -43,6 +43,7 @@ export function TeamSettingsForm({ data, totalDivCaps, onChange }: Props) {
         </div>
       )}
 
+      {/* teamSize, rosterMin은 UI에서 제거 (state/API에는 기본값 유지) */}
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className={labelCls}>최대 팀 수</label>
@@ -53,26 +54,6 @@ export function TeamSettingsForm({ data, totalDivCaps, onChange }: Props) {
             min={2}
             disabled={data.autoCalcMaxTeams && totalDivCaps > 0}
             onChange={(e) => onChange("maxTeams", e.target.value)}
-          />
-        </div>
-        <div>
-          <label className={labelCls}>팀당 선수 수</label>
-          <input
-            type="number"
-            className={inputCls}
-            value={data.teamSize}
-            min={1}
-            onChange={(e) => onChange("teamSize", e.target.value)}
-          />
-        </div>
-        <div>
-          <label className={labelCls}>최소 로스터</label>
-          <input
-            type="number"
-            className={inputCls}
-            value={data.rosterMin}
-            min={1}
-            onChange={(e) => onChange("rosterMin", e.target.value)}
           />
         </div>
         <div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 const inputCls =
@@ -26,6 +27,11 @@ interface Props {
 
 export function RegistrationSettingsForm({ data, onChange }: Props) {
   const { categories, divCaps, divFees } = data;
+
+  // 부문/디비전 추가용 state (form submit 대신 onClick으로 동작)
+  const [newCatInput, setNewCatInput] = useState("");
+  // 각 부문별 디비전 추가 입력값을 관리하는 state
+  const [newDivInputs, setNewDivInputs] = useState<Record<string, string>>({});
 
   return (
     <div className="space-y-4">
@@ -112,48 +118,73 @@ export function RegistrationSettingsForm({ data, onChange }: Props) {
                 </div>
               ))}
 
-              {/* 디비전 추가 */}
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const input = (e.target as HTMLFormElement).elements.namedItem("newDiv") as HTMLInputElement;
-                  const val = input.value.trim();
-                  if (!val || divs.includes(val)) return;
-                  onChange({ categories: { ...categories, [cat]: [...divs, val] } });
-                  input.value = "";
-                }}
-                className="flex gap-2"
-              >
+              {/* 디비전 추가 (form 대신 state+onClick으로 동작) */}
+              <div className="flex gap-2">
                 <input
-                  name="newDiv"
+                  value={newDivInputs[cat] ?? ""}
+                  onChange={(e) => setNewDivInputs({ ...newDivInputs, [cat]: e.target.value })}
+                  onKeyDown={(e) => {
+                    // Enter 키로도 추가 가능
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      const val = (newDivInputs[cat] ?? "").trim();
+                      if (!val || divs.includes(val)) return;
+                      onChange({ categories: { ...categories, [cat]: [...divs, val] } });
+                      setNewDivInputs({ ...newDivInputs, [cat]: "" });
+                    }
+                  }}
                   placeholder="디비전 추가 (예: D3)"
                   className="flex-1 rounded-[8px] border border-[var(--color-border)] px-2 py-1 text-sm"
                 />
-                <button type="submit" className="text-xs font-medium text-[var(--color-accent)] hover:underline">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const val = (newDivInputs[cat] ?? "").trim();
+                    if (!val || divs.includes(val)) return;
+                    onChange({ categories: { ...categories, [cat]: [...divs, val] } });
+                    setNewDivInputs({ ...newDivInputs, [cat]: "" });
+                  }}
+                  className="text-xs font-medium text-[var(--color-accent)] hover:underline"
+                >
                   추가
                 </button>
-              </form>
+              </div>
             </div>
           </div>
         ))}
 
-        {/* 부문 추가 */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            const input = (e.target as HTMLFormElement).elements.namedItem("newCat") as HTMLInputElement;
-            const val = input.value.trim();
-            if (!val || categories[val]) return;
-            onChange({ categories: { ...categories, [val]: [] } });
-            input.value = "";
-          }}
-          className="flex gap-2"
-        >
-          <input name="newCat" placeholder="부문 추가 (예: 일반부)" className={`flex-1 ${inputCls}`} />
-          <Button type="submit" variant="secondary" className="whitespace-nowrap">
+        {/* 부문 추가 (form 대신 state+onClick으로 동작 - form 중첩 방지) */}
+        <div className="flex gap-2">
+          <input
+            value={newCatInput}
+            onChange={(e) => setNewCatInput(e.target.value)}
+            onKeyDown={(e) => {
+              // Enter 키로도 추가 가능
+              if (e.key === "Enter") {
+                e.preventDefault();
+                const val = newCatInput.trim();
+                if (!val || categories[val]) return;
+                onChange({ categories: { ...categories, [val]: [] } });
+                setNewCatInput("");
+              }
+            }}
+            placeholder="부문 추가 (예: 일반부)"
+            className={`flex-1 ${inputCls}`}
+          />
+          <Button
+            type="button"
+            variant="secondary"
+            className="whitespace-nowrap"
+            onClick={() => {
+              const val = newCatInput.trim();
+              if (!val || categories[val]) return;
+              onChange({ categories: { ...categories, [val]: [] } });
+              setNewCatInput("");
+            }}
+          >
             부문 추가
           </Button>
-        </form>
+        </div>
       </div>
 
       {/* 기본 참가비 */}
