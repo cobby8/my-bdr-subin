@@ -51,7 +51,6 @@ function PreferFilterToggleButton() {
       aria-label={preferFilter ? "맞춤 필터 켜짐" : "맞춤 필터 꺼짐"}
       title={preferFilter ? "맞춤 필터 켜짐" : "맞춤 필터 꺼짐"}
     >
-      {/* tune 아이콘: ON이면 primary 색상, OFF이면 muted 색상 */}
       <span
         className="material-symbols-outlined text-xl"
         style={{
@@ -59,7 +58,7 @@ function PreferFilterToggleButton() {
           fontVariationSettings: preferFilter ? "'FILL' 1" : undefined,
         }}
       >
-        tune
+        star
       </span>
     </button>
   );
