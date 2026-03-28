@@ -87,10 +87,10 @@ export function TournamentSidebar({
 
           {/* 상세 정보 행 */}
           <div className="space-y-2.5 text-xs">
-            {/* 참가비 (1인당) */}
+            {/* 참가비 */}
             {hasFee && (
               <div className="flex items-center justify-between">
-                <span style={{ color: "var(--color-text-secondary)" }}>참가비 (1인당)</span>
+                <span style={{ color: "var(--color-text-secondary)" }}>참가비</span>
                 <span className="font-semibold">{feeDisplay}</span>
               </div>
             )}
