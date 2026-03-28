@@ -93,16 +93,16 @@ export const TOURNAMENT_FORMAT_LABEL_SHORT: Record<string, string> = {
  */
 export const TOURNAMENT_STATUS_TRANSITIONS: Record<string, string[]> = {
   // 준비중 → 접수중 또는 종료(취소)
-  draft: ["registration_open", "cancelled"],
-  upcoming: ["registration_open", "cancelled"],
+  draft: ["registration", "cancelled"],
+  upcoming: ["registration", "cancelled"],
   // 접수중 → 진행중 또는 종료(취소)
-  registration: ["ongoing", "cancelled"],
-  registration_open: ["ongoing", "cancelled"],
-  active: ["ongoing", "cancelled"],
-  published: ["registration_open", "cancelled"],
-  open: ["ongoing", "cancelled"],
-  opening_soon: ["registration_open", "cancelled"],
-  registration_closed: ["ongoing", "cancelled"],
+  registration: ["in_progress", "cancelled"],
+  registration_open: ["in_progress", "cancelled"],
+  active: ["in_progress", "cancelled"],
+  published: ["registration", "cancelled"],
+  open: ["in_progress", "cancelled"],
+  opening_soon: ["registration", "cancelled"],
+  registration_closed: ["in_progress", "cancelled"],
   // 진행중 → 종료
   in_progress: ["completed", "cancelled"],
   live: ["completed", "cancelled"],

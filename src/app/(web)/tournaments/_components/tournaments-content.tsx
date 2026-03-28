@@ -295,7 +295,8 @@ export function TournamentsContent({
   const [genderFilter, setGenderFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [divisionFilter, setDivisionFilter] = useState("all");
-  const [statusTab, setStatusTab] = useState<"recruiting" | "active" | "ended">("recruiting");
+  // 상태 탭 4종: 준비중/접수중/진행중/종료
+  const [statusTab, setStatusTab] = useState<"draft" | "registration" | "in_progress" | "completed">("registration");
   const [currentPage, setCurrentPage] = useState(1);
   const { preferFilter } = usePreferFilter();
 
@@ -334,12 +335,13 @@ export function TournamentsContent({
     setCurrentPage(1);
   }, [searchParams, searchQuery, regionFilter, genderFilter, categoryFilter, divisionFilter, statusTab]);
 
-  // 상태 탭 매핑 (기존과 동일)
-  const STATUS_TAB_MAP: Record<string, "recruiting" | "active" | "ended"> = {
-    draft: "recruiting", published: "recruiting", registration: "recruiting",
-    registration_open: "recruiting", registration_closed: "recruiting",
-    active: "active", in_progress: "active", ongoing: "active", live: "active",
-    completed: "ended", ended: "ended", closed: "ended", cancelled: "ended",
+  // 상태 탭 매핑 — DB의 다양한 status 값을 4종 탭으로 분류
+  const STATUS_TAB_MAP: Record<string, "draft" | "registration" | "in_progress" | "completed"> = {
+    draft: "draft", upcoming: "draft",
+    registration: "registration", registration_open: "registration", active: "registration",
+    published: "registration", open: "registration", opening_soon: "registration", registration_closed: "registration",
+    in_progress: "in_progress", live: "in_progress", ongoing: "in_progress", group_stage: "in_progress",
+    completed: "completed", ended: "completed", closed: "completed", cancelled: "completed",
   };
 
   // 필터 적용 (기존 로직 100% 유지)
@@ -348,7 +350,7 @@ export function TournamentsContent({
 
     result = result.filter((t) => {
       const st = t.status ?? "draft";
-      return (STATUS_TAB_MAP[st] ?? "recruiting") === statusTab;
+      return (STATUS_TAB_MAP[st] ?? "draft") === statusTab;
     });
 
     if (searchQuery.trim()) {
@@ -431,12 +433,13 @@ export function TournamentsContent({
           />
         </div>
 
-        {/* 상태 탭: 토스 스타일 (밑줄 인디케이터) */}
+        {/* 상태 탭: 4종 통일 (준비중/접수중/진행중/종료) */}
         <div className="mt-4 flex gap-1 border-b border-[var(--color-border)]">
           {([
-            { key: "recruiting" as const, label: "모집중" },
-            { key: "active" as const, label: "진행중" },
-            { key: "ended" as const, label: "완료" },
+            { key: "draft" as const, label: "준비중" },
+            { key: "registration" as const, label: "접수중" },
+            { key: "in_progress" as const, label: "진행중" },
+            { key: "completed" as const, label: "종료" },
           ]).map((tab) => {
             const isActive = statusTab === tab.key;
             return (

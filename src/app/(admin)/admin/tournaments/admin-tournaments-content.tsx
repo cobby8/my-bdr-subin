@@ -24,34 +24,61 @@ interface SerializedTournament {
   organizerEmail: string | null;
 }
 
-// 상태/형식 라벨은 서버에서 전달받으므로 클라이언트에서도 동일하게 매핑
+// 상태 4종 통일: draft(준비중) / registration(접수중) / in_progress(진행중) / completed(종료)
 const STATUS_LABEL: Record<string, string> = {
   draft: "준비중",
+  upcoming: "준비중",
+  registration: "접수중",
+  registration_open: "접수중",
+  active: "접수중",
+  published: "접수중",
   open: "접수중",
+  opening_soon: "접수중",
+  registration_closed: "접수중",
   in_progress: "진행중",
+  live: "진행중",
+  ongoing: "진행중",
+  group_stage: "진행중",
   completed: "종료",
+  ended: "종료",
+  closed: "종료",
+  cancelled: "종료",
 };
 
 const STATUS_BADGE: Record<string, "default" | "success" | "info" | "warning" | "secondary"> = {
   draft: "default",
-  open: "success",
-  in_progress: "info",
+  registration: "info",
+  in_progress: "success",
   completed: "secondary",
 };
 
 const FORMAT_LABEL: Record<string, string> = {
-  single_elimination: "싱글 엘리미네이션",
+  single_elimination: "토너먼트",
   double_elimination: "더블 엘리미네이션",
-  round_robin: "라운드 로빈",
-  swiss: "스위스",
+  round_robin: "리그전",
+  group_stage: "조별리그",
+  group_stage_knockout: "조별리그+토너먼트",
+  GROUP_STAGE_KNOCKOUT: "조별리그+토너먼트",
+  dual_tournament: "듀얼토너먼트",
+  full_league_knockout: "풀리그+토너먼트",
+  swiss: "스위스 라운드",
 };
 
-// 상태 전환 규칙
+// 상태 전환 규칙 — 4종 기준: 준비중→접수중→진행중→종료
 const TRANSITIONS: Record<string, string[]> = {
-  draft: ["open"],
-  open: ["in_progress"],
+  draft: ["registration"],
+  registration: ["in_progress"],
   in_progress: ["completed"],
   completed: [],
+  // 레거시 상태도 전환 지원
+  upcoming: ["registration"],
+  registration_open: ["in_progress"],
+  active: ["in_progress"],
+  published: ["registration"],
+  open: ["in_progress"],
+  ongoing: ["completed"],
+  live: ["completed"],
+  cancelled: ["draft"],
 };
 
 interface Props {
@@ -66,19 +93,31 @@ export function AdminTournamentsContent({
   const [activeTab, setActiveTab] = useState("all");
   const [selected, setSelected] = useState<SerializedTournament | null>(null);
 
-  // 탭별 필터링 — 서버 전체 데이터를 클라이언트에서 filter
+  // DB의 다양한 status 값을 4종 탭 키로 매핑
+  const toTabKey = (status: string): string => {
+    const map: Record<string, string> = {
+      draft: "draft", upcoming: "draft",
+      registration: "registration", registration_open: "registration", active: "registration",
+      published: "registration", open: "registration", opening_soon: "registration", registration_closed: "registration",
+      in_progress: "in_progress", live: "in_progress", ongoing: "in_progress", group_stage: "in_progress",
+      completed: "completed", ended: "completed", closed: "completed", cancelled: "completed",
+    };
+    return map[status] ?? "draft";
+  };
+
+  // 탭별 필터링 — 4종 매핑 기준
   const filtered =
     activeTab === "all"
       ? tournaments
-      : tournaments.filter((t) => (t.status ?? "draft") === activeTab);
+      : tournaments.filter((t) => toTabKey(t.status ?? "draft") === activeTab);
 
   // 탭 목록 + 각 상태별 개수 계산
   const tabs = [
     { key: "all", label: "전체", count: tournaments.length },
-    { key: "draft", label: "준비중", count: tournaments.filter((t) => (t.status ?? "draft") === "draft").length },
-    { key: "open", label: "접수중", count: tournaments.filter((t) => t.status === "open").length },
-    { key: "in_progress", label: "진행중", count: tournaments.filter((t) => t.status === "in_progress").length },
-    { key: "completed", label: "종료", count: tournaments.filter((t) => t.status === "completed").length },
+    { key: "draft", label: "준비중", count: tournaments.filter((t) => toTabKey(t.status ?? "draft") === "draft").length },
+    { key: "registration", label: "접수중", count: tournaments.filter((t) => toTabKey(t.status ?? "draft") === "registration").length },
+    { key: "in_progress", label: "진행중", count: tournaments.filter((t) => toTabKey(t.status ?? "draft") === "in_progress").length },
+    { key: "completed", label: "종료", count: tournaments.filter((t) => toTabKey(t.status ?? "draft") === "completed").length },
   ];
 
   const fmtDate = (iso: string | null) =>
@@ -103,6 +142,8 @@ export function AdminTournamentsContent({
             <tbody>
               {filtered.map((t) => {
                 const status = t.status ?? "draft";
+                // 레거시 status도 4종 기준 뱃지로 표시
+                const tabKey = toTabKey(status);
                 return (
                   <tr
                     key={t.id}
@@ -118,9 +159,9 @@ export function AdminTournamentsContent({
                         {t.organizerName ?? t.organizerEmail ?? "-"}
                       </p>
                     </td>
-                    {/* 상태 뱃지 */}
+                    {/* 상태 뱃지 — 4종 기준 */}
                     <td className="px-5 py-3">
-                      <Badge variant={STATUS_BADGE[status] ?? "default"}>
+                      <Badge variant={STATUS_BADGE[tabKey] ?? "default"}>
                         {STATUS_LABEL[status] ?? status}
                       </Badge>
                     </td>

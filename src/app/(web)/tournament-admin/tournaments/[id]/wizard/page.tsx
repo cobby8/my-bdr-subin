@@ -47,11 +47,11 @@ const GENDER_OPTIONS = [
   { value: "female", label: "여성" },
 ];
 
-// 대회 상태 4종 통일
+// 대회 상태 4종 통일 (draft/registration/in_progress/completed)
 const STATUS_OPTIONS = [
   { value: "draft", label: "준비중" },
-  { value: "registration_open", label: "접수중" },
-  { value: "ongoing", label: "진행중" },
+  { value: "registration", label: "접수중" },
+  { value: "in_progress", label: "진행중" },
   { value: "completed", label: "종료" },
 ];
 
