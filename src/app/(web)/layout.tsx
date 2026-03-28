@@ -1,17 +1,34 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { usePathname, useRouter } from "next/navigation";
 import { Footer } from "@/components/layout/Footer";
 import { SWRProvider } from "@/components/providers/swr-provider";
 import { PreferFilterProvider, usePreferFilter } from "@/contexts/prefer-filter-context";
 import { ToastProvider } from "@/contexts/toast-context";
-import { SlideMenu } from "@/components/shared/slide-menu";
-import { ThemeToggle } from "@/components/shared/theme-toggle";
-import { TextSizeToggle } from "@/components/shared/text-size-toggle";
 import { ProfileCompletionBanner } from "@/components/shared/profile-completion-banner";
+
+/* ============================================================
+ * dynamic import: 초기 번들 크기를 줄이기 위해
+ * SSR이 불필요한 클라이언트 전용 컴포넌트를 lazy load 한다.
+ * - SlideMenu: "더보기" 탭을 눌러야만 보이므로 지연 로딩
+ * - ThemeToggle / TextSizeToggle: 작지만 SSR 불필요
+ * ============================================================ */
+const SlideMenu = dynamic(
+  () => import("@/components/shared/slide-menu").then((m) => m.SlideMenu),
+  { ssr: false }
+);
+const ThemeToggle = dynamic(
+  () => import("@/components/shared/theme-toggle").then((m) => m.ThemeToggle),
+  { ssr: false }
+);
+const TextSizeToggle = dynamic(
+  () => import("@/components/shared/text-size-toggle").then((m) => m.TextSizeToggle),
+  { ssr: false }
+);
 
 /* ============================================================
  * 하단 탭 네비바 항목: 5개 탭 (모바일+데스크탑 공통)
@@ -63,6 +80,167 @@ function PreferFilterToggleButton() {
         star
       </span>
     </button>
+  );
+}
+
+/* ============================================================
+ * SearchAutocomplete — PC 검색바 + 실시간 자동완성 드롭다운
+ * 타이핑 시 디바운스 300ms 후 /api/web/search?q= 호출
+ * 결과를 카테고리(경기/대회/팀/커뮤니티)별 최대 3건씩 드롭다운 표시
+ * ESC 또는 외부 클릭으로 닫기
+ * ============================================================ */
+interface SearchResult {
+  games: { id: string; title: string; venue_name?: string }[];
+  tournaments: { id: string; name: string; city?: string }[];
+  teams: { id: string; name: string; city?: string }[];
+  posts: { id: string; title: string; category?: string }[];
+}
+
+function SearchAutocomplete() {
+  const router = useRouter();
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<SearchResult | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /* 디바운스 300ms 후 검색 API 호출 */
+  const debouncedSearch = useCallback((q: string) => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (!q || q.length < 1) {
+      setResults(null);
+      setIsOpen(false);
+      setIsLoading(false);
+      return;
+    }
+    setIsLoading(true);
+    timerRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/web/search?q=${encodeURIComponent(q)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setResults(data);
+          setIsOpen(true);
+        }
+      } catch {
+        /* 네트워크 에러 무시 */
+      } finally {
+        setIsLoading(false);
+      }
+    }, 300);
+  }, []);
+
+  /* 외부 클릭 시 드롭다운 닫기 */
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  /* 검색 결과 항목 클릭 시 이동 후 드롭다운 닫기 */
+  const navigate = (href: string) => {
+    setIsOpen(false);
+    setQuery("");
+    router.push(href);
+  };
+
+  /* 드롭다운에 표시할 카테고리별 항목 (최대 3건씩) */
+  const categories = results ? [
+    { label: "경기", icon: "sports_basketball", items: results.games.slice(0, 3).map(g => ({ id: g.id, title: g.title, sub: g.venue_name, href: `/games/${g.id}` })) },
+    { label: "대회", icon: "emoji_events", items: results.tournaments.slice(0, 3).map(t => ({ id: t.id, title: t.name, sub: t.city, href: `/tournaments/${t.id}` })) },
+    { label: "팀", icon: "groups", items: results.teams.slice(0, 3).map(t => ({ id: t.id, title: t.name, sub: t.city, href: `/teams/${t.id}` })) },
+    { label: "커뮤니티", icon: "forum", items: results.posts.slice(0, 3).map(p => ({ id: p.id, title: p.title, sub: p.category, href: `/community/${p.id}` })) },
+  ].filter(cat => cat.items.length > 0) : [];
+
+  const totalResults = categories.reduce((sum, cat) => sum + cat.items.length, 0);
+
+  return (
+    <div ref={containerRef} className="hidden lg:flex items-center gap-2">
+      <form
+        className="relative w-72"
+        onSubmit={(e) => {
+          e.preventDefault();
+          const q = query.trim();
+          if (q) {
+            setIsOpen(false);
+            router.push(`/search?q=${encodeURIComponent(q)}`);
+          }
+        }}
+      >
+        {/* 검색 아이콘 */}
+        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-lg" style={{ color: "var(--color-text-muted)" }}>search</span>
+
+        {/* 로딩 스피너: 검색 중일 때 우측에 표시 */}
+        {isLoading && (
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin rounded-full border-2 border-[var(--color-text-muted)] border-t-transparent" />
+        )}
+
+        <input
+          name="q"
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            debouncedSearch(e.target.value.trim());
+          }}
+          onFocus={() => { if (results && totalResults > 0) setIsOpen(true); }}
+          onKeyDown={(e) => { if (e.key === "Escape") setIsOpen(false); }}
+          placeholder="경기, 대회, 팀 검색..."
+          autoComplete="off"
+          className="w-full rounded-xl py-2.5 pl-10 pr-4 text-sm outline-none"
+          style={{ backgroundColor: "var(--color-surface)", color: "var(--color-text-primary)" }}
+        />
+
+        {/* 자동완성 드롭다운 */}
+        {isOpen && categories.length > 0 && (
+          <div
+            className="absolute left-0 top-full mt-2 w-full overflow-hidden rounded-xl border shadow-xl"
+            style={{ backgroundColor: "var(--color-card)", borderColor: "var(--color-border)", zIndex: 100 }}
+          >
+            {categories.map((cat) => (
+              <div key={cat.label}>
+                {/* 카테고리 헤더 */}
+                <div className="flex items-center gap-2 px-4 py-2" style={{ backgroundColor: "var(--color-surface)" }}>
+                  <span className="material-symbols-outlined text-base" style={{ color: "var(--color-text-muted)" }}>{cat.icon}</span>
+                  <span className="text-xs font-semibold" style={{ color: "var(--color-text-tertiary)" }}>{cat.label}</span>
+                </div>
+                {/* 카테고리 항목 */}
+                {cat.items.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => navigate(item.href)}
+                    className="flex w-full items-center justify-between px-4 py-2.5 text-left transition-colors hover:bg-[var(--color-surface)]"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium" style={{ color: "var(--color-text-primary)" }}>{item.title}</p>
+                      {item.sub && (
+                        <p className="truncate text-xs" style={{ color: "var(--color-text-muted)" }}>{item.sub}</p>
+                      )}
+                    </div>
+                    <span className="material-symbols-outlined ml-2 text-base flex-shrink-0" style={{ color: "var(--color-text-muted)" }}>arrow_forward</span>
+                  </button>
+                ))}
+              </div>
+            ))}
+            {/* 전체 검색 결과 보기 링크 */}
+            <button
+              type="button"
+              onClick={() => { setIsOpen(false); router.push(`/search?q=${encodeURIComponent(query.trim())}`); }}
+              className="flex w-full items-center justify-center gap-1 border-t px-4 py-3 text-sm font-medium transition-colors hover:bg-[var(--color-surface)]"
+              style={{ borderColor: "var(--color-border)", color: "var(--color-primary)" }}
+            >
+              &quot;{query.trim()}&quot; 전체 검색 결과 보기
+              <span className="material-symbols-outlined text-base">arrow_forward</span>
+            </button>
+          </div>
+        )}
+      </form>
+    </div>
   );
 }
 
@@ -214,25 +392,8 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
               <Image src="/images/logo.png" alt="BDR" width={100} height={30} className="h-7 w-auto" />
             </Link>
           </div>
-          {/* PC: 검색바 — Enter 시 /search?q=검색어 로 이동 (통합 검색) */}
-          <div className="hidden lg:flex items-center gap-2">
-            <form
-              className="relative w-72"
-              onSubmit={(e) => {
-                e.preventDefault();
-                const q = (e.currentTarget.elements.namedItem("q") as HTMLInputElement).value.trim();
-                if (q) router.push(`/search?q=${encodeURIComponent(q)}`);
-              }}
-            >
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-lg" style={{ color: "var(--color-text-muted)" }}>search</span>
-              <input
-                name="q"
-                placeholder="경기, 대회, 팀 검색..."
-                className="w-full rounded-xl py-2.5 pl-10 pr-4 text-sm outline-none"
-                style={{ backgroundColor: "var(--color-surface)", color: "var(--color-text-primary)" }}
-              />
-            </form>
-          </div>
+          {/* PC: 검색바 — 타이핑 시 실시간 자동완성 + Enter로 전체 검색 */}
+          <SearchAutocomplete />
         </div>
 
         {/* 우측: 테마+검색+선호필터+알림+프로필 */}

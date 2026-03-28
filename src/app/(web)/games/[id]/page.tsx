@@ -26,9 +26,26 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const game = await getGame(id);
   if (!game) return { title: "경기 상세 | MyBDR" };
+
+  const title = `${game.title || "경기 상세"} | MyBDR`;
+  const description = game.description?.slice(0, 100) || "경기 상세 정보를 확인하고 참가 신청하세요.";
+
   return {
-    title: `${game.title || "경기 상세"} | MyBDR`,
-    description: game.description?.slice(0, 100) || "경기 상세 정보를 확인하고 참가 신청하세요.",
+    title,
+    description,
+    /* Open Graph: 카카오톡/페이스북 등 SNS 공유 시 미리보기 카드 */
+    openGraph: {
+      title: game.title || "경기 상세",
+      description,
+      type: "website",
+      url: `https://mybdr.kr/games/${id}`,
+    },
+    /* Twitter Card: 트위터/X 공유 시 카드 */
+    twitter: {
+      card: "summary",
+      title: game.title || "경기 상세",
+      description,
+    },
   };
 }
 

@@ -22,12 +22,30 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const tournament = await prisma.tournament.findUnique({
     where: { id },
-    select: { name: true, description: true },
+    select: { name: true, description: true, banner_url: true },
   }).catch(() => null);
   if (!tournament) return { title: "대회 상세 | MyBDR" };
+
+  const title = `${tournament.name} | MyBDR`;
+  const description = tournament.description?.slice(0, 100) || `${tournament.name} 대회 일정, 참가 신청`;
+
   return {
-    title: `${tournament.name} | MyBDR`,
-    description: tournament.description?.slice(0, 100) || `${tournament.name} 대회 일정, 팀, 순위를 확인하세요.`,
+    title,
+    description,
+    /* Open Graph: 카카오톡/페이스북 등 SNS 공유 시 미리보기 카드 */
+    openGraph: {
+      title: tournament.name,
+      description,
+      type: "website",
+      url: `https://mybdr.kr/tournaments/${id}`,
+      images: tournament.banner_url ? [{ url: tournament.banner_url }] : [],
+    },
+    /* Twitter Card: 트위터/X 공유 시 큰 이미지 카드 */
+    twitter: {
+      card: tournament.banner_url ? "summary_large_image" : "summary",
+      title: tournament.name,
+      description,
+    },
   };
 }
 

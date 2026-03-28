@@ -11,6 +11,7 @@ import { RecommendedGames } from "@/components/home/recommended-games";
 import { NotableTeams } from "@/components/home/notable-teams";
 import { RecommendedVideos } from "@/components/home/recommended-videos";
 import { HomeCommunity } from "@/components/home/home-community";
+import { RecentActivity } from "@/components/home/recent-activity";
 import {
   prefetchTeams,
   prefetchStats,
@@ -74,10 +75,13 @@ export default async function HomePage() {
       {/* [섹션 3] 주목할만한 팀: TossListItem으로 리스트 표시 */}
       <NotableTeams fallbackData={teamsData} />
 
-      {/* [섹션 4] 커뮤니티: 최근 게시글 TossListItem */}
+      {/* [섹션 4] 최근 활동 피드: 경기참가/대회참가/글작성 통합 (클라이언트 fetch) */}
+      <RecentActivity />
+
+      {/* [섹션 5] 커뮤니티: 최근 게시글 TossListItem */}
       <HomeCommunity fallbackData={communityData} />
 
-      {/* [섹션 5] 인기 영상 (YouTube — 프리페치 안 함) */}
+      {/* [섹션 6] 인기 영상 (YouTube — 프리페치 안 함) */}
       <RecommendedVideos />
     </div>
   );

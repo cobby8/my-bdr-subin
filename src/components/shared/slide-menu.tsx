@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { TextSizeToggle } from "@/components/shared/text-size-toggle";
+import { PushNotificationToggle } from "@/components/shared/push-notification-toggle";
 
 /* ============================================================
  * 슬라이드 메뉴 네비게이션 항목 정의
@@ -151,6 +152,10 @@ export function SlideMenu({
           <div className="mb-2 flex items-center gap-2 px-2">
             <ThemeToggle />
             <TextSizeToggle />
+          </div>
+          {/* 푸시 알림 권한 요청 토글 (브라우저 지원 시에만 표시) */}
+          <div className="mb-2">
+            <PushNotificationToggle />
           </div>
           <Link
             href="/profile"
