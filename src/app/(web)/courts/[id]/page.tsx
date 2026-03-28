@@ -2,21 +2,21 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/db/prisma";
-import { Card } from "@/components/ui/card";
 
 export const revalidate = 300;
 
-// SEO: 코트 상세 동적 메타데이터 — 코트명을 DB에서 조회하여 title에 반영
+// SEO: 코트 상세 동적 메타데이터
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   const court = await prisma.court_infos.findUnique({
     where: { id: BigInt(id) },
-    select: { name: true, address: true },
+    select: { name: true, address: true, city: true, court_type: true },
   }).catch(() => null);
   if (!court) return { title: "코트 상세 | MyBDR" };
+  const typeLabel = court.court_type === "indoor" ? "실내" : "야외";
   return {
     title: `${court.name} | MyBDR`,
-    description: court.address ? `${court.name} — ${court.address}` : `${court.name} 코트 정보와 리뷰를 확인하세요.`,
+    description: `${court.name} — ${typeLabel} 농구장. ${court.address}`,
   };
 }
 
@@ -25,6 +25,7 @@ type Params = { id: string };
 export default async function CourtDetailPage({ params }: { params: Promise<Params> }) {
   const { id } = await params;
 
+  // 코트 상세 정보 조회
   const court = await prisma.court_infos.findUnique({
     where: { id: BigInt(id) },
     include: {
@@ -43,160 +44,449 @@ export default async function CourtDetailPage({ params }: { params: Promise<Para
 
   if (!court) notFound();
 
+  // 같은 코트 또는 같은 도시의 경기 조회 (최근 5건)
+  const relatedGames = await prisma.games.findMany({
+    where: {
+      OR: [
+        { court_id: court.id },
+        { city: court.city, district: court.district ?? undefined },
+      ],
+    },
+    orderBy: { scheduled_at: "desc" },
+    take: 5,
+    select: {
+      id: true,
+      game_id: true,
+      title: true,
+      game_type: true,
+      scheduled_at: true,
+      city: true,
+      venue_name: true,
+    },
+  }).catch(() => []);
+
+  // 같은 장소 이름을 가진 대회 조회 (최근 3건)
+  const relatedTournaments = await prisma.tournament.findMany({
+    where: {
+      OR: [
+        { venue_name: { contains: court.name } },
+        { venue_name: court.name },
+        { venue_address: { contains: court.address.split(" ").slice(0, 3).join(" ") } },
+      ],
+    },
+    orderBy: { startDate: "desc" },
+    take: 3,
+    select: {
+      id: true,
+      name: true,
+      startDate: true,
+      endDate: true,
+      venue_name: true,
+    },
+  }).catch(() => []);
+
   const facilities = Array.isArray(court.facilities) ? court.facilities as string[] : [];
+  const isIndoor = court.court_type === "indoor";
+  const typeLabel = isIndoor ? "실내" : "야외";
+  const lat = Number(court.latitude);
+  const lng = Number(court.longitude);
+
+  // 카카오맵 URL
+  const kakaoMapUrl = `https://map.kakao.com/link/map/${encodeURIComponent(court.name)},${lat},${lng}`;
+  const kakaoNaviUrl = `https://map.kakao.com/link/to/${encodeURIComponent(court.name)},${lat},${lng}`;
+
+  // 경기 유형 레이블
+  const gameTypeLabel = (type: number) => {
+    switch (type) {
+      case 0: return "픽업게임";
+      case 1: return "팀매치";
+      case 2: return "대회경기";
+      default: return "경기";
+    }
+  };
 
   return (
     <div>
-      <div className="mb-6">
-        <Link href="/courts" className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]">
-          ← 코트 목록
-        </Link>
-        <h1 className="mt-1 text-xl font-bold sm:text-2xl">{court.name}</h1>
-        <p className="mt-1 text-sm text-[var(--color-text-muted)]">{court.address}</p>
-      </div>
+      {/* 상단 네비게이션 */}
+      <Link
+        href="/courts"
+        className="inline-flex items-center gap-1 text-sm mb-4 transition-colors"
+        style={{ color: "var(--color-text-muted)" }}
+      >
+        <span className="material-symbols-outlined text-base">arrow_back</span>
+        농구장 목록
+      </Link>
 
-      {/* 기본 정보 */}
-      <div className="mb-4 grid gap-4 sm:grid-cols-2">
-        <Card>
-          <h2 className="mb-3 font-semibold">코트 정보</h2>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-[var(--color-text-muted)]">유형</span>
-              <span>{court.court_type === "indoor" ? "실내" : court.court_type === "outdoor" ? "야외" : court.court_type}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[var(--color-text-muted)]">바닥재</span>
-              <span>{court.surface_type ?? "-"}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[var(--color-text-muted)]">골대 수</span>
-              <span>{court.hoops_count ?? 2}개</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[var(--color-text-muted)]">이용료</span>
-              <span>
-                {court.is_free
-                  ? "무료"
-                  : court.fee
-                  ? `${Number(court.fee).toLocaleString()}원`
-                  : "-"}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[var(--color-text-muted)]">지역</span>
-              <span>{court.city}{court.district ? ` ${court.district}` : ""}</span>
-            </div>
-          </div>
-        </Card>
-
-        <Card>
-          <h2 className="mb-3 font-semibold">이용 현황</h2>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-[var(--color-text-muted)]">평점</span>
-              <span>
-                {court.average_rating && Number(court.average_rating) > 0
-                  ? `⭐ ${Number(court.average_rating).toFixed(1)}`
-                  : "평점 없음"}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[var(--color-text-muted)]">리뷰 수</span>
-              <span>{court.reviews_count}개</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[var(--color-text-muted)]">체크인 수</span>
-              <span>{court.checkins_count}회</span>
-            </div>
+      {/* 메인 정보 카드 */}
+      <div
+        className="rounded-2xl p-5 sm:p-6 mb-4"
+        style={{
+          backgroundColor: "var(--color-card)",
+          boxShadow: "var(--shadow-card)",
+        }}
+      >
+        {/* 코트 이름 + 유형 뱃지 */}
+        <div className="flex items-start gap-3">
+          {/* 유형 아이콘 */}
+          <div
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full"
+            style={{
+              backgroundColor: isIndoor
+                ? "color-mix(in srgb, var(--color-info) 15%, transparent)"
+                : "color-mix(in srgb, var(--color-success) 15%, transparent)",
+            }}
+          >
+            <span
+              className="material-symbols-outlined text-2xl"
+              style={{ color: isIndoor ? "var(--color-info)" : "var(--color-success)" }}
+            >
+              {isIndoor ? "stadium" : "park"}
+            </span>
           </div>
 
-          {facilities.length > 0 && (
-            <div className="mt-3">
-              <p className="mb-2 text-xs text-[var(--color-text-muted)]">편의시설</p>
-              <div className="flex flex-wrap gap-1">
-                {facilities.map((f, i) => (
-                  <span
-                    key={i}
-                    className="rounded-full bg-[var(--color-surface-bright)] px-2 py-0.5 text-xs text-[var(--color-text-muted)]"
-                  >
-                    {f}
-                  </span>
-                ))}
-              </div>
-            </div>
+          <div className="flex-1">
+            <h1
+              className="text-xl font-extrabold sm:text-2xl"
+              style={{ color: "var(--color-text-primary)" }}
+            >
+              {court.name}
+            </h1>
+            <p
+              className="mt-1 flex items-center gap-1 text-sm"
+              style={{ color: "var(--color-text-muted)" }}
+            >
+              <span className="material-symbols-outlined text-base">location_on</span>
+              {court.address}
+            </p>
+          </div>
+        </div>
+
+        {/* 속성 뱃지 그리드 */}
+        <div className="mt-4 flex flex-wrap gap-2">
+          <InfoBadge
+            icon={isIndoor ? "stadium" : "park"}
+            label={typeLabel}
+            color={isIndoor ? "var(--color-info)" : "var(--color-success)"}
+          />
+          {court.surface_type && (
+            <InfoBadge icon="texture" label={court.surface_type} color="var(--color-text-secondary)" />
           )}
-        </Card>
+          <InfoBadge
+            icon="sports_basketball"
+            label={`골대 ${court.hoops_count ?? 2}개`}
+            color="var(--color-text-secondary)"
+          />
+          {court.has_lighting && (
+            <InfoBadge icon="lightbulb" label="야간 조명" color="var(--color-accent)" />
+          )}
+          <InfoBadge
+            icon={court.is_free ? "money_off" : "payments"}
+            label={
+              court.is_free
+                ? "무료"
+                : court.fee
+                ? `${Number(court.fee).toLocaleString()}원`
+                : "유료"
+            }
+            color={court.is_free ? "var(--color-success)" : "var(--color-warning)"}
+          />
+          {court.average_rating && Number(court.average_rating) > 0 && (
+            <InfoBadge
+              icon="star"
+              label={`${Number(court.average_rating).toFixed(1)} (${court.reviews_count})`}
+              color="var(--color-primary)"
+            />
+          )}
+        </div>
+
+        {/* 소개 */}
+        {court.description && (
+          <p
+            className="mt-4 text-sm leading-relaxed"
+            style={{ color: "var(--color-text-muted)" }}
+          >
+            {court.description}
+          </p>
+        )}
+
+        {/* 편의시설 */}
+        {facilities.length > 0 && (
+          <div className="mt-4">
+            <p className="text-xs font-semibold mb-2" style={{ color: "var(--color-text-secondary)" }}>
+              편의시설
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {facilities.map((f, i) => (
+                <span
+                  key={i}
+                  className="rounded-[4px] px-2 py-0.5 text-xs"
+                  style={{
+                    backgroundColor: "var(--color-surface-bright)",
+                    color: "var(--color-text-muted)",
+                  }}
+                >
+                  {f}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 카카오맵 버튼 */}
+        {lat !== 0 && (
+          <div className="mt-5 flex gap-2">
+            <a
+              href={kakaoMapUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-[4px] px-4 py-2.5 text-sm font-semibold transition-colors"
+              style={{
+                backgroundColor: "var(--color-surface-bright)",
+                color: "var(--color-text-primary)",
+              }}
+            >
+              <span className="material-symbols-outlined text-base">map</span>
+              카카오맵에서 보기
+            </a>
+            <a
+              href={kakaoNaviUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-[4px] px-4 py-2.5 text-sm font-semibold text-white transition-colors"
+              style={{ backgroundColor: "var(--color-primary)" }}
+            >
+              <span className="material-symbols-outlined text-base">directions</span>
+              길찾기
+            </a>
+          </div>
+        )}
       </div>
 
-      {/* 설명 */}
-      {court.description && (
-        <Card className="mb-4">
-          <h2 className="mb-2 font-semibold">소개</h2>
-          <p className="text-sm text-[var(--color-text-muted)]">{court.description}</p>
-        </Card>
+      {/* 이용 현황 카드 */}
+      <div
+        className="rounded-2xl p-5 sm:p-6 mb-4"
+        style={{
+          backgroundColor: "var(--color-card)",
+          boxShadow: "var(--shadow-card)",
+        }}
+      >
+        <h2 className="text-base font-bold mb-3" style={{ color: "var(--color-text-primary)" }}>
+          이용 현황
+        </h2>
+        <div className="grid grid-cols-3 gap-3 text-center">
+          <StatBlock
+            label="평점"
+            value={
+              court.average_rating && Number(court.average_rating) > 0
+                ? Number(court.average_rating).toFixed(1)
+                : "-"
+            }
+          />
+          <StatBlock label="리뷰" value={`${court.reviews_count}개`} />
+          <StatBlock label="체크인" value={`${court.checkins_count}회`} />
+        </div>
+      </div>
+
+      {/* 근처 경기 섹션 */}
+      {relatedGames.length > 0 && (
+        <div
+          className="rounded-2xl p-5 sm:p-6 mb-4"
+          style={{
+            backgroundColor: "var(--color-card)",
+            boxShadow: "var(--shadow-card)",
+          }}
+        >
+          <h2 className="text-base font-bold mb-3" style={{ color: "var(--color-text-primary)" }}>
+            <span className="material-symbols-outlined text-base align-middle mr-1" style={{ color: "var(--color-primary)" }}>
+              sports_basketball
+            </span>
+            근처 경기 ({relatedGames.length}건)
+          </h2>
+          <div className="space-y-2">
+            {relatedGames.map((game) => (
+              <Link
+                key={game.id.toString()}
+                href={`/games/${game.game_id}`}
+                className="flex items-center justify-between rounded-lg px-3 py-2.5 transition-colors"
+                style={{ backgroundColor: "var(--color-surface)" }}
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium truncate" style={{ color: "var(--color-text-primary)" }}>
+                    {game.title || "경기"}
+                  </p>
+                  <p className="text-xs mt-0.5" style={{ color: "var(--color-text-muted)" }}>
+                    {gameTypeLabel(game.game_type)} · {new Date(game.scheduled_at).toLocaleDateString("ko-KR", { month: "short", day: "numeric", weekday: "short" })}
+                  </p>
+                </div>
+                <span className="material-symbols-outlined text-base" style={{ color: "var(--color-text-disabled)" }}>
+                  chevron_right
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
       )}
 
-      {/* 지도 링크 */}
-      {Number(court.latitude) !== 0 && (
-        <Card className="mb-4">
-          <h2 className="mb-3 font-semibold">위치</h2>
-          <p className="mb-3 text-sm text-[var(--color-text-muted)]">{court.address}</p>
-          <a
-            href={`https://map.kakao.com/link/map/${encodeURIComponent(court.name)},${court.latitude},${court.longitude}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 rounded-full bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white"
-          >
-            카카오맵에서 보기 ↗
-          </a>
-        </Card>
+      {/* 관련 대회 섹션 */}
+      {relatedTournaments.length > 0 && (
+        <div
+          className="rounded-2xl p-5 sm:p-6 mb-4"
+          style={{
+            backgroundColor: "var(--color-card)",
+            boxShadow: "var(--shadow-card)",
+          }}
+        >
+          <h2 className="text-base font-bold mb-3" style={{ color: "var(--color-text-primary)" }}>
+            <span className="material-symbols-outlined text-base align-middle mr-1" style={{ color: "var(--color-navy)" }}>
+              emoji_events
+            </span>
+            이 코트에서 열린 대회 ({relatedTournaments.length}건)
+          </h2>
+          <div className="space-y-2">
+            {relatedTournaments.map((t) => (
+              <Link
+                key={t.id}
+                href={`/tournaments/${t.id}`}
+                className="flex items-center justify-between rounded-lg px-3 py-2.5 transition-colors"
+                style={{ backgroundColor: "var(--color-surface)" }}
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium truncate" style={{ color: "var(--color-text-primary)" }}>
+                    {t.name}
+                  </p>
+                  <p className="text-xs mt-0.5" style={{ color: "var(--color-text-muted)" }}>
+                    {t.startDate
+                      ? new Date(t.startDate).toLocaleDateString("ko-KR", { year: "numeric", month: "short", day: "numeric" })
+                      : "날짜 미정"}
+                  </p>
+                </div>
+                <span className="material-symbols-outlined text-base" style={{ color: "var(--color-text-disabled)" }}>
+                  chevron_right
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
       )}
 
       {/* 최근 체크인 */}
       {court.court_checkins.length > 0 && (
-        <Card className="mb-4">
-          <h2 className="mb-3 font-semibold">최근 체크인</h2>
+        <div
+          className="rounded-2xl p-5 sm:p-6 mb-4"
+          style={{
+            backgroundColor: "var(--color-card)",
+            boxShadow: "var(--shadow-card)",
+          }}
+        >
+          <h2 className="text-base font-bold mb-3" style={{ color: "var(--color-text-primary)" }}>
+            최근 체크인
+          </h2>
           <div className="space-y-2">
             {court.court_checkins.map((c) => (
-              <div key={c.id.toString()} className="flex items-center justify-between text-sm">
-                <span>{c.users?.nickname ?? "사용자"}</span>
-                <span className="text-xs text-[var(--color-text-secondary)]">
+              <div
+                key={c.id.toString()}
+                className="flex items-center justify-between text-sm"
+              >
+                <span style={{ color: "var(--color-text-primary)" }}>
+                  {c.users?.nickname ?? "사용자"}
+                </span>
+                <span className="text-xs" style={{ color: "var(--color-text-muted)" }}>
                   {new Date(c.created_at).toLocaleDateString("ko-KR")}
                 </span>
               </div>
             ))}
           </div>
-        </Card>
+        </div>
       )}
 
       {/* 리뷰 */}
-      <Card>
-        <h2 className="mb-3 font-semibold">리뷰 ({court.reviews_count})</h2>
+      <div
+        className="rounded-2xl p-5 sm:p-6"
+        style={{
+          backgroundColor: "var(--color-card)",
+          boxShadow: "var(--shadow-card)",
+        }}
+      >
+        <h2 className="text-base font-bold mb-3" style={{ color: "var(--color-text-primary)" }}>
+          리뷰 ({court.reviews_count})
+        </h2>
         {court.court_reviews.length > 0 ? (
           <div className="space-y-3">
             {court.court_reviews.map((r) => (
-              <div key={r.id.toString()} className="border-b border-[var(--color-border)] pb-3 last:border-0 last:pb-0">
+              <div
+                key={r.id.toString()}
+                className="border-b pb-3 last:border-0 last:pb-0"
+                style={{ borderColor: "var(--color-border-subtle)" }}
+              >
                 <div className="mb-1 flex items-center justify-between">
-                  <span className="text-sm font-medium">
+                  <span className="text-sm font-medium" style={{ color: "var(--color-text-primary)" }}>
                     {r.users?.nickname ?? "사용자"}
                   </span>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-[var(--color-primary)]">
-                      {"⭐".repeat(Math.min(r.rating, 5))}
+                    {/* 별점을 Material Symbols로 표시 */}
+                    <span className="flex items-center gap-0.5">
+                      {Array.from({ length: Math.min(r.rating, 5) }).map((_, i) => (
+                        <span
+                          key={i}
+                          className="material-symbols-outlined"
+                          style={{ fontSize: "14px", color: "var(--color-primary)", fontVariationSettings: "'FILL' 1" }}
+                        >
+                          star
+                        </span>
+                      ))}
                     </span>
-                    <span className="text-xs text-[var(--color-text-secondary)]">
+                    <span className="text-xs" style={{ color: "var(--color-text-muted)" }}>
                       {new Date(r.created_at).toLocaleDateString("ko-KR")}
                     </span>
                   </div>
                 </div>
-                {r.content && <p className="text-sm text-[var(--color-text-muted)]">{r.content}</p>}
+                {r.content && (
+                  <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
+                    {r.content}
+                  </p>
+                )}
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-sm text-[var(--color-text-muted)]">아직 리뷰가 없습니다.</p>
+          <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
+            아직 리뷰가 없습니다.
+          </p>
         )}
-      </Card>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────
+// InfoBadge — 속성 뱃지 (아이콘 + 텍스트)
+// ─────────────────────────────────────────
+function InfoBadge({ icon, label, color }: { icon: string; label: string; color: string }) {
+  return (
+    <span
+      className="inline-flex items-center gap-1 rounded-[4px] px-2.5 py-1 text-xs font-medium"
+      style={{
+        backgroundColor: `color-mix(in srgb, ${color} 12%, transparent)`,
+        color,
+      }}
+    >
+      <span className="material-symbols-outlined" style={{ fontSize: "14px" }}>{icon}</span>
+      {label}
+    </span>
+  );
+}
+
+// ─────────────────────────────────────────
+// StatBlock — 통계 블록
+// ─────────────────────────────────────────
+function StatBlock({ label, value }: { label: string; value: string }) {
+  return (
+    <div
+      className="rounded-lg p-3"
+      style={{ backgroundColor: "var(--color-surface)" }}
+    >
+      <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>{label}</p>
+      <p className="text-lg font-bold mt-0.5" style={{ color: "var(--color-text-primary)" }}>{value}</p>
     </div>
   );
 }

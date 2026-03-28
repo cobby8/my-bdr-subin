@@ -860,6 +860,9 @@ model court_infos {
   reviews_count   Int              @default(0)
   average_rating  Decimal?         @default(0.0) @db.Decimal(3, 2)
   checkins_count  Int              @default(0)
+  has_lighting    Boolean          @default(false)
+  photo_url       String?          @db.VarChar
+  data_source     String?          @db.VarChar
   metadata        Json?            @default("{}")
   created_at      DateTime         @db.Timestamp(6)
   updated_at      DateTime         @db.Timestamp(6)
