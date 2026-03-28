@@ -53,8 +53,8 @@ interface CourtItem {
   court_type: string;
   surface_type: string | null;
   hoops_count: number | null;
-  is_free: boolean;
-  has_lighting: boolean;
+  is_free: boolean | null;       // null = 미확인 (추정 데이터 정리 후)
+  has_lighting: boolean | null;   // null = 미확인
   fee: number | null;
   average_rating: number | null;
   reviews_count: number;
@@ -64,8 +64,8 @@ interface CourtItem {
   nearest_station: string | null;
   court_size: string | null;
   lighting_until: string | null;
-  has_restroom: boolean;
-  has_parking: boolean;
+  has_restroom: boolean | null;   // null = 미확인
+  has_parking: boolean | null;    // null = 미확인
   verified: boolean;
   data_source: string | null;
   // 혼잡도: 현재 활성 체크인 세션 수
@@ -173,12 +173,12 @@ export function CourtsContent({ courts, cities }: CourtsContentProps) {
       result = result.filter((c) => c.city === cityFilter);
     }
 
-    // pill 필터
+    // pill 필터 — null(미확인)은 제외, 명시적으로 true인 것만 필터
     if (activePills.has("free")) {
-      result = result.filter((c) => c.is_free);
+      result = result.filter((c) => c.is_free === true);
     }
     if (activePills.has("lighting")) {
-      result = result.filter((c) => c.has_lighting);
+      result = result.filter((c) => c.has_lighting === true);
     }
     if (activePills.has("fullcourt")) {
       result = result.filter((c) => c.court_size === "fullcourt");
@@ -730,7 +730,8 @@ function MiniCourtCard({ court, distance }: { court: CourtItem; distance?: numbe
                   {formatDistance(distance)}
                 </span>
               )}
-              {court.is_free && (
+              {/* 무료 표시: null(미확인)은 숨김, 명시적 true만 표시 */}
+              {court.is_free === true && (
                 <span style={{ color: "var(--color-success)" }}>무료</span>
               )}
               {court.activeCount > 0 && (
@@ -867,27 +868,29 @@ function CourtListCard({
               </span>
             )}
 
-            {/* 무료/유료 */}
-            <span
-              className="rounded-[4px] px-1.5 py-0.5 text-[10px] font-medium"
-              style={{
-                backgroundColor: court.is_free
-                  ? "color-mix(in srgb, var(--color-success) 15%, transparent)"
-                  : "color-mix(in srgb, var(--color-warning) 15%, transparent)",
-                color: court.is_free
-                  ? "var(--color-success)"
-                  : "var(--color-warning)",
-              }}
-            >
-              {court.is_free
-                ? "무료"
-                : court.fee
-                  ? `${court.fee.toLocaleString()}원`
-                  : "유료"}
-            </span>
+            {/* 무료/유료 — null(미확인)이면 표시 안 함 */}
+            {court.is_free !== null && (
+              <span
+                className="rounded-[4px] px-1.5 py-0.5 text-[10px] font-medium"
+                style={{
+                  backgroundColor: court.is_free
+                    ? "color-mix(in srgb, var(--color-success) 15%, transparent)"
+                    : "color-mix(in srgb, var(--color-warning) 15%, transparent)",
+                  color: court.is_free
+                    ? "var(--color-success)"
+                    : "var(--color-warning)",
+                }}
+              >
+                {court.is_free
+                  ? "무료"
+                  : court.fee
+                    ? `${court.fee.toLocaleString()}원`
+                    : "유료"}
+              </span>
+            )}
 
-            {/* 조명 */}
-            {court.has_lighting && (
+            {/* 조명 — null(미확인)이면 표시 안 함 */}
+            {court.has_lighting === true && (
               <span
                 className="inline-flex items-center gap-0.5 rounded-[4px] px-1.5 py-0.5 text-[10px] font-medium"
                 style={{

@@ -858,9 +858,9 @@ model court_infos {
   latitude        Decimal          @db.Decimal(10, 7)
   longitude       Decimal          @db.Decimal(10, 7)
   court_type      String           @default("outdoor") @db.VarChar
-  hoops_count     Int?             @default(2)
+  hoops_count     Int?
   surface_type    String?          @db.VarChar
-  is_free         Boolean          @default(true)
+  is_free         Boolean?
   fee             Decimal?         @db.Decimal(10, 0)
   operating_hours Json?            @default("{}")
   facilities      Json?            @default("[]")
@@ -868,7 +868,7 @@ model court_infos {
   reviews_count   Int              @default(0)
   average_rating  Decimal?         @default(0.0) @db.Decimal(3, 2)
   checkins_count  Int              @default(0)
-  has_lighting    Boolean          @default(false)
+  has_lighting    Boolean?         @default(false)
   photo_url       String?          @db.VarChar
   data_source     String?          @db.VarChar
   metadata        Json?            @default("{}")
@@ -878,9 +878,9 @@ model court_infos {
   court_size      String?          @db.VarChar        // fullcourt, halfcourt, 3x3
   hoop_height     Float?                              // 골대 높이 (cm)
   lighting_until  String?          @db.VarChar        // 조명 종료 시간 (예: "23:00")
-  has_restroom    Boolean          @default(false)    // 화장실 유무
-  has_parking     Boolean          @default(false)    // 주차장 유무
-  rental_available Boolean         @default(false)    // 대관 가능 여부
+  has_restroom    Boolean?         @default(false)    // 화장실 유무
+  has_parking     Boolean?         @default(false)    // 주차장 유무
+  rental_available Boolean?        @default(false)    // 대관 가능 여부
   rental_url      String?          @db.VarChar        // 대관 신청 URL
   kakao_place_id  String?          @db.VarChar        // 카카오 장소 ID
   kakao_place_url String?          @db.VarChar        // 카카오 장소 URL

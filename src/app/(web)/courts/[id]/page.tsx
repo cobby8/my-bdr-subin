@@ -166,14 +166,15 @@ export default async function CourtDetailPage({ params }: { params: Promise<Para
           </div>
         </div>
 
-        {/* 속성 뱃지 그리드 */}
+        {/* 속성 뱃지 그리드 — null인 필드는 표시하지 않음 */}
         <div className="mt-4 flex flex-wrap gap-2">
+          {/* 코트 유형 (항상 표시) */}
           <InfoBadge
             icon={isIndoor ? "stadium" : "park"}
-            label={typeLabel}
-            color={isIndoor ? "var(--color-info)" : "var(--color-success)"}
+            label={court.court_type === "unknown" ? "미분류" : typeLabel}
+            color={court.court_type === "unknown" ? "var(--color-text-muted)" : isIndoor ? "var(--color-info)" : "var(--color-success)"}
           />
-          {/* 코트 크기 (풀코트/하프/3x3) */}
+          {/* 코트 크기 — null이면 숨김 */}
           {court.court_size && (
             <InfoBadge
               icon="square_foot"
@@ -181,39 +182,46 @@ export default async function CourtDetailPage({ params }: { params: Promise<Para
               color="var(--color-text-secondary)"
             />
           )}
+          {/* 바닥재질 — null이면 숨김 */}
           {court.surface_type && (
             <InfoBadge icon="texture" label={court.surface_type} color="var(--color-text-secondary)" />
           )}
-          <InfoBadge
-            icon="sports_basketball"
-            label={`골대 ${court.hoops_count ?? 2}개`}
-            color="var(--color-text-secondary)"
-          />
-          {/* 조명 + 종료시간 */}
-          {court.has_lighting && (
+          {/* 골대 수 — null이면 숨김 */}
+          {court.hoops_count != null && (
+            <InfoBadge
+              icon="sports_basketball"
+              label={`골대 ${court.hoops_count}개`}
+              color="var(--color-text-secondary)"
+            />
+          )}
+          {/* 조명 — null(미확인)이면 숨김, true일 때만 표시 */}
+          {court.has_lighting === true && (
             <InfoBadge
               icon="lightbulb"
               label={court.lighting_until ? `조명 ~${court.lighting_until}` : "야간 조명"}
               color="var(--color-accent)"
             />
           )}
-          <InfoBadge
-            icon={court.is_free ? "money_off" : "payments"}
-            label={
-              court.is_free
-                ? "무료"
-                : court.fee
-                ? `${Number(court.fee).toLocaleString()}원`
-                : "유료"
-            }
-            color={court.is_free ? "var(--color-success)" : "var(--color-warning)"}
-          />
-          {/* 화장실 */}
-          {court.has_restroom && (
+          {/* 요금 — null(미확인)이면 숨김 */}
+          {court.is_free !== null && (
+            <InfoBadge
+              icon={court.is_free ? "money_off" : "payments"}
+              label={
+                court.is_free
+                  ? "무료"
+                  : court.fee
+                  ? `${Number(court.fee).toLocaleString()}원`
+                  : "유료"
+              }
+              color={court.is_free ? "var(--color-success)" : "var(--color-warning)"}
+            />
+          )}
+          {/* 화장실 — null(미확인)이면 숨김, true일 때만 표시 */}
+          {court.has_restroom === true && (
             <InfoBadge icon="wc" label="화장실" color="var(--color-text-secondary)" />
           )}
-          {/* 주차장 */}
-          {court.has_parking && (
+          {/* 주차장 — null(미확인)이면 숨김, true일 때만 표시 */}
+          {court.has_parking === true && (
             <InfoBadge icon="local_parking" label="주차" color="var(--color-text-secondary)" />
           )}
           {/* 검증 여부 */}
@@ -228,6 +236,26 @@ export default async function CourtDetailPage({ params }: { params: Promise<Para
             />
           )}
         </div>
+
+        {/* 정보 출처 표시 — 데이터가 어디서 왔는지 사용자에게 알림 */}
+        {court.data_source && (
+          <div
+            className="mt-3 flex items-center gap-1.5 text-[11px]"
+            style={{ color: "var(--color-text-disabled)" }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: "13px" }}>
+              info
+            </span>
+            정보 출처: {court.data_source === "manual_curation"
+              ? "관리자 직접 확인"
+              : court.data_source === "kakao_search"
+              ? "카카오맵"
+              : court.data_source === "google_places"
+              ? "구글맵"
+              : court.data_source}
+            {!court.verified && " (미검증 — 실제와 다를 수 있습니다)"}
+          </div>
+        )}
 
         {/* 가까운 역 정보 */}
         {court.nearest_station && (
