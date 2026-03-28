@@ -10,6 +10,8 @@ import { prisma } from "@/lib/db/prisma";
 import { getWebSession } from "@/lib/auth/web-session";
 import { apiSuccess, apiError } from "@/lib/api/response";
 import { REPORT_TYPE_KEYS } from "@/lib/constants/court";
+import { addXP } from "@/lib/services/gamification";
+import { XP_REWARDS } from "@/lib/constants/gamification";
 
 type RouteCtx = { params: Promise<{ id: string }> };
 
@@ -113,6 +115,9 @@ export async function POST(
 
   // 활성 제보 수 재계산
   await recalculateReportsCount(courtId);
+
+  // 게이미피케이션: 제보 작성 XP 부여
+  await addXP(userId, XP_REWARDS.report, "report");
 
   return apiSuccess(
     {

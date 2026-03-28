@@ -6,6 +6,7 @@ import { getWebSession } from "@/lib/auth/web-session";
 import { CourtCheckin } from "./_components/court-checkin";
 import { CourtReviews } from "./_components/court-reviews";
 import { CourtReports } from "./_components/court-reports";
+import { CourtRankings } from "./_components/court-rankings";
 
 export const revalidate = 300;
 
@@ -334,6 +335,9 @@ export default async function CourtDetailPage({ params }: { params: Promise<Para
           <StatBlock label="체크인" value={`${court.checkins_count}회`} />
         </div>
       </div>
+
+      {/* 체크인 랭킹 TOP 10 (클라이언트 컴포넌트 — SWR 자동 갱신) */}
+      <CourtRankings courtId={court.id.toString()} />
 
       {/* 근처 경기 섹션 */}
       {relatedGames.length > 0 && (

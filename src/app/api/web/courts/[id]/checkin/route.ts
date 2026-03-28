@@ -2,6 +2,8 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db/prisma";
 import { getWebSession } from "@/lib/auth/web-session";
 import { apiSuccess, apiError } from "@/lib/api/response";
+import { completeSession } from "@/lib/services/gamification";
+import { XP_REWARDS } from "@/lib/constants/gamification";
 
 // 3시간 이내 세션만 활성으로 간주 (밀리초)
 const SESSION_TIMEOUT_MS = 3 * 60 * 60 * 1000;
@@ -265,9 +267,29 @@ export async function DELETE(
     },
   });
 
+  // ─── 게이미피케이션: 트랜잭션으로 XP + 스트릭 + 도장깨기 일괄 처리 ───
+  // completeSession이 $transaction 안에서 3개 함수를 순차 호출
+  // 하나라도 실패하면 전체 롤백되어 데이터 불일치 방지
+  const gamResult = await completeSession(userId, xp);
+
+  const { xpResult, streakResult, courtBadgeResult } = gamResult;
+
   return apiSuccess({
     sessionId: updated.id.toString(),
     durationMinutes,
     xpEarned: xp,
+    // 게이미피케이션 결과 (클라이언트에서 세션 완료 카드에 표시)
+    gamification: {
+      totalXp: xpResult?.newXp ?? 0,
+      level: xpResult?.newLevel ?? 1,
+      title: xpResult?.newTitle ?? "루키",
+      leveledUp: xpResult?.leveledUp ?? false,
+      levelUpBadge: xpResult?.levelUpBadge ?? null,
+      streak: streakResult?.streak ?? 0,
+      streakBonus: streakResult?.bonus ?? false,
+      streakBonusXp: streakResult?.bonus ? XP_REWARDS.streak_7 : 0,
+      newCourtBadges: courtBadgeResult?.newBadges ?? [],
+      courtCount: courtBadgeResult?.courtCount ?? 0,
+    },
   });
 }

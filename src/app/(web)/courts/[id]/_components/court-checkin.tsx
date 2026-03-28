@@ -10,6 +10,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
+import { SessionCompleteCard } from "./session-complete-card";
 
 // SWR fetcher (JSON 반환)
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
@@ -70,6 +71,10 @@ export function CourtCheckin({ courtId, courtLat, courtLng }: CourtCheckinProps)
   // 다른 코트 체크인 정보 (409 응답에서 받음)
   const [checkedInCourtId, setCheckedInCourtId] = useState<string | null>(null);
   const [checkedInCourtName, setCheckedInCourtName] = useState<string | null>(null);
+
+  // 세션 완료 카드 표시 데이터 (체크아웃 성공 시 설정)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [sessionResult, setSessionResult] = useState<any>(null);
 
   const mySession = data?.my_session;
   const activeCount = data?.active_count ?? 0;
@@ -153,7 +158,7 @@ export function CourtCheckin({ courtId, courtLat, courtLng }: CourtCheckinProps)
     }
   }, [courtId, mutate, userLat, userLng]);
 
-  // 체크아웃 처리
+  // 체크아웃 처리 — 세션 완료 카드 표시
   const handleCheckout = useCallback(async () => {
     setLoading(true);
     try {
@@ -166,9 +171,8 @@ export function CourtCheckin({ courtId, courtLat, courtLng }: CourtCheckinProps)
         return;
       }
       const result = await res.json();
-      const xp = result.xp_earned ?? 0;
-      const mins = result.duration_minutes ?? 0;
-      alert(`농구 끝! ${mins}분 동안 활동하여 ${xp}XP를 획득했습니다`);
+      // 세션 완료 카드에 데이터 전달 (gamification 포함)
+      setSessionResult(result);
       await mutate();
     } catch {
       alert("네트워크 오류가 발생했습니다");
@@ -202,6 +206,16 @@ export function CourtCheckin({ courtId, courtLat, courtLng }: CourtCheckinProps)
   }, [checkedInCourtId, mutate]);
 
   return (
+    <>
+    {/* 세션 완료 카드: 체크아웃 성공 시 오버레이로 표시 */}
+    {sessionResult && sessionResult.gamification && (
+      <SessionCompleteCard
+        durationMinutes={sessionResult.duration_minutes ?? 0}
+        xpEarned={sessionResult.xp_earned ?? 0}
+        gamification={sessionResult.gamification}
+        onClose={() => setSessionResult(null)}
+      />
+    )}
     <div
       className="rounded-2xl p-5 sm:p-6 mb-4"
       style={{
@@ -427,5 +441,6 @@ export function CourtCheckin({ courtId, courtLat, courtLng }: CourtCheckinProps)
         </button>
       )}
     </div>
+    </>
   );
 }

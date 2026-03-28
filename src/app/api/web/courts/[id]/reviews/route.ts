@@ -11,6 +11,8 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db/prisma";
 import { getWebSession } from "@/lib/auth/web-session";
 import { apiSuccess, apiError } from "@/lib/api/response";
+import { addXP } from "@/lib/services/gamification";
+import { XP_REWARDS } from "@/lib/constants/gamification";
 
 type RouteCtx = { params: Promise<{ id: string }> };
 
@@ -155,6 +157,9 @@ export async function POST(
 
   // 코트의 average_rating + reviews_count 재계산
   await recalculateCourtRating(courtId);
+
+  // 게이미피케이션: 리뷰 작성 XP 부여
+  await addXP(userId, XP_REWARDS.review, "review");
 
   return apiSuccess(
     {

@@ -18,6 +18,10 @@ import Image from "next/image";
 import { TossCard } from "@/components/toss/toss-card";
 import { TossListItem } from "@/components/toss/toss-list-item";
 import { TossSectionHeader } from "@/components/toss/toss-section-header";
+import { XpLevelCard } from "./_components/xp-level-card";
+import { StreakCard } from "./_components/streak-card";
+import { BadgeCollection } from "./_components/badge-collection";
+import { CourtStamps } from "./_components/court-stamps";
 
 // 기존 컴포넌트는 import 제거하되 파일은 삭제하지 않음
 
@@ -36,6 +40,39 @@ interface ProfileData {
   teams?: { id: string; name: string; role: string }[];
   recent_games?: { id: string; title: string | null; scheduled_at: string | null; status: number }[];
   tournaments?: { id: string; name: string; status: string | null }[];
+}
+
+// 게이미피케이션 API 응답 타입
+interface GamificationData {
+  xp: number;
+  level: number;
+  title: string;
+  emoji: string;
+  progress: number;
+  next_level_xp: number | null;
+  xp_to_next_level: number;
+  streak: number;
+  badges: {
+    id: string;
+    badge_type: string;
+    badge_name: string;
+    earned_at: string;
+  }[];
+  court_stamps: {
+    count: number;
+    milestones: {
+      count: number;
+      name: string;
+      icon: string;
+      achieved: boolean;
+    }[];
+    next_milestone: {
+      count: number;
+      name: string;
+      icon: string;
+      achieved: boolean;
+    } | null;
+  };
 }
 
 interface StatsData {
@@ -228,6 +265,11 @@ export default function ProfilePage() {
     revalidateOnFocus: false,
     dedupingInterval: 60000,
   });
+  // 게이미피케이션 데이터 (XP/레벨/스트릭/뱃지/도장깨기)
+  const { data: gamification } = useSWR<GamificationData>("/api/web/profile/gamification", {
+    revalidateOnFocus: false,
+    dedupingInterval: 60000,
+  });
 
   // 로딩 상태: 토스 스타일 심플 로더
   if (isLoading) {
@@ -271,7 +313,11 @@ export default function ProfilePage() {
   const displayName = user.nickname ?? "사용자";
   const initial = displayName.trim()[0]?.toUpperCase() || "U";
   const totalGames = user.total_games_participated ?? 0;
-  const tier = getTierInfo(totalGames);
+  // 게이미피케이션 기반 레벨/칭호 (기존 getTierInfo 대체)
+  const gLevel = gamification?.level ?? 1;
+  const gTitle = gamification?.title ?? "루키";
+  const gEmoji = gamification?.emoji ?? "";
+  const tier = getTierInfo(totalGames); // 기존 호환성 유지
   const winRate = statsRaw?.win_rate;
 
   // 스탯 데이터 추출
@@ -316,14 +362,14 @@ export default function ProfilePage() {
           {displayName}
         </h1>
 
-        {/* 티어 배지 + 포지션 */}
+        {/* 레벨 배지 + 포지션 (XP 기반) */}
         <div className="flex items-center gap-2 mb-2">
           <span
             className="flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full"
-            style={{ backgroundColor: tier.color, color: "#FFFFFF" }}
+            style={{ backgroundColor: "var(--color-primary)", color: "#FFFFFF" }}
           >
-            <span className="material-symbols-outlined" style={{ fontSize: "12px" }}>{tier.icon}</span>
-            {tier.label}
+            {gEmoji && <span style={{ fontSize: "12px" }}>{gEmoji}</span>}
+            Lv.{gLevel} {gTitle}
           </span>
           {user.position && (
             <span className="text-xs" style={{ color: "var(--color-text-muted)" }}>
@@ -490,14 +536,50 @@ export default function ProfilePage() {
         </TossCard>
       </div>
 
-      {/* ==== 6. 업적 배지: 조건 기반 달성 배지 ==== */}
+      {/* ==== 6. 게이미피케이션 섹션: XP/스트릭/도장깨기/뱃지 ==== */}
+      {gamification && (
+        <>
+          {/* XP 진행률 + 레벨 */}
+          <XpLevelCard
+            xp={gamification.xp}
+            level={gamification.level}
+            title={gamification.title}
+            emoji={gamification.emoji}
+            progress={gamification.progress}
+            nextLevelXp={gamification.next_level_xp}
+            xpToNextLevel={gamification.xp_to_next_level}
+          />
+
+          {/* 연속 출석 스트릭 */}
+          <StreakCard streak={gamification.streak} />
+
+          {/* 도장깨기 진행률 */}
+          <CourtStamps
+            courtCount={gamification.court_stamps.count}
+            milestones={gamification.court_stamps.milestones}
+            nextMilestone={gamification.court_stamps.next_milestone}
+          />
+
+          {/* 획득 뱃지 컬렉션 */}
+          <BadgeCollection
+            badges={gamification.badges.map((b) => ({
+              id: b.id,
+              badgeType: b.badge_type,
+              badgeName: b.badge_name,
+              earnedAt: b.earned_at,
+            }))}
+          />
+        </>
+      )}
+
+      {/* ==== 7. 기존 업적 배지 (경기 기반): 조건 기반 달성 배지 ==== */}
       <AchievementBadges
         totalGames={totalGames}
         avgPoints={avgPoints}
         teams={teams}
       />
 
-      {/* ==== 7. 설정 메뉴: TossListItem 리스트 ==== */}
+      {/* ==== 8. 설정 메뉴: TossListItem 리스트 ==== */}
       <div>
         <TossSectionHeader title="설정" />
         <TossCard className="p-0">
