@@ -77,7 +77,7 @@ function getStatusBadge(game: GameFromApi): { text: string; className: string } 
 /* 스켈레톤: 토스 스타일 카드 */
 function GamesGridSkeleton() {
   return (
-    <div className="space-y-3">
+    <div className="space-y-6">
       {Array.from({ length: 6 }).map((_, i) => (
         <Skeleton key={i} className="h-20 rounded-2xl" />
       ))}
@@ -122,7 +122,7 @@ function GameCard({ game, photoUrl }: { game: GameFromApi; photoUrl?: string | n
           )}
           {/* 유형 뱃지 (좌상단 작게) */}
           <span
-            className="absolute top-1 left-1 rounded px-1 py-0.5 text-[10px] font-bold"
+            className="absolute top-1 left-1 rounded px-1 py-0.5 text-xs font-bold"
             style={{ backgroundColor: badge.bg, color: badge.color }}
           >
             {badge.label}
@@ -138,7 +138,7 @@ function GameCard({ game, photoUrl }: { game: GameFromApi; photoUrl?: string | n
                 {game.title}
               </h3>
               {statusBadge && (
-                <span className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-bold ${statusBadge.className}`}>
+                <span className={`shrink-0 rounded px-1.5 py-0.5 text-xs font-bold ${statusBadge.className}`}>
                   {statusBadge.text}
                 </span>
               )}
@@ -293,7 +293,7 @@ export function GamesContent({
           </div>
 
           {/* 경기 카드 리스트: 토스 스타일 세로 스택 */}
-          <div className="space-y-3">
+          <div className="space-y-6">
             {games.map((g) => (
               <GameCard
                 key={g.id}

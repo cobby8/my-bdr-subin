@@ -29,14 +29,15 @@ interface CommunityApiResponse {
 }
 
 // 카테고리 맵: DB 키 -> 한글 라벨 + 뱃지 색상
+// 카테고리별 뱃지 색상: CSS 변수 사용 (하드코딩 금지 원칙)
 const categoryMap: Record<string, { label: string; bg: string; color: string }> = {
-  general:     { label: "자유게시판", bg: "#2563eb", color: "#fff" },
-  recruit:     { label: "팀원모집",   bg: "#16a34a", color: "#fff" },
-  review:      { label: "대회후기",   bg: "#ea580c", color: "#fff" },
-  info:        { label: "정보공유",   bg: "#7c3aed", color: "#fff" },
-  qna:         { label: "질문답변",   bg: "#0891b2", color: "#fff" },
-  notice:      { label: "공지사항",   bg: "#dc2626", color: "#fff" },
-  marketplace: { label: "농구장터",   bg: "#d97706", color: "#fff" },
+  general:     { label: "자유게시판", bg: "var(--color-primary)",       color: "#fff" },
+  recruit:     { label: "팀원모집",   bg: "var(--color-success)",       color: "#fff" },
+  review:      { label: "대회후기",   bg: "var(--color-warning)",       color: "#fff" },
+  info:        { label: "정보공유",   bg: "var(--color-ai-purple)",     color: "#fff" },
+  qna:         { label: "질문답변",   bg: "var(--color-info)",          color: "#fff" },
+  notice:      { label: "공지사항",   bg: "var(--color-error)",         color: "#fff" },
+  marketplace: { label: "농구장터",   bg: "var(--color-tier-trophy)",   color: "#fff" },
 };
 
 // 카테고리 탭 배열 (전체 + 7개 카테고리)
@@ -72,7 +73,7 @@ function formatRelativeTime(isoString: string | null): string {
 // -- 스켈레톤 UI (토스 스타일 카드형) --
 function CommunityListSkeleton() {
   return (
-    <div className="space-y-3">
+    <div className="space-y-6">
       {Array.from({ length: 6 }).map((_, i) => (
         <div
           key={i}
@@ -297,7 +298,7 @@ export function CommunityContent({ fallbackPosts }: CommunityContentProps) {
       ) : (
         <>
           {/* 게시글 카드 리스트: TossCard 스타일 */}
-          <div className="space-y-3">
+          <div className="space-y-6">
             {paginatedPosts.map((p) => (
               <PostCard key={p.id} post={p} />
             ))}

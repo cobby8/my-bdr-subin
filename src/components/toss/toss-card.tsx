@@ -27,7 +27,7 @@ export function TossCard({ children, className = "", onClick }: TossCardProps) {
        * shadow-card: 매우 가벼운 그림자 (globals.css에서 정의)
        * border 없음: 토스는 그림자로만 구분
        * 호버: scale(1.01) + shadow-elevated로 부드러운 인터랙션 */
-      className={`bg-[var(--color-card)] rounded-2xl p-5 transition-all duration-200 hover:scale-[1.01] hover:shadow-[var(--shadow-elevated)] ${onClick ? "cursor-pointer" : ""} ${className}`}
+      className={`bg-[var(--color-card)] rounded-2xl p-6 transition-all duration-200 hover:scale-[1.01] hover:shadow-[var(--shadow-elevated)] ${onClick ? "cursor-pointer" : ""} ${className}`}
       style={{ boxShadow: "var(--shadow-card)" }}
       onClick={onClick}
       role={onClick ? "button" : undefined}

@@ -50,7 +50,7 @@ export function TossButton({
     /* small: 인라인 작은 버튼
      * h-10 (40px): 작은 버튼 높이
      * rounded-lg (8px) */
-    small: `h-10 rounded-lg px-4 text-sm bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] ${fullWidth ? "w-full" : ""}`,
+    small: `h-10 rounded-xl px-4 text-sm bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] ${fullWidth ? "w-full" : ""}`,
   };
 
   return (

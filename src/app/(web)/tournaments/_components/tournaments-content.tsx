@@ -88,7 +88,7 @@ const DEFAULT_FORMAT_STYLE = {
 /* 스켈레톤: 토스 스타일 */
 function TournamentGridSkeleton() {
   return (
-    <div className="space-y-3">
+    <div className="space-y-6">
       {Array.from({ length: 6 }).map((_, i) => (
         <Skeleton key={i} className="h-24 rounded-2xl" />
       ))}
@@ -138,7 +138,7 @@ function TournamentCard({ tournament: t, photoUrl }: { tournament: TournamentFro
           )}
           {/* 상태 뱃지 (좌상단) */}
           <span
-            className="absolute top-1 left-1 rounded px-1 py-0.5 text-[10px] font-bold text-white"
+            className="absolute top-1 left-1 rounded px-1 py-0.5 text-xs font-bold text-white"
             style={{ backgroundColor: badgeBg }}
           >
             {badgeLabel}
@@ -156,12 +156,12 @@ function TournamentCard({ tournament: t, photoUrl }: { tournament: TournamentFro
             {(categoryLabels.length > 0 || divisionTiers.length > 0) && (
               <div className="flex items-center gap-1 mb-1">
                 {categoryLabels.map((label) => (
-                  <span key={label} className="rounded bg-[var(--color-primary-weak)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--color-primary)]">
+                  <span key={label} className="rounded bg-[var(--color-primary-weak)] px-1.5 py-0.5 text-xs font-medium text-[var(--color-primary)]">
                     {label}
                   </span>
                 ))}
                 {divisionTiers.length > 0 && (
-                  <span className="rounded bg-[var(--color-surface)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--color-text-muted)]">
+                  <span className="rounded bg-[var(--color-surface)] px-1.5 py-0.5 text-xs font-medium text-[var(--color-text-muted)]">
                     {divisionTiers.join("·")}
                   </span>
                 )}
@@ -480,7 +480,7 @@ export function TournamentsContent({
           )}
 
           {/* 대회 리스트: 토스 스타일 세로 스택 */}
-          <div className="space-y-3">
+          <div className="space-y-6">
             {paginatedTournaments.map((t) => (
               <TournamentCard
                 key={t.id}

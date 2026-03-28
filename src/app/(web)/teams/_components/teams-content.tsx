@@ -353,7 +353,7 @@ export function TeamsContent({
                         {/* 배지: TOP1/인기/신규 등 */}
                         {badge && (
                           <span
-                            className="text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0"
+                            className="text-xs font-bold px-1.5 py-0.5 rounded shrink-0"
                             style={{ backgroundColor: badgeStyle.bg, color: badgeStyle.text }}
                           >
                             {badge}

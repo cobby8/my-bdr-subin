@@ -212,7 +212,7 @@ export default function ProfilePage() {
         {/* 총 경기 */}
         <TossCard className="text-center">
           <p
-            className="text-2xl font-bold mb-1"
+            className="text-3xl font-bold mb-1"
             style={{ color: "var(--color-text-primary)" }}
           >
             {totalGames}
@@ -225,7 +225,7 @@ export default function ProfilePage() {
         {/* 승률 */}
         <TossCard className="text-center">
           <p
-            className="text-2xl font-bold mb-1"
+            className="text-3xl font-bold mb-1"
             style={{ color: "var(--color-primary)" }}
           >
             {winRate != null ? `${winRate}%` : "-"}
@@ -238,7 +238,7 @@ export default function ProfilePage() {
         {/* PPG */}
         <TossCard className="text-center">
           <p
-            className="text-2xl font-bold mb-1"
+            className="text-3xl font-bold mb-1"
             style={{ color: "var(--color-text-primary)" }}
           >
             {avgPoints > 0 ? avgPoints.toFixed(1) : "-"}

@@ -52,7 +52,7 @@
   --color-info: #3182F6;             /* primary와 통일 */
 
   /* --- 테두리 (실선 보더) --- */
-  --color-border: #E5E8EB;           /* 기본 보더 */
+  --color-border: #F2F4F6;           /* 기본 보더 (토스 기준 연하게) */
   --color-border-subtle: #F2F4F6;    /* 미세한 구분선 */
 
   /* --- 라운딩 (토스 스타일: 12~16px 둥근 모서리) --- */

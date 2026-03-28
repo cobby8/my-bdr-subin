@@ -42,7 +42,7 @@ export function TossListItem({
       /* py-4 px-1: 토스 리스트 표준 간격
        * border-b: 하단 구분선 (토스는 매우 연한 보더)
        * 호버: 배경색 변화 (surface-bright) */
-      className="flex items-center gap-3 py-4 px-1 border-b border-[var(--color-border-subtle)] transition-colors hover:bg-[var(--color-surface-bright)] rounded-lg cursor-pointer"
+      className="flex items-center gap-3 py-4 px-5 border-b border-[var(--color-border-subtle)] transition-colors hover:bg-[var(--color-surface-bright)] rounded-lg cursor-pointer"
       onClick={!href ? onClick : undefined}
     >
       {/* 좌: 원형 아이콘 (40px, 배경색 지정) */}
