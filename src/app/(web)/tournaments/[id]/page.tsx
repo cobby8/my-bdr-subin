@@ -272,38 +272,27 @@ export default async function TournamentDetailPage({ params }: { params: Promise
         />
       )}
 
-      {/* 대회 장소 카드: 지도 placeholder + 주소 표시 */}
+      {/* 대회 장소 카드: 아이콘 + 장소명 컴팩트 표시 (지도 placeholder 제거) */}
       {(tournament.city || tournament.venue_name) && (
         <div
-          className="mt-6 rounded-xl border p-6"
+          className="mt-6 rounded-xl border p-4"
           style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-card)" }}
         >
-          <h3 className="mb-4 flex items-center gap-2 text-lg font-bold">
-            <span
-              className="h-6 w-1.5 flex-shrink-0 rounded-full"
-              style={{ backgroundColor: "var(--color-primary)" }}
-            />
-            대회 장소
-          </h3>
-          <div
-            className="mb-4 flex h-48 items-center justify-center rounded-lg"
-            style={{
-              background: "linear-gradient(135deg, var(--color-surface) 0%, var(--color-elevated) 100%)",
-              border: "1px solid var(--color-border)",
-            }}
-          >
-            <div className="text-center">
-              <span className="material-symbols-outlined text-4xl" style={{ color: "var(--color-text-tertiary)" }}>map</span>
-              <p className="mt-1 text-sm font-medium" style={{ color: "var(--color-text-tertiary)" }}>
-                {tournament.venue_name ?? "경기장"}
+          <div className="flex items-center gap-3">
+            {/* 장소 아이콘 */}
+            <div
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg"
+              style={{ backgroundColor: "var(--color-surface)" }}
+            >
+              <span className="material-symbols-outlined text-xl" style={{ color: "var(--color-info)" }}>location_on</span>
+            </div>
+            {/* 장소 정보 */}
+            <div>
+              <p className="text-xs font-medium" style={{ color: "var(--color-text-tertiary)" }}>대회 장소</p>
+              <p className="text-sm font-bold" style={{ color: "var(--color-text-primary)" }}>
+                {[tournament.venue_name, tournament.city].filter(Boolean).join(", ")}
               </p>
             </div>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <span className="material-symbols-outlined text-lg" style={{ color: "var(--color-info)" }}>location_on</span>
-            <span style={{ color: "var(--color-text-secondary)" }}>
-              {[tournament.city, tournament.venue_name].filter(Boolean).join(" ")}
-            </span>
           </div>
         </div>
       )}

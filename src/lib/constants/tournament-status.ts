@@ -61,12 +61,14 @@ export const TOURNAMENT_STATUS_BADGE: Record<string, "default" | "success" | "er
  * 대회 형식 → 한글 레이블 매핑.
  */
 export const TOURNAMENT_FORMAT_LABEL: Record<string, string> = {
-  single_elimination: "싱글 엘리미네이션",
+  single_elimination: "토너먼트",
   double_elimination: "더블 엘리미네이션",
   round_robin: "리그전",
   group_stage: "조별리그",
   group_stage_knockout: "조별리그+토너먼트",
   GROUP_STAGE_KNOCKOUT: "조별리그+토너먼트", // DB에 대문자로 저장된 레코드 대응
+  dual_tournament: "듀얼토너먼트",
+  full_league_knockout: "풀리그+토너먼트",
   swiss: "스위스 라운드",
 };
 
@@ -74,12 +76,14 @@ export const TOURNAMENT_FORMAT_LABEL: Record<string, string> = {
  * 대회 형식 약어 레이블 (카드 UI처럼 공간이 좁은 곳에서 사용).
  */
 export const TOURNAMENT_FORMAT_LABEL_SHORT: Record<string, string> = {
-  single_elimination: "싱글 엘리미",
+  single_elimination: "토너먼트",
   double_elimination: "더블 엘리미",
   round_robin: "리그전",
   group_stage: "조별리그",
   group_stage_knockout: "조별+토너먼트",
   GROUP_STAGE_KNOCKOUT: "조별+토너먼트",
+  dual_tournament: "듀얼토너먼트",
+  full_league_knockout: "풀리그+토너먼트",
   swiss: "스위스",
 };
 
