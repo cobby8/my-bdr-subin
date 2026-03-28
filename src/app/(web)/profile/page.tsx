@@ -477,6 +477,14 @@ export default function ProfilePage() {
               <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
                 아직 경기 기록이 없어요
               </p>
+              {/* 빈 상태 CTA: 경기 찾기로 유도 */}
+              <Link
+                href="/games"
+                className="mt-3 inline-flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary-light)]"
+              >
+                <span className="material-symbols-outlined text-base">search</span>
+                경기 찾아보기
+              </Link>
             </div>
           )}
         </TossCard>

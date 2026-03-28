@@ -231,6 +231,19 @@ export default async function TeamDetailPage({
           {currentTab === "tournaments" && <TournamentsTab teamId={team.id} />}
         </Suspense>
       </div>
+
+      {/* 다음 액션 유도: 다른 팀 탐색 */}
+      <div className="px-8 pb-8 lg:px-12">
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/teams"
+            className="flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] px-4 py-2.5 text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-elevated)]"
+          >
+            <span className="material-symbols-outlined text-base">groups</span>
+            다른 팀 보기
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

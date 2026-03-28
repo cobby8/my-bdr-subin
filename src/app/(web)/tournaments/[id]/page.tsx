@@ -472,6 +472,17 @@ export default async function TournamentDetailPage({ params }: { params: Promise
             venue={[tournament.city, tournament.venue_name].filter(Boolean).join(" ")}
           />
         </div>
+
+        {/* 다음 액션 유도: 다른 대회 탐색 */}
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link
+            href="/tournaments"
+            className="flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] px-4 py-2.5 text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-elevated)]"
+          >
+            <span className="material-symbols-outlined text-base">emoji_events</span>
+            다른 대회 보기
+          </Link>
+        </div>
       </div>
 
       {/* ========================================

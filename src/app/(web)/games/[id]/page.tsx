@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getGame, listGameApplications } from "@/lib/services/game";
 import { getUserGameProfile } from "@/lib/services/user";
@@ -263,6 +264,26 @@ export default async function GameDetailPage({
           {/* 호스트 프로필 카드 */}
           <HostCard organizerName={null} />
         </div>
+      </div>
+
+      {/* 다음 액션 유도: 다른 경기 탐색 + 내 경기 확인 */}
+      <div className="mt-6 flex flex-wrap gap-3">
+        <Link
+          href="/games"
+          className="flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] px-4 py-2.5 text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-elevated)]"
+        >
+          <span className="material-symbols-outlined text-base">sports_basketball</span>
+          다른 경기 보기
+        </Link>
+        {session && (
+          <Link
+            href="/games/my-games"
+            className="flex items-center gap-1.5 rounded-lg border border-[var(--color-border)] px-4 py-2.5 text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-elevated)]"
+          >
+            <span className="material-symbols-outlined text-base">assignment</span>
+            내 경기 보기
+          </Link>
+        )}
       </div>
     </div>
   );
