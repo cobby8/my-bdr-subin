@@ -15,8 +15,9 @@ export const updateTournamentSchema = z
   .object({
     name: z.string().trim().min(1, "대회명을 입력하세요").max(100, "대회명은 100자 이하여야 합니다"),
     format: z.string(),
-    startDate: z.string().nullable(),
-    endDate: z.string().nullable(),
+    // 빈 문자열("")도 허용 — datetime-local 입력 초기화 시 빈 문자열이 올 수 있음
+    startDate: z.string().nullable().or(z.literal("")),
+    endDate: z.string().nullable().or(z.literal("")),
     status: z.string(),
     venue_name: z.string().nullable(),
     venue_address: z.string().nullable(),
@@ -27,8 +28,9 @@ export const updateTournamentSchema = z
     roster_min: z.number().int().min(1),
     roster_max: z.number().int().min(1),
     entry_fee: z.number().min(0, "참가비는 0 이상이어야 합니다"),
-    registration_start_at: z.string().nullable(),
-    registration_end_at: z.string().nullable(),
+    // 빈 문자열("")도 허용 — datetime-local 입력 초기화 시 빈 문자열이 올 수 있음
+    registration_start_at: z.string().nullable().or(z.literal("")),
+    registration_end_at: z.string().nullable().or(z.literal("")),
     description: z.string().max(5000, "설명은 5000자 이하여야 합니다").nullable(),
     rules: z.string().nullable(),
     prize_info: z.string().nullable(),

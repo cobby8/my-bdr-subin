@@ -1,11 +1,10 @@
 /**
- * 대회 상세 우측 사이드바 (디자인 시안 v2)
+ * 대회 상세 우측 사이드바
  *
- * 시안 구성:
- * 1) 참가비 카드: 얼리버드 안내, 큰 금액(+취소선 원가), 상세정보, 프로그레스바, CTA 버튼 2개, 마감 카운트다운
+ * 구성:
+ * 1) 참가비 카드: 금액, 참가팀 현황, 프로그레스바, CTA 버튼, 마감 카운트다운
  * 2) 도움이 필요하신가요? 카드: 1:1 문의 + 이메일
  *
- * - DB에 없는 항목(상금, 얼리버드)은 UI만 배치
  * - sticky로 스크롤 시 고정
  */
 
@@ -73,21 +72,7 @@ export function TournamentSidebar({
         style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-card)" }}
       >
         <div className="p-4">
-          {/* 얼리버드 안내: 접수 중 + 참가비 있을 때만 (파랑 계열 — 정보성 배지) */}
-          {isRegistrationOpen && hasFee && (
-            <div
-              className="mb-4 rounded-lg px-3 py-2 text-center text-xs font-medium"
-              style={{
-                backgroundColor: "color-mix(in srgb, var(--color-info) 10%, transparent)",
-                color: "var(--color-info)",
-              }}
-            >
-              <span className="material-symbols-outlined mr-1 align-middle text-sm">local_offer</span>
-              현재 얼리버드 혜택 적용 중
-            </div>
-          )}
-
-          {/* 참가비 금액 (큰 표시) + 원가 취소선 */}
+          {/* 참가비 금액 (큰 표시) */}
           <div className="mb-3 text-center">
             <p
               className="text-2xl font-extrabold"
@@ -95,15 +80,6 @@ export function TournamentSidebar({
             >
               {feeDisplay}
             </p>
-            {/* 원래 가격 취소선 (DB에 없으므로 1.5배로 표시) */}
-            {hasFee && (
-              <p
-                className="mt-1 text-sm line-through"
-                style={{ color: "var(--color-text-tertiary)" }}
-              >
-                ₩{Math.round(entryFee! * 1.5).toLocaleString()}
-              </p>
-            )}
           </div>
 
           {/* 구분선 */}
@@ -118,12 +94,6 @@ export function TournamentSidebar({
                 <span className="font-semibold">{feeDisplay}</span>
               </div>
             )}
-
-            {/* 상금 규모 (DB에 없음 -- placeholder, 파랑 강조) */}
-            <div className="flex items-center justify-between">
-              <span style={{ color: "var(--color-text-secondary)" }}>상금 규모 (우승)</span>
-              <span className="font-bold" style={{ color: "var(--color-info)" }}>-</span>
-            </div>
 
             {/* 참가팀 현황 + 프로그레스바 */}
             <div>
