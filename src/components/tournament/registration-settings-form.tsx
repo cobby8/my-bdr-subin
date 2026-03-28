@@ -107,9 +107,8 @@ export function RegistrationSettingsForm({ data, onChange }: Props) {
                     {div}
                   </span>
 
-                  {/* 정원 입력 */}
+                  {/* 팀수 입력 */}
                   <div className="flex items-center gap-1">
-                    <span className="text-xs text-[var(--color-text-muted)]">정원</span>
                     <input
                       type="number"
                       placeholder="—"
@@ -124,25 +123,6 @@ export function RegistrationSettingsForm({ data, onChange }: Props) {
                       className="w-16 rounded-lg border border-[var(--color-border)] bg-transparent px-2 py-1 text-center text-sm"
                     />
                     <span className="text-xs text-[var(--color-text-muted)]">팀</span>
-                  </div>
-
-                  {/* 참가비 입력 */}
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs text-[var(--color-text-muted)]">참가비</span>
-                    <input
-                      type="number"
-                      placeholder="—"
-                      value={divFees[div] ?? ""}
-                      onChange={(e) => {
-                        const val = e.target.value ? Number(e.target.value) : undefined;
-                        const next = { ...divFees };
-                        if (val) next[div] = val;
-                        else delete next[div];
-                        onChange({ divFees: next });
-                      }}
-                      className="w-20 rounded-lg border border-[var(--color-border)] bg-transparent px-2 py-1 text-center text-sm"
-                    />
-                    <span className="text-xs text-[var(--color-text-muted)]">원</span>
                   </div>
 
                   {/* 디비전 삭제 버튼 — 오른쪽 끝 */}

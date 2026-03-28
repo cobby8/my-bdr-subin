@@ -11,6 +11,7 @@ import {
 import { TeamSettingsForm, type TeamSettingsData } from "@/components/tournament/team-settings-form";
 import { GameTimeInput } from "@/components/tournament/game-time-input";
 import { GameBallInput } from "@/components/tournament/game-ball-input";
+import { DivisionGeneratorModal } from "@/components/tournament/division-generator-modal";
 
 // --- 3단계 구성 (생성 위자드와 동일) ---
 const STEPS = [
@@ -93,6 +94,7 @@ export default function TournamentEditWizardPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showDivisionGenerator, setShowDivisionGenerator] = useState(false);
 
   // --- Step 1: 기본정보 + 일정/장소 + 경기설정 ---
   const [name, setName] = useState("");
@@ -564,8 +566,19 @@ export default function TournamentEditWizardPage() {
         <div className="space-y-4">
           {/* --- 섹션 1: 종별/디비전 --- */}
           <TossCard className="hover:scale-100">
-            <SectionTitle icon="category">종별 / 디비전</SectionTitle>
-            <div className="mt-4">
+            <div className="flex items-center justify-between mb-4">
+              <SectionTitle icon="category">종별 / 디비전</SectionTitle>
+              <button
+                type="button"
+                onClick={() => setShowDivisionGenerator(true)}
+                className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-white transition-all hover:opacity-90 active:scale-95"
+                style={{ backgroundColor: "var(--color-primary)" }}
+              >
+                <span className="material-symbols-outlined text-lg">add_circle</span>
+                종별 추가
+              </button>
+            </div>
+            <div>
               <RegistrationSettingsForm
                 data={registration}
                 onChange={(updates) => setRegistration((prev) => ({ ...prev, ...updates }))}
@@ -800,6 +813,21 @@ export default function TournamentEditWizardPage() {
           </button>
         </div>
       )}
+
+      {/* 종별 자동생성기 모달 */}
+      <DivisionGeneratorModal
+        open={showDivisionGenerator}
+        onClose={() => setShowDivisionGenerator(false)}
+        onApply={(newCategories) => {
+          setRegistration((prev) => {
+            const merged = { ...prev.categories };
+            for (const [cat, divs] of Object.entries(newCategories)) {
+              merged[cat] = [...(merged[cat] ?? []), ...divs.filter((d) => !(merged[cat] ?? []).includes(d))];
+            }
+            return { ...prev, categories: merged };
+          });
+        }}
+      />
     </div>
   );
 }
