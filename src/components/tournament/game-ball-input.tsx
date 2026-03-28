@@ -12,13 +12,9 @@ const pillCls = (active: boolean) =>
       : "bg-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border-active)]"
   }`;
 
-// 자주 사용하는 농구공 프리셋
+// 경기구 프리셋 (1개 + 직접입력)
 const BALL_PRESETS = [
-  "몰텐 GG7X",
-  "몰텐 GF7X",
-  "몰텐 B7G5000",
-  "스폴딩 TF-1000",
-  "나이키 엘리트",
+  "몰텐 BG4500",
 ];
 
 interface Props {

@@ -12,13 +12,12 @@ const pillCls = (active: boolean) =>
       : "bg-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border-active)]"
   }`;
 
-// BDR 대회에서 자주 사용하는 방식 프리셋
+// BDR 대회에서 자주 사용하는 방식 프리셋 (4개 + 직접입력)
 const METHOD_PRESETS = [
-  "예선 풀리그 + 본선 싱글 엘리미네이션",
-  "풀리그",
-  "싱글 엘리미네이션",
-  "더블 엘리미네이션",
-  "조별 풀리그 + 8강 토너먼트",
+  "조별리그+토너먼트",
+  "듀얼토너먼트",
+  "토너먼트",
+  "풀리그+토너먼트",
 ];
 
 interface Props {

@@ -39,9 +39,8 @@ const FORMAT_OPTIONS = [
   { value: "swiss", label: "스위스 라운드" },
 ];
 
-// 성별 옵션 (pill)
+// 성별 옵션 (pill) — BDR은 남성부/여성부만 운영 (혼성 없음)
 const GENDER_OPTIONS = [
-  { value: "mixed", label: "혼성" },
   { value: "male", label: "남성" },
   { value: "female", label: "여성" },
 ];
@@ -81,7 +80,7 @@ export default function NewTournamentWizardPage() {
   const [organizer, setOrganizer] = useState("");   // 주최
   const [host, setHost] = useState("");             // 주관
   const [sponsors, setSponsors] = useState("");     // 후원사
-  const [gender, setGender] = useState("mixed");    // 성별
+  const [gender, setGender] = useState("male");      // 성별 (기본: 남성)
   const [rules, setRules] = useState("");           // 규칙
   const [prizeInfo, setPrizeInfo] = useState("");   // 상금 정보
 
