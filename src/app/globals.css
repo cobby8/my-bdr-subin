@@ -5,6 +5,13 @@
 @source not "../../.claude";
 
 @theme {
+  /* --- Breakpoints (Tailwind CSS 4 필수) --- */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
   /* ========================================
    * 토스 스타일 디자인 시스템
    * - 라이트 모드 기본 (화이트 + 토스 블루)
