@@ -15,6 +15,20 @@ import { TextSizeToggle } from "@/components/shared/text-size-toggle";
  * 하단 탭 네비바 항목: 5개 탭 (모바일+데스크탑 공통)
  * 토스 스타일: 모든 화면에서 하단 탭 네비 표시
  * ============================================================ */
+/* ============================================================
+ * PC 좌측 사이드 네비 항목 (lg 이상에서만 표시)
+ * 모바일 하단 탭에는 없는 랭킹/커뮤니티/알림도 포함
+ * ============================================================ */
+const sideNavItems = [
+  { href: "/", label: "홈", icon: "home" },
+  { href: "/games", label: "경기", icon: "sports_basketball" },
+  { href: "/tournaments", label: "대회", icon: "emoji_events" },
+  { href: "/teams", label: "팀", icon: "groups" },
+  { href: "/rankings", label: "랭킹", icon: "leaderboard" },
+  { href: "/community", label: "커뮤니티", icon: "forum" },
+  { href: "/notifications", label: "알림", icon: "notifications" },
+];
+
 const bottomNavItems = [
   { href: "/", label: "홈", icon: "home" },
   { href: "/games", label: "경기", icon: "sports_basketball" },
@@ -82,16 +96,77 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-screen flex-col bg-[var(--color-background)]">
 
       {/* ========================================
+       * PC 사이드 네비 (lg 이상에서만 표시)
+       * 좌측 고정, 너비 240px, 로고+메뉴+프로필
+       * ======================================== */}
+      <aside className="fixed left-0 top-0 z-40 hidden h-full w-60 flex-col border-r border-[var(--color-border)] bg-[var(--color-background)] lg:flex">
+        {/* 로고 */}
+        <div className="p-6 pb-4">
+          <Link href="/">
+            <Image src="/images/logo.png" alt="BDR" width={100} height={30} className="h-7 w-auto" />
+          </Link>
+        </div>
+
+        {/* 메인 네비게이션 */}
+        <nav className="flex-1 overflow-y-auto px-3 space-y-1">
+          {sideNavItems.map(item => {
+            const active = isActive(item.href);
+            return (
+              <Link key={item.href} href={item.href} prefetch={true}
+                className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
+                  active
+                    ? "bg-[var(--color-surface)] text-[var(--color-primary)] font-semibold"
+                    : "text-[var(--color-text-secondary)] hover:bg-[var(--color-surface)]"
+                }`}
+              >
+                <span className="material-symbols-outlined text-xl"
+                  style={active ? { fontVariationSettings: "'FILL' 1" } : undefined}
+                >{item.icon}</span>
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* 하단: 프로필 + 로그아웃 */}
+        <div className="border-t border-[var(--color-border)] p-4 space-y-2">
+          {user ? (
+            <>
+              <Link href="/profile" className="flex items-center gap-3 px-2 py-2">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-primary)] text-sm font-bold text-white">
+                  {user.name?.trim()?.[0]?.toUpperCase() ?? "U"}
+                </div>
+                <div>
+                  <p className="text-sm font-semibold" style={{ color: "var(--color-text-primary)" }}>{user.name || "사용자"}</p>
+                  <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>프로필 보기</p>
+                </div>
+              </Link>
+              <button onClick={async () => { await fetch("/api/web/logout", { method: "POST", credentials: "include" }); window.location.href = "/login"; }}
+                className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm text-[var(--color-text-muted)] hover:bg-[var(--color-surface)] transition-colors"
+              >
+                <span className="material-symbols-outlined text-lg">logout</span>
+                로그아웃
+              </button>
+            </>
+          ) : (
+            <Link href="/login" className="block w-full rounded-xl bg-[var(--color-primary)] py-3 text-center text-sm font-bold text-white">
+              로그인
+            </Link>
+          )}
+        </div>
+      </aside>
+
+      {/* ========================================
        * 상단 헤더 (모바일+데스크탑 공통, 56px)
        * 토스 스타일: 미니멀 헤더, backdrop-blur
        * [뒤로가기]  MyBDR  [검색] [알림] [프로필]
        * ======================================== */}
       <header
-        className="fixed top-0 z-50 flex h-14 w-full items-center justify-between border-b border-[var(--color-border)] px-4 backdrop-blur-xl"
+        className="fixed top-0 z-50 flex h-14 w-full items-center justify-between border-b border-[var(--color-border)] px-4 backdrop-blur-xl lg:left-60"
         style={{ backgroundColor: "color-mix(in srgb, var(--color-background) 85%, transparent)" }}
       >
-        {/* 좌측: 뒤로가기 + 로고 텍스트 */}
-        <div className="flex items-center gap-2">
+        {/* 좌측: 뒤로가기 + 로고 (PC에서는 사이드 네비에 있으므로 숨김) */}
+        <div className="flex items-center gap-2 lg:hidden">
           {/* 뒤로가기 버튼: 홈이 아닐 때만 표시 */}
           {pathname !== "/" && (
             <button
@@ -154,14 +229,14 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
        * 토스 스타일: max-width 640px (모바일 앱 느낌), mx-auto 중앙 정렬
        * pt-14 (헤더 56px) + pb-20 (하단 네비 80px)
        * ======================================== */}
-      <main className="min-h-screen flex-1 pb-20 pt-14">
-        <div className="mx-auto max-w-[640px] px-5 py-4">
+      <main className="min-h-screen flex-1 pb-20 pt-14 lg:ml-60 lg:pb-8">
+        <div className="mx-auto max-w-[640px] px-5 py-4 lg:max-w-[960px] lg:px-8">
           {children}
         </div>
       </main>
 
       {/* 푸터: 메인 콘텐츠 아래에 표시 */}
-      <div className="mx-auto max-w-[640px] pb-20">
+      <div className="mx-auto max-w-[640px] pb-20 lg:ml-60">
         <Footer />
       </div>
 
@@ -171,7 +246,7 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
        * 상단 보더로 구분, 배경은 blur 처리
        * ======================================== */}
       <nav
-        className="fixed bottom-0 left-0 z-50 flex h-14 w-full items-center justify-around border-t border-[var(--color-border)] backdrop-blur-xl"
+        className="fixed bottom-0 left-0 z-50 flex h-14 w-full items-center justify-around border-t border-[var(--color-border)] backdrop-blur-xl lg:hidden"
         style={{
           backgroundColor: "color-mix(in srgb, var(--color-background) 90%, transparent)",
           paddingBottom: "max(0px, env(safe-area-inset-bottom, 0px))",
