@@ -107,6 +107,9 @@ export const POST = withWebAuth(async (req: Request, ctx: WebAuthContext) => {
       allowWaitingList, waitingListCap,
       entryFee, bankName, bankAccount, bankHolder, feeNotes,
       maxTeams, teamSize, rosterMin, rosterMax, autoApproveTeams,
+      // 대회 관리 확장 필드
+      organizer, host, sponsors, gameTime, gameBall, gameMethod, places, gender,
+      rules, prizeInfo,
     } = body;
 
     if (!name?.trim()) {
@@ -155,6 +158,17 @@ export const POST = withWebAuth(async (req: Request, ctx: WebAuthContext) => {
       venueName: venueName || undefined,
       venueAddress: venueAddress || undefined,
       city: city || undefined,
+      // 대회 관리 확장 필드
+      organizer: organizer || undefined,
+      host: host || undefined,
+      sponsors: sponsors || undefined,
+      gameTime: gameTime || undefined,
+      gameBall: gameBall || undefined,
+      gameMethod: gameMethod || undefined,
+      places: places || undefined,
+      gender: gender || undefined,
+      rules: rules || undefined,
+      prizeInfo: prizeInfo || undefined,
       categories: categories || undefined,
       divCaps: divCaps || undefined,
       divFees: divFees || undefined,

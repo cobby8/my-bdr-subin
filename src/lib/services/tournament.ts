@@ -119,6 +119,17 @@ export interface CreateTournamentInput {
   rosterMin?: number;
   rosterMax?: number;
   autoApproveTeams?: boolean;
+  // 대회 관리 확장 필드
+  organizer?: string;
+  host?: string;
+  sponsors?: string;
+  gameTime?: string;
+  gameBall?: string;
+  gameMethod?: string;
+  places?: { name: string; address: string }[];
+  gender?: string;
+  rules?: string;
+  prizeInfo?: string;
 }
 
 export interface UpdateTournamentData {
@@ -337,6 +348,17 @@ export async function createTournament(input: CreateTournamentInput) {
       venue_name: input.venueName ?? null,
       venue_address: input.venueAddress ?? null,
       city: input.city ?? null,
+      // 대회 관리 확장 필드
+      organizer: input.organizer ?? null,
+      host: input.host ?? null,
+      sponsors: input.sponsors ?? null,
+      game_time: input.gameTime ?? null,
+      game_ball: input.gameBall ?? null,
+      game_method: input.gameMethod ?? null,
+      places: input.places ?? undefined,
+      gender: input.gender ?? null,
+      rules: input.rules ?? input.rules ?? null,
+      prize_info: input.prizeInfo ?? null,
       categories: input.categories ?? {},
       div_caps: input.divCaps ?? {},
       div_fees: input.divFees ?? {},

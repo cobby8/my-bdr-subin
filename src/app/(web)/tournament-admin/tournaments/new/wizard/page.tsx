@@ -1,25 +1,32 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ScheduleForm, type ScheduleFormData } from "@/components/tournament/schedule-form";
+import { ScheduleForm, type ScheduleFormData, type PlaceInfo } from "@/components/tournament/schedule-form";
 import {
   RegistrationSettingsForm,
   type RegistrationSettingsData,
 } from "@/components/tournament/registration-settings-form";
 import { TeamSettingsForm, type TeamSettingsData } from "@/components/tournament/team-settings-form";
+import { GameTimeInput } from "@/components/tournament/game-time-input";
+import { GameBallInput } from "@/components/tournament/game-ball-input";
+import { GameMethodInput } from "@/components/tournament/game-method-input";
+import { DivisionGeneratorModal } from "@/components/tournament/division-generator-modal";
+import { TournamentCopyModal, type CopyData } from "@/components/tournament/tournament-copy-modal";
 
+// 8탭 구성 (기존 7탭 + "경기설정" 추가)
 const STEPS = [
-  { id: "template", label: "템플릿", icon: "🎨" },
-  { id: "info", label: "기본 정보", icon: "📝" },
-  { id: "schedule", label: "일정/장소", icon: "📅" },
-  { id: "registration", label: "접수 설정", icon: "📋" },
-  { id: "team", label: "팀 설정", icon: "🏀" },
-  { id: "design", label: "디자인", icon: "🎨" },
-  { id: "preview", label: "미리보기", icon: "👁" },
+  { id: "template", label: "템플릿", icon: "dashboard" },
+  { id: "info", label: "기본 정보", icon: "edit_note" },
+  { id: "schedule", label: "일정/장소", icon: "calendar_month" },
+  { id: "game", label: "경기 설정", icon: "sports_basketball" },
+  { id: "registration", label: "접수 설정", icon: "how_to_reg" },
+  { id: "team", label: "팀 설정", icon: "groups" },
+  { id: "design", label: "디자인", icon: "palette" },
+  { id: "preview", label: "미리보기", icon: "visibility" },
 ];
 
 // 대회 형식: value(영문 코드)를 DB에 저장, label(한글)은 표시용
@@ -32,8 +39,24 @@ const FORMAT_OPTIONS = [
   { value: "swiss", label: "스위스 라운드" },
 ];
 
+// 성별 옵션 (pill)
+const GENDER_OPTIONS = [
+  { value: "mixed", label: "혼성" },
+  { value: "male", label: "남성" },
+  { value: "female", label: "여성" },
+];
+
 const inputCls =
   "w-full rounded-[16px] border-none bg-[var(--color-border)] px-4 py-3 text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/50";
+const labelCls = "mb-1 block text-sm text-[var(--color-text-muted)]";
+
+// pill 버튼 스타일
+const pillCls = (active: boolean) =>
+  `rounded-[4px] px-3 py-1.5 text-sm font-medium transition-colors cursor-pointer ${
+    active
+      ? "bg-[var(--color-accent)] text-white"
+      : "bg-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border-active)]"
+  }`;
 
 type AuthStatus = "loading" | "unauthenticated" | "unauthorized" | "authorized";
 
@@ -44,15 +67,25 @@ export default function NewTournamentWizardPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // 모달 상태
+  const [showDivisionGenerator, setShowDivisionGenerator] = useState(false);
+  const [showCopyModal, setShowCopyModal] = useState(false);
+
   // Step 0: 템플릿
   const [template, setTemplate] = useState("기본형");
 
-  // Step 1: 기본 정보
+  // Step 1: 기본 정보 (확장됨)
   const [name, setName] = useState("");
   const [format, setFormat] = useState("single_elimination");
   const [description, setDescription] = useState("");
+  const [organizer, setOrganizer] = useState("");   // 주최
+  const [host, setHost] = useState("");             // 주관
+  const [sponsors, setSponsors] = useState("");     // 후원사
+  const [gender, setGender] = useState("mixed");    // 성별
+  const [rules, setRules] = useState("");           // 규칙
+  const [prizeInfo, setPrizeInfo] = useState("");   // 상금 정보
 
-  // Step 2: 일정/장소
+  // Step 2: 일정/장소 (places 배열 추가)
   const [schedule, setSchedule] = useState<ScheduleFormData>({
     startDate: "",
     endDate: "",
@@ -61,9 +94,15 @@ export default function NewTournamentWizardPage() {
     venueName: "",
     venueAddress: "",
     city: "",
+    places: [],
   });
 
-  // Step 3: 접수 설정
+  // Step 3: 경기 설정 (신규)
+  const [gameTime, setGameTime] = useState("");
+  const [gameBall, setGameBall] = useState("");
+  const [gameMethod, setGameMethod] = useState("");
+
+  // Step 4: 접수 설정
   const [registration, setRegistration] = useState<RegistrationSettingsData>({
     categories: {},
     divCaps: {},
@@ -77,7 +116,7 @@ export default function NewTournamentWizardPage() {
     feeNotes: "",
   });
 
-  // Step 4: 팀 설정
+  // Step 5: 팀 설정
   const [teamSettings, setTeamSettings] = useState<TeamSettingsData>({
     maxTeams: "16",
     teamSize: "5",
@@ -87,13 +126,69 @@ export default function NewTournamentWizardPage() {
     autoCalcMaxTeams: false,
   });
 
-  // Step 5: 디자인
+  // Step 6: 디자인
   const [primaryColor, setPrimaryColor] = useState("#E31B23");
   const [secondaryColor, setSecondaryColor] = useState("#E76F51");
   const [subdomain, setSubdomain] = useState("");
 
   // 디비전 정원 합산
   const totalDivCaps = Object.values(registration.divCaps).reduce((s, v) => s + v, 0);
+
+  // 이전 대회 복사 적용
+  const handleCopyApply = useCallback((data: CopyData) => {
+    if (data.format) setFormat(data.format);
+    if (data.description) setDescription(data.description);
+    if (data.organizer) setOrganizer(data.organizer);
+    if (data.host) setHost(data.host);
+    if (data.sponsors) setSponsors(data.sponsors);
+    if (data.gender) setGender(data.gender);
+    if (data.rules) setRules(data.rules);
+    if (data.prizeInfo) setPrizeInfo(data.prizeInfo);
+    if (data.venueName || data.venueAddress || data.city || data.places) {
+      setSchedule((prev) => ({
+        ...prev,
+        venueName: data.venueName ?? prev.venueName,
+        venueAddress: data.venueAddress ?? prev.venueAddress,
+        city: data.city ?? prev.city,
+        places: data.places ?? prev.places,
+      }));
+    }
+    if (data.gameTime) setGameTime(data.gameTime);
+    if (data.gameBall) setGameBall(data.gameBall);
+    if (data.gameMethod) setGameMethod(data.gameMethod);
+    if (data.categories || data.divCaps || data.divFees || data.entryFee || data.bankName) {
+      setRegistration((prev) => ({
+        ...prev,
+        categories: data.categories ?? prev.categories,
+        divCaps: data.divCaps ?? prev.divCaps,
+        divFees: data.divFees ?? prev.divFees,
+        entryFee: data.entryFee ?? prev.entryFee,
+        bankName: data.bankName ?? prev.bankName,
+        bankAccount: data.bankAccount ?? prev.bankAccount,
+        bankHolder: data.bankHolder ?? prev.bankHolder,
+        feeNotes: data.feeNotes ?? prev.feeNotes,
+      }));
+    }
+    if (data.maxTeams || data.teamSize || data.rosterMin || data.rosterMax) {
+      setTeamSettings((prev) => ({
+        ...prev,
+        maxTeams: data.maxTeams ?? prev.maxTeams,
+        teamSize: data.teamSize ?? prev.teamSize,
+        rosterMin: data.rosterMin ?? prev.rosterMin,
+        rosterMax: data.rosterMax ?? prev.rosterMax,
+      }));
+    }
+    if (data.primaryColor) setPrimaryColor(data.primaryColor);
+    if (data.secondaryColor) setSecondaryColor(data.secondaryColor);
+  }, []);
+
+  // 종별 자동생성기 적용
+  const handleDivisionApply = useCallback((categories: Record<string, string[]>) => {
+    setRegistration((prev) => ({
+      ...prev,
+      categories: { ...prev.categories, ...categories },
+    }));
+  }, []);
 
   // 인증 체크
   useEffect(() => {
@@ -134,7 +229,7 @@ export default function NewTournamentWizardPage() {
   if (authStatus === "unauthorized") {
     return (
       <div className="flex min-h-[40vh] flex-col items-center justify-center gap-4 text-center">
-        <div className="text-5xl">🔒</div>
+        <span className="material-symbols-outlined text-5xl text-[var(--color-text-muted)]">lock</span>
         <h1 className="text-xl font-bold text-[var(--color-text-primary)]">권한이 필요합니다</h1>
         <p className="max-w-md text-sm text-[var(--color-text-muted)]">
           대회를 만들려면 <strong>대회 관리자</strong> 이상의 권한이 필요합니다.
@@ -143,7 +238,7 @@ export default function NewTournamentWizardPage() {
         </p>
         <Link
           href="/tournaments"
-          className="mt-2 rounded-full bg-[var(--color-accent)] px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-accent-hover)]"
+          className="mt-2 rounded-[4px] bg-[var(--color-accent)] px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-accent-hover)]"
         >
           대회 목록으로 돌아가기
         </Link>
@@ -180,6 +275,13 @@ export default function NewTournamentWizardPage() {
           name,
           format,
           description: description || undefined,
+          // 기본 정보 확장 필드
+          organizer: organizer || undefined,
+          host: host || undefined,
+          sponsors: sponsors || undefined,
+          gender: gender || undefined,
+          rules: rules || undefined,
+          prizeInfo: prizeInfo || undefined,
           // 일정
           startDate: schedule.startDate || undefined,
           endDate: schedule.endDate || undefined,
@@ -188,6 +290,11 @@ export default function NewTournamentWizardPage() {
           venueName: schedule.venueName || undefined,
           venueAddress: schedule.venueAddress || undefined,
           city: schedule.city || undefined,
+          places: schedule.places.length > 0 ? schedule.places : undefined,
+          // 경기 설정
+          gameTime: gameTime || undefined,
+          gameBall: gameBall || undefined,
+          gameMethod: gameMethod || undefined,
           // 접수
           categories: Object.keys(registration.categories).length > 0 ? registration.categories : undefined,
           divCaps: Object.keys(registration.divCaps).length > 0 ? registration.divCaps : undefined,
@@ -227,15 +334,25 @@ export default function NewTournamentWizardPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-bold sm:text-2xl">새 대회 만들기</h1>
+      {/* 헤더 + 이전 대회 복사 버튼 */}
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-xl font-bold sm:text-2xl">새 대회 만들기</h1>
+        <button
+          onClick={() => setShowCopyModal(true)}
+          className="flex items-center gap-1 rounded-[4px] border border-[var(--color-border)] px-3 py-1.5 text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-border)]"
+        >
+          <span className="material-symbols-outlined text-base">content_copy</span>
+          이전 대회에서 복사
+        </button>
+      </div>
 
-      {/* Step Indicator */}
+      {/* Step Indicator (Material Symbols 아이콘 사용) */}
       <div className="mb-8 flex gap-1 overflow-x-auto">
         {STEPS.map((step, i) => (
           <button
             key={step.id}
             onClick={() => i < currentStep && setCurrentStep(i)}
-            className={`flex items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm transition-colors ${
+            className={`flex items-center gap-1.5 whitespace-nowrap rounded-[4px] px-3 py-2 text-sm transition-colors ${
               i === currentStep
                 ? "bg-[var(--color-accent)] font-semibold text-white"
                 : i < currentStep
@@ -243,7 +360,7 @@ export default function NewTournamentWizardPage() {
                   : "cursor-not-allowed bg-[var(--color-elevated)] text-[var(--color-text-muted)]"
             }`}
           >
-            <span>{step.icon}</span>
+            <span className="material-symbols-outlined text-base">{step.icon}</span>
             {step.label}
           </button>
         ))}
@@ -269,7 +386,7 @@ export default function NewTournamentWizardPage() {
                       : "border-[var(--color-border)] hover:border-[var(--color-accent)]"
                   }`}
                 >
-                  <div className="mb-2 text-2xl">🏆</div>
+                  <span className="material-symbols-outlined mb-2 text-3xl">emoji_events</span>
                   <p className="font-medium">{t}</p>
                 </div>
               ))}
@@ -277,12 +394,14 @@ export default function NewTournamentWizardPage() {
           </div>
         )}
 
-        {/* Step 1: 기본 정보 */}
+        {/* Step 1: 기본 정보 (확장) */}
         {currentStep === 1 && (
           <div className="space-y-4">
             <h2 className="text-lg font-semibold">기본 정보</h2>
+
+            {/* 대회 이름 */}
             <div>
-              <label className="mb-1 block text-sm text-[var(--color-text-muted)]">대회 이름 *</label>
+              <label className={labelCls}>대회 이름 *</label>
               <input
                 type="text"
                 value={name}
@@ -291,8 +410,10 @@ export default function NewTournamentWizardPage() {
                 placeholder="대회 이름 입력"
               />
             </div>
+
+            {/* 대회 방식 */}
             <div>
-              <label className="mb-1 block text-sm text-[var(--color-text-muted)]">대회 방식</label>
+              <label className={labelCls}>대회 방식</label>
               <select
                 value={format}
                 onChange={(e) => setFormat(e.target.value)}
@@ -303,37 +424,138 @@ export default function NewTournamentWizardPage() {
                 ))}
               </select>
             </div>
+
+            {/* 성별 (pill 버튼) */}
             <div>
-              <label className="mb-1 block text-sm text-[var(--color-text-muted)]">대회 소개</label>
+              <label className={labelCls}>성별</label>
+              <div className="flex gap-2">
+                {GENDER_OPTIONS.map((g) => (
+                  <button
+                    key={g.value}
+                    type="button"
+                    onClick={() => setGender(g.value)}
+                    className={pillCls(gender === g.value)}
+                  >
+                    {g.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 주최 / 주관 / 후원사 (2열) */}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className={labelCls}>주최</label>
+                <input
+                  type="text"
+                  value={organizer}
+                  onChange={(e) => setOrganizer(e.target.value)}
+                  className={inputCls}
+                  placeholder="주최 단체/기관"
+                />
+              </div>
+              <div>
+                <label className={labelCls}>주관</label>
+                <input
+                  type="text"
+                  value={host}
+                  onChange={(e) => setHost(e.target.value)}
+                  className={inputCls}
+                  placeholder="주관 단체/기관"
+                />
+              </div>
+            </div>
+            <div>
+              <label className={labelCls}>후원사</label>
+              <input
+                type="text"
+                value={sponsors}
+                onChange={(e) => setSponsors(e.target.value)}
+                className={inputCls}
+                placeholder="후원사 (여러 개면 쉼표로 구분)"
+              />
+            </div>
+
+            {/* 대회 소개 */}
+            <div>
+              <label className={labelCls}>대회 소개</label>
               <textarea
                 className={inputCls}
-                rows={4}
+                rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="대회 소개 입력"
               />
             </div>
+
+            {/* 규칙 */}
+            <div>
+              <label className={labelCls}>규칙</label>
+              <textarea
+                className={inputCls}
+                rows={3}
+                value={rules}
+                onChange={(e) => setRules(e.target.value)}
+                placeholder="대회 규칙 (예: KBL 규칙 준용, 파울 5개 퇴장 등)"
+              />
+            </div>
+
+            {/* 상금 정보 */}
+            <div>
+              <label className={labelCls}>상금 / 시상 정보</label>
+              <textarea
+                className={inputCls}
+                rows={2}
+                value={prizeInfo}
+                onChange={(e) => setPrizeInfo(e.target.value)}
+                placeholder="우승 100만원, 준우승 50만원 등"
+              />
+            </div>
           </div>
         )}
 
-        {/* Step 2: 일정/장소 */}
+        {/* Step 2: 일정/장소 (복수 경기장 지원) */}
         {currentStep === 2 && (
           <ScheduleForm
             data={schedule}
-            onChange={(field, value) => setSchedule((prev) => ({ ...prev, [field]: value }))}
+            onChange={(field, value) =>
+              setSchedule((prev) => ({ ...prev, [field]: value }))
+            }
           />
         )}
 
-        {/* Step 3: 접수 설정 */}
+        {/* Step 3: 경기 설정 (신규 탭) */}
         {currentStep === 3 && (
-          <RegistrationSettingsForm
-            data={registration}
-            onChange={(updates) => setRegistration((prev) => ({ ...prev, ...updates }))}
-          />
+          <div className="space-y-6">
+            <h2 className="text-lg font-semibold">경기 설정</h2>
+            <GameTimeInput value={gameTime} onChange={setGameTime} />
+            <GameBallInput value={gameBall} onChange={setGameBall} />
+            <GameMethodInput value={gameMethod} onChange={setGameMethod} />
+          </div>
         )}
 
-        {/* Step 4: 팀 설정 */}
+        {/* Step 4: 접수 설정 */}
         {currentStep === 4 && (
+          <div>
+            {/* 종별 자동생성기 버튼 */}
+            <div className="mb-4 flex justify-end">
+              <button
+                onClick={() => setShowDivisionGenerator(true)}
+                className="flex items-center gap-1 rounded-[4px] bg-[var(--color-navy)] px-3 py-1.5 text-sm font-medium text-white hover:opacity-90"
+              >
+                <span className="material-symbols-outlined text-base">auto_awesome</span>
+                BDR 종별 자동생성
+              </button>
+            </div>
+            <RegistrationSettingsForm
+              data={registration}
+              onChange={(updates) => setRegistration((prev) => ({ ...prev, ...updates }))}
+            />
+          </div>
+        )}
+
+        {/* Step 5: 팀 설정 */}
+        {currentStep === 5 && (
           <TeamSettingsForm
             data={teamSettings}
             totalDivCaps={totalDivCaps}
@@ -343,13 +565,13 @@ export default function NewTournamentWizardPage() {
           />
         )}
 
-        {/* Step 5: 디자인 */}
-        {currentStep === 5 && (
+        {/* Step 6: 디자인 */}
+        {currentStep === 6 && (
           <div className="space-y-4">
             <h2 className="text-lg font-semibold">디자인 / URL</h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="mb-1 block text-sm text-[var(--color-text-muted)]">대표 색상</label>
+                <label className={labelCls}>대표 색상</label>
                 <div className="flex items-center gap-3">
                   <input
                     type="color"
@@ -361,7 +583,7 @@ export default function NewTournamentWizardPage() {
                 </div>
               </div>
               <div>
-                <label className="mb-1 block text-sm text-[var(--color-text-muted)]">보조 색상</label>
+                <label className={labelCls}>보조 색상</label>
                 <div className="flex items-center gap-3">
                   <input
                     type="color"
@@ -374,7 +596,7 @@ export default function NewTournamentWizardPage() {
               </div>
             </div>
 
-            {/* 미리보기 */}
+            {/* 미리보기 배너 */}
             <div
               className="rounded-[16px] p-6 text-center"
               style={{
@@ -386,7 +608,7 @@ export default function NewTournamentWizardPage() {
 
             {/* URL */}
             <div>
-              <label className="mb-1 block text-sm text-[var(--color-text-muted)]">서브도메인 (선택)</label>
+              <label className={labelCls}>서브도메인 (선택)</label>
               <div className="flex items-center gap-2">
                 <input
                   type="text"
@@ -404,15 +626,21 @@ export default function NewTournamentWizardPage() {
           </div>
         )}
 
-        {/* Step 6: 미리보기 */}
-        {currentStep === 6 && (
+        {/* Step 7: 미리보기 */}
+        {currentStep === 7 && (
           <div className="space-y-4">
-            <div className="mb-2 text-center text-4xl">🎉</div>
+            <div className="mb-2 text-center">
+              <span className="material-symbols-outlined text-4xl text-[var(--color-accent)]">celebration</span>
+            </div>
             <h2 className="text-center text-lg font-semibold">대회 생성 미리보기</h2>
 
             <div className="space-y-3 rounded-[16px] bg-[var(--color-elevated)] p-4 text-sm">
               <Row label="대회명" value={name || "미입력"} />
               <Row label="형식" value={FORMAT_OPTIONS.find((f) => f.value === format)?.label ?? format} />
+              <Row label="성별" value={GENDER_OPTIONS.find((g) => g.value === gender)?.label ?? gender} />
+              {organizer && <Row label="주최" value={organizer} />}
+              {host && <Row label="주관" value={host} />}
+              {sponsors && <Row label="후원사" value={sponsors} />}
               <Row
                 label="대회 기간"
                 value={
@@ -432,9 +660,16 @@ export default function NewTournamentWizardPage() {
               <Row
                 label="장소"
                 value={
-                  [schedule.city, schedule.venueName].filter(Boolean).join(" ") || "미설정"
+                  schedule.places.length > 0
+                    ? schedule.places.map((p) => p.name).join(", ")
+                    : [schedule.city, schedule.venueName].filter(Boolean).join(" ") || "미설정"
                 }
               />
+
+              {/* 경기 설정 */}
+              {gameTime && <Row label="경기시간" value={gameTime} />}
+              {gameBall && <Row label="경기구" value={gameBall} />}
+              {gameMethod && <Row label="대회 방식 상세" value={gameMethod} />}
 
               {/* 부문/디비전 */}
               {Object.keys(registration.categories).length > 0 && (
@@ -486,6 +721,9 @@ export default function NewTournamentWizardPage() {
                 />
               )}
 
+              {rules && <Row label="규칙" value={rules.slice(0, 50) + (rules.length > 50 ? "..." : "")} />}
+              {prizeInfo && <Row label="상금" value={prizeInfo.slice(0, 50) + (prizeInfo.length > 50 ? "..." : "")} />}
+
               <Row
                 label="URL"
                 value={subdomain ? `${subdomain}.mybdr.kr` : "자동 생성"}
@@ -512,6 +750,18 @@ export default function NewTournamentWizardPage() {
           </Button>
         )}
       </div>
+
+      {/* 모달들 */}
+      <DivisionGeneratorModal
+        open={showDivisionGenerator}
+        onClose={() => setShowDivisionGenerator(false)}
+        onApply={handleDivisionApply}
+      />
+      <TournamentCopyModal
+        open={showCopyModal}
+        onClose={() => setShowCopyModal(false)}
+        onApply={handleCopyApply}
+      />
     </div>
   );
 }

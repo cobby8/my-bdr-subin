@@ -153,6 +153,15 @@ model Tournament {
   venue_address                          String?                 @db.VarChar
   city                                   String?                 @db.VarChar
   district                               String?                 @db.VarChar
+  // 대회 관리 확장 필드 (BDR-join 이식)
+  organizer                              String?                 @db.VarChar
+  host                                   String?                 @db.VarChar
+  sponsors                               String?                 @db.VarChar
+  game_time                              String?                 @db.VarChar
+  game_ball                              String?                 @db.VarChar
+  game_method                            String?
+  places                                 Json?
+  gender                                 String?                 @db.VarChar
   status                                 String?                 @default("draft") @db.VarChar
   teams_count                            Int?                    @default(0)
   matches_count                          Int?                    @default(0)
