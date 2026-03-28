@@ -165,35 +165,47 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
         className="fixed top-0 z-50 flex h-14 w-full items-center justify-between border-b border-[var(--color-border)] px-4 backdrop-blur-xl lg:left-60"
         style={{ backgroundColor: "color-mix(in srgb, var(--color-background) 85%, transparent)" }}
       >
-        {/* 좌측: 뒤로가기 + 로고 (PC에서는 사이드 네비에 있으므로 숨김) */}
-        <div className="flex items-center gap-2 lg:hidden">
-          {/* 뒤로가기 버튼: 홈이 아닐 때만 표시 */}
-          {pathname !== "/" && (
-            <button
-              onClick={() => router.back()}
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-surface-bright)]"
-            >
-              <span className="material-symbols-outlined text-xl">arrow_back</span>
-            </button>
-          )}
-          {/* 로고: BDR 이미지 */}
-          <Link href="/" prefetch={true}>
-            <Image src="/images/logo.png" alt="BDR" width={100} height={30} className="h-7 w-auto" />
-          </Link>
+        {/* 좌측: 모바일=뒤로+로고, PC=검색바 */}
+        <div className="flex items-center gap-2">
+          {/* 모바일: 뒤로가기 + 로고 */}
+          <div className="flex items-center gap-2 lg:hidden">
+            {pathname !== "/" && (
+              <button
+                onClick={() => router.back()}
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-surface-bright)]"
+              >
+                <span className="material-symbols-outlined text-xl">arrow_back</span>
+              </button>
+            )}
+            <Link href="/" prefetch={true}>
+              <Image src="/images/logo.png" alt="BDR" width={100} height={30} className="h-7 w-auto" />
+            </Link>
+          </div>
+          {/* PC: 검색바 (넓은 입력 필드) */}
+          <div className="hidden lg:flex items-center gap-2 flex-1">
+            <div className="relative w-full max-w-md">
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-lg" style={{ color: "var(--color-text-muted)" }}>search</span>
+              <input
+                placeholder="경기, 대회, 팀 검색..."
+                className="w-full rounded-xl py-2.5 pl-10 pr-4 text-sm outline-none"
+                style={{ backgroundColor: "var(--color-surface)", color: "var(--color-text-primary)" }}
+              />
+            </div>
+          </div>
         </div>
 
-        {/* 우측: 테마 + 글씨크기 + 검색 + 알림 + 프로필 */}
+        {/* 우측: 모바일=테마+검색+알림+프로필, PC=테마+알림+프로필 */}
         <div className="flex items-center gap-1">
           <ThemeToggle />
           <TextSizeToggle />
-          {/* 검색 아이콘 */}
+          {/* 모바일 검색 아이콘 (PC에서는 좌측 검색바 사용) */}
           <Link
             href="/games"
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-bright)]"
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-bright)] lg:hidden"
           >
             <span className="material-symbols-outlined text-xl">search</span>
           </Link>
-          {/* 알림 아이콘 (로그인 시) */}
+          {/* 알림 (PC에서도 표시 — 사이드네비 알림과 별개로 빠른 접근) */}
           {user && (
             <Link
               href="/notifications"
@@ -205,7 +217,7 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
               )}
             </Link>
           )}
-          {/* 프로필 아바타 / 로그인 버튼 */}
+          {/* 프로필 (PC에서도 유지) */}
           {user ? (
             <Link
               href="/profile"
@@ -235,9 +247,11 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
         </div>
       </main>
 
-      {/* 푸터: 메인 콘텐츠 아래에 표시 */}
-      <div className="mx-auto max-w-[640px] pb-20 lg:ml-60">
-        <Footer />
+      {/* 푸터 */}
+      <div className="pb-20 lg:ml-60 lg:pb-8">
+        <div className="mx-auto max-w-[640px] px-5 lg:max-w-[960px] lg:px-8">
+          <Footer />
+        </div>
       </div>
 
       {/* ========================================
