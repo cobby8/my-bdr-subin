@@ -539,11 +539,13 @@ export default function NewTournamentWizardPage() {
               <SectionTitle icon="category">종별 / 디비전</SectionTitle>
               {/* BDR 종별 자동생성기 버튼 */}
               <button
+                type="button"
                 onClick={() => setShowDivisionGenerator(true)}
-                className="flex items-center gap-1 rounded-[4px] bg-[var(--color-navy)] px-3 py-1.5 text-sm font-medium text-white hover:opacity-90"
+                className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-white transition-all hover:opacity-90 active:scale-95"
+                style={{ backgroundColor: "var(--color-primary)" }}
               >
-                <span className="material-symbols-outlined text-base">auto_awesome</span>
-                자동생성
+                <span className="material-symbols-outlined text-lg">add_circle</span>
+                종별 추가
               </button>
             </div>
             {/* RegistrationSettingsForm 재사용 — 접수 관련 전체 폼 */}
