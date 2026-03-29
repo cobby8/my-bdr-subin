@@ -144,13 +144,15 @@ export function HeatmapOverlay({ map, points, maxWeight, visible }: HeatmapOverl
     drawHeatmap();
 
     // 지도 이동/줌 변경 시 다시 그리기
-    const moveListener = window.kakao.maps.event.addListener(map, "center_changed", drawHeatmap);
-    const zoomListener = window.kakao.maps.event.addListener(map, "zoom_changed", drawHeatmap);
+    window.kakao.maps.event.addListener(map, "center_changed", drawHeatmap);
+    window.kakao.maps.event.addListener(map, "zoom_changed", drawHeatmap);
 
     return () => {
-      // 이벤트 리스너 정리
-      window.kakao.maps.event.removeListener(moveListener);
-      window.kakao.maps.event.removeListener(zoomListener);
+      // 이벤트 리스너 정리 (map과 kakao가 아직 살아있을 때만)
+      if (window.kakao?.maps?.event) {
+        window.kakao.maps.event.removeListener(map, "center_changed", drawHeatmap);
+        window.kakao.maps.event.removeListener(map, "zoom_changed", drawHeatmap);
+      }
 
       // canvas 제거
       if (canvasRef.current && canvasRef.current.parentNode) {
