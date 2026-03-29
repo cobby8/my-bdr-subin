@@ -26,7 +26,7 @@ export default async function AdminCourtsPage({
       }
     : undefined;
 
-  const [courts, totalCount] = await Promise.all([
+  const [courts, totalCount, pendingSuggestions, pendingAmbassadors] = await Promise.all([
     prisma.court_infos.findMany({
       where,
       orderBy: { created_at: "desc" },
@@ -45,6 +45,25 @@ export default async function AdminCourtsPage({
       },
     }),
     prisma.court_infos.count({ where }),
+    // 위키 수정 제안 중 대기 중인 것만 조회 (최신순 50건)
+    prisma.court_edit_suggestions.findMany({
+      where: { status: "pending" },
+      orderBy: { created_at: "desc" },
+      take: 50,
+      include: {
+        court_infos: { select: { id: true, name: true } },
+        users: { select: { nickname: true } },
+      },
+    }),
+    // 앰배서더 신청 전체 조회 (pending 우선, 최신순)
+    prisma.court_ambassadors.findMany({
+      orderBy: [{ status: "asc" }, { created_at: "desc" }],
+      take: 50,
+      include: {
+        user: { select: { id: true, nickname: true } },
+        court_infos: { select: { id: true, name: true, city: true, district: true } },
+      },
+    }),
   ]);
 
   // 직렬화
@@ -61,6 +80,34 @@ export default async function AdminCourtsPage({
     createdAt: c.created_at.toISOString(),
   }));
 
+  // 위키 수정 제안 직렬화
+  const serializedSuggestions = pendingSuggestions.map((s) => ({
+    id: s.id.toString(),
+    courtId: s.court_info_id.toString(),
+    courtName: s.court_infos?.name ?? "코트",
+    userId: s.user_id.toString(),
+    nickname: s.users?.nickname ?? "사용자",
+    changes: s.changes as Record<string, { old: unknown; new: unknown }>,
+    reason: s.reason,
+    status: s.status,
+    createdAt: s.created_at.toISOString(),
+  }));
+
+  // 앰배서더 직렬화
+  const serializedAmbassadors = pendingAmbassadors.map((a) => ({
+    id: a.id.toString(),
+    userId: a.user_id.toString(),
+    nickname: a.user?.nickname ?? "사용자",
+    courtId: a.court_info_id.toString(),
+    courtName: a.court_infos?.name ?? "코트",
+    courtCity: a.court_infos?.city ?? "",
+    courtDistrict: a.court_infos?.district ?? null,
+    status: a.status,
+    appointedAt: a.appointed_at?.toISOString() ?? null,
+    revokedAt: a.revoked_at?.toISOString() ?? null,
+    createdAt: a.created_at.toISOString(),
+  }));
+
   return (
     <div>
       <AdminPageHeader
@@ -71,6 +118,8 @@ export default async function AdminCourtsPage({
       />
       <AdminCourtsContent
         courts={serialized}
+        pendingSuggestions={serializedSuggestions}
+        pendingAmbassadors={serializedAmbassadors}
         createCourtAction={createCourtAction}
         updateCourtAction={updateCourtAction}
         deleteCourtAction={deleteCourtAction}

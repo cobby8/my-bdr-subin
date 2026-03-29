@@ -40,6 +40,8 @@ export const XP_REWARDS = {
   streak_7: 50,
   // 위키 수정 제안이 승인됐을 때 (거절 시 0)
   wiki_edit: 10,
+  // 앰배서더가 제보/위키 처리할 때마다 받는 XP
+  ambassador_approve: 5,
 } as const;
 
 // ─────────────────────────────────────────

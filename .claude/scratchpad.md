@@ -1,30 +1,38 @@
 # 작업 스크래치패드
 
 ## 현재 작업
-- **요청**: QR 코드 체크인 시스템 구현
+- **요청**: 코트 앰배서더 시스템 구현
 - **상태**: 구현 완료 (tsc 통과)
 - **현재 담당**: developer → PM 검토 대기
 
 ### 구현 기록
 
-구현한 기능: 코트 QR 코드 체크인 시스템 (QR 생성/다운로드/인쇄 + 자동 체크인 + GPS 스킵)
+구현한 기능: 코트 앰배서더 시스템 (신청/조회/관리자 승인-거절-해임/앰배서더 직접 수정)
 
 | 파일 경로 | 변경 내용 | 신규/수정 |
 |----------|----------|----------|
-| src/app/(web)/courts/[id]/_components/court-qr-code.tsx | QR 모달 (Google Charts API, 다운로드/인쇄) | 신규 |
-| src/app/(web)/courts/[id]/checkin/page.tsx | QR 스캔 후 자동 체크인 페이지 | 신규 |
-| src/app/api/web/courts/[id]/checkin/route.ts | method:"qr" 시 GPS 검증 스킵 로직 추가 | 수정 |
-| src/app/(web)/courts/[id]/page.tsx | CourtQrCode 컴포넌트 import + 버튼 배치 | 수정 |
+| prisma/schema.prisma | court_ambassadors 모델 + User/court_infos 관계 추가 | 수정 |
+| src/lib/constants/gamification.ts | ambassador_approve: 5 XP 추가 | 수정 |
+| src/app/api/web/courts/[id]/ambassador/route.ts | GET(조회) + POST(신청) API | 신규 |
+| src/app/api/web/courts/[id]/ambassador/edit/route.ts | PATCH 앰배서더 직접 수정 (data_source→ambassador) | 신규 |
+| src/app/api/web/admin/ambassadors/route.ts | GET 관리자용 전체 목록 조회 | 신규 |
+| src/app/api/web/admin/ambassadors/[id]/route.ts | PATCH 승인/거절/해임 | 신규 |
+| src/app/(web)/courts/[id]/_components/court-ambassador.tsx | 앰배서더 뱃지+신청+직접수정 모달 | 신규 |
+| src/app/(web)/courts/[id]/page.tsx | CourtAmbassador 삽입 + data_source "ambassador" 표시 | 수정 |
+| src/app/(admin)/admin/courts/page.tsx | 앰배서더 데이터 패칭 추가 | 수정 |
+| src/app/(admin)/admin/courts/admin-courts-content.tsx | 앰배서더 탭 + AmbassadorsTab 컴포넌트 | 수정 |
 
 tester 참고:
-- 테스트 방법: /courts/{id} 페이지에서 "QR 체크인" 버튼 클릭 → 모달 확인 → 다운로드/인쇄 동작 확인
-- QR 스캔 시뮬레이션: /courts/{id}/checkin 직접 접속 → 로그인 상태면 자동 체크인
-- 미로그인 시 /login으로 리다이렉트 확인
-- API: POST body에 method:"qr" 보내면 GPS 검증 스킵, method:"manual"은 기존대로 GPS 검증
+- 코트 상세: /courts/{id} → 체크인 아래에 "코트 앰배서더" 섹션 표시
+- 미로그인: 신청 클릭 시 /login 리다이렉트
+- 로그인: 신청 → pending 상태 → "승인 대기 중" 표시
+- 관리자: /admin/courts → "앰배서더" 탭 → 승인/거절/해임 버튼
+- 앰배서더 직접 수정: active 앰배서더 → "직접 수정" 버튼 → 모달에서 필드 수정 → 즉시 반영 + data_source="ambassador" + 5XP
+- 중복 방지: 유저당 코트 1건, active 앰배서더 1명 제한
 
 reviewer 참고:
-- Prisma 스키마 변경 없음 (checkin_method 필드 기존 활용)
-- 외부 패키지 추가 없음 (Google Charts QR API = img src)
+- DB 마이그레이션 필요: npx prisma db push 또는 migrate dev
+- 기존 위키 API(suggestions) 변경 없음 — 앰배서더 직접 수정은 별도 경로
 
 ## 기획설계 (planner-architect)
 

@@ -128,6 +128,8 @@ model User {
   // Phase 5: 픽업게임 — 방장 / 참가자 2가지 관계
   pickup_games_hosted                                                       pickup_games[]               @relation("pickup_host")
   pickup_participations                                                     pickup_participants[]        @relation("pickup_participant")
+  // 코트 앰배서더: 해당 유저가 앰배서더로 활동하는 코트들
+  court_ambassadors                                                         court_ambassadors[]          @relation("ambassador_user")
 
   @@unique([provider, uid], map: "index_users_on_provider_and_uid")
   @@index([createdAt], map: "index_users_on_created_at")
@@ -903,6 +905,7 @@ model court_infos {
   court_reports            court_reports[]
   court_edit_suggestions   court_edit_suggestions[]
   pickup_games             pickup_games[]
+  court_ambassadors        court_ambassadors[]
 
   @@index([average_rating], map: "index_court_infos_on_average_rating")
   @@index([city], map: "index_court_infos_on_city")
@@ -1782,4 +1785,25 @@ model pickup_participants {
 
   @@unique([pickup_game_id, user_id], map: "idx_pickup_participants_unique") // 중복 참가 방지
   @@index([user_id], map: "idx_pickup_participants_user")
+}
+
+// ─── 코트 앰배서더: 코트별 관리 권한을 가진 사용자 ───
+// 앰배서더는 위키 수정을 승인 없이 직접 반영할 수 있고, 제보를 처리할 수 있다.
+model court_ambassadors {
+  id            BigInt    @id @default(autoincrement())
+  user_id       BigInt                                        // 신청/임명된 유저
+  court_info_id BigInt                                        // 대상 코트
+  status        String    @default("pending") @db.VarChar     // pending | active | revoked
+  appointed_at  DateTime? @db.Timestamp(6)                    // 승인(임명) 시각
+  revoked_at    DateTime? @db.Timestamp(6)                    // 해임 시각
+  created_at    DateTime  @default(now()) @db.Timestamp(6)    // 신청 시각
+  updated_at    DateTime  @updatedAt @db.Timestamp(6)
+
+  // 관계
+  user        User        @relation("ambassador_user", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  court_infos court_infos @relation(fields: [court_info_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([user_id, court_info_id], map: "idx_court_ambassadors_user_court") // 유저당 코트 1건
+  @@index([court_info_id, status], map: "idx_court_ambassadors_court_status")
+  @@index([status], map: "idx_court_ambassadors_status")
 }

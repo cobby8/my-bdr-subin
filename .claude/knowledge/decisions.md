@@ -2,6 +2,38 @@
 <!-- 담당: planner-architect | 최대 30항목 -->
 <!-- "왜 A 대신 B를 선택했는지" 기술 결정의 배경과 이유를 기록 -->
 
+### [2026-03-29] GPS 밀집도 히트맵: Canvas 오버레이 + simpleheat 방식
+- **분류**: decision
+- **발견자**: planner-architect
+- **결정**: (1) 카카오맵에는 공식 히트맵 레이어가 없으므로 CustomOverlay + canvas 방식 채택. (2) simpleheat.js(3KB) 경량 라이브러리 또는 직접 canvas 2D gradient 구현. (3) 데이터는 court_sessions를 시간대별(오전/오후/저녁) groupBy하여 코트별 세션 수를 weight로 사용. (4) 별도 DB 테이블 불필요 -- 기존 court_sessions + court_infos.lat/lng로 충분. (5) ISR 10분 캐시로 서버 부하 최소화.
+- **이유**: (1) 카카오맵 히트맵 미지원 확인 (네이버맵은 지원하나 카카오맵으로 이미 통일). (2) Google Maps처럼 HeatmapLayer가 없으므로 canvas 오버레이가 유일한 방법. (3) simpleheat는 3KB로 번들 영향 최소. (4) 대안으로 원형 오버레이(크기=세션수)도 가능하지만 히트맵이 시각적으로 더 직관적.
+- **대안 기각**: (A) 네이버맵 전환 -- 기존 카카오맵 코드 전체 교체 비용 과다. (B) Mapbox/Leaflet 전환 -- 동일한 이유. (C) 코트별 단순 숫자 뱃지 -- 밀집도 표현력 부족.
+- **참조횟수**: 0
+
+### [2026-03-29] 코트 3x3 이벤트: 기존 tournament과 완전 분리
+- **분류**: decision
+- **발견자**: planner-architect
+- **결정**: (1) court_events + court_event_teams + court_event_players + court_event_matches 4테이블 신설. (2) 기존 Tournament 모델과 완전 분리. (3) 대진표는 4~8팀 단순 single_elimination/round_robin만 지원 (bracket-builder 재사용 가능하나 간소 버전). (4) 코트 상세 페이지에 "이 코트의 3x3 이벤트" 섹션 추가.
+- **이유**: (1) Tournament은 UUID PK + series + 서브도메인 사이트 + 디비전 + 복잡한 팀 등록 워크플로를 가진 공식 대회 시스템. 3x3 이벤트는 "오늘 저녁 코트에서 4팀 미니대회" 수준의 가벼운 이벤트. (2) Tournament에 is_3x3 플래그를 추가하면 기존 tournament API/UI 전체에 분기 로직이 침투. (3) 3x3 이벤트는 court_infos에 종속(코트가 주체), tournament은 독립적(어느 코트에서든 개최 가능).
+- **대안 기각**: (A) Tournament에 type 필드 추가 -- 기존 17개 파일에 분기 필요, 위험. (B) pickup_games 확장 -- 픽업게임은 개인 참가, 3x3은 팀 참가로 구조가 다름.
+- **참조횟수**: 0
+
+### [2026-03-29] 코트 앰배서더: court_ambassadors 테이블 + 위키 바이패스
+- **분류**: decision
+- **발견자**: planner-architect
+- **결정**: (1) court_ambassadors 테이블 신설 (user_id, court_info_id, status). (2) 앰배서더는 해당 코트의 court_edit_suggestions를 직접 승인 가능 (관리자 승인 바이패스). (3) 앰배서더 자신의 수정은 승인 없이 직접 반영. (4) 신청 → 관리자 승인 워크플로. (5) 앰배서더 뱃지 + 활동 시 XP 보너스.
+- **이유**: (1) 672개 코트를 관리자 혼자 관리할 수 없음 -- 코트별 "동네 관리자"가 필요. (2) 위키 시스템의 승인 병목 해소 -- 앰배서더가 있는 코트는 즉시 정보 갱신 가능. (3) 앰배서더 뱃지는 커뮤니티 기여 인정 + 게이미피케이션 연계.
+- **대안 기각**: (A) 누구나 직접 수정 (승인 없음) -- 악의적 수정 위험. (B) 등급 기반 자동 승인 (Lv5+) -- 레벨이 높아도 해당 코트에 대한 지식이 없을 수 있음.
+- **참조횟수**: 0
+
+### [2026-03-29] 주간 운동 리포트: DB 없이 court_sessions 실시간 집계 + Vercel Cron
+- **분류**: decision
+- **발견자**: planner-architect
+- **결정**: (1) 별도 weekly_reports 테이블 불필요 -- court_sessions에서 지난주 범위로 집계. (2) /profile/weekly-report 페이지에서 클라이언트가 GET 요청 시 실시간 계산. (3) Web Push는 Vercel Cron(매주 월 09:00 KST)으로 발송하되, 1차로는 notifications 테이블 INSERT만 (앱 내 알림). (4) 진짜 Web Push는 Push API 구독 관리가 필요하므로 2차 확장으로 분리.
+- **이유**: (1) 주간 데이터를 별도 저장하면 court_sessions과 이중 관리 -- 집계 쿼리가 충분히 빠름 (인덱스 있음). (2) Vercel Cron은 vercel.json에 1줄 추가로 설정 가능, 별도 인프라 불필요. (3) Web Push 구독 관리(PushSubscription 저장)는 별도 테이블이 필요하므로 1차에서는 앱 내 알림만.
+- **대안 기각**: (A) weekly_reports 캐시 테이블 -- 조회 빈도가 주 1회 수준이라 캐시 효용 낮음. (B) 이메일 발송 -- 이메일 인프라(SendGrid 등) 추가 비용+설정 필요.
+- **참조횟수**: 0
+
 ### [2026-03-29] 코트 유저 위키: court_edit_suggestions 1테이블 + changes JSON diff 방식
 - **분류**: decision
 - **발견자**: planner-architect

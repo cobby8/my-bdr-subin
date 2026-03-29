@@ -10,6 +10,7 @@ import { CourtRankings } from "./_components/court-rankings";
 import { CourtEditSuggest } from "./_components/court-edit-suggest";
 import { CourtPickups } from "./_components/court-pickups";
 import { CourtQrCode } from "./_components/court-qr-code";
+import { CourtAmbassador } from "./_components/court-ambassador";
 
 export const revalidate = 300;
 
@@ -255,6 +256,8 @@ export default async function CourtDetailPage({ params }: { params: Promise<Para
               ? "카카오맵"
               : court.data_source === "google_places"
               ? "구글맵"
+              : court.data_source === "ambassador"
+              ? "앰배서더 직접 수정"
               : court.data_source}
             {!court.verified && " (미검증 — 실제와 다를 수 있습니다)"}
           </div>
@@ -343,6 +346,9 @@ export default async function CourtDetailPage({ params }: { params: Promise<Para
 
       {/* 체크인 + 혼잡도 (클라이언트 컴포넌트, 30초 갱신) */}
       <CourtCheckin courtId={court.id.toString()} courtLat={lat} courtLng={lng} />
+
+      {/* 코트 앰배서더 뱃지 + 신청 (클라이언트 컴포넌트 — SWR) */}
+      <CourtAmbassador courtId={court.id.toString()} currentUserId={currentUserId} />
 
       {/* 픽업게임 모집 섹션 (클라이언트 컴포넌트 — SWR) */}
       <CourtPickups courtId={court.id.toString()} currentUserId={currentUserId} />
