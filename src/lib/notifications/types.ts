@@ -18,6 +18,9 @@ export const NOTIFICATION_TYPES = {
   TOURNAMENT_DDAY_REMINDER: "tournament.dday.reminder",       // 팀장: D-3/D-1 알림
   TOURNAMENT_BRACKET_APPROVAL: "tournament.bracket.approval", // 슈퍼관리자: 브라켓 승인 요청
   TOURNAMENT_BRACKET_APPROVED: "tournament.bracket.approved", // 관리자: 브라켓 승인됨
+
+  // 리포트 관련
+  WEEKLY_REPORT: "weekly.report",                             // 유저: 주간 운동 리포트 도착
 } as const;
 
 export type NotificationType =

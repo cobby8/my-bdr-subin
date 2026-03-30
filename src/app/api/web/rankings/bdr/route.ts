@@ -1,5 +1,4 @@
 import { NextRequest } from "next/server";
-import * as XLSX from "xlsx";
 import { apiSuccess, apiError } from "@/lib/api/response";
 import { checkRateLimit, RATE_LIMITS } from "@/lib/security/rate-limit";
 import { getClientIp } from "@/lib/security/get-client-ip";
@@ -66,7 +65,9 @@ function findColumnKey(
 /**
  * xlsx 바이너리 데이터를 파싱하여 BdrRankingItem 배열로 변환
  */
-function parseXlsx(buffer: ArrayBuffer): BdrRankingItem[] {
+async function parseXlsx(buffer: ArrayBuffer): Promise<BdrRankingItem[]> {
+  // xlsx 라이브러리를 동적 import (번들 크기 ~1MB 절약)
+  const XLSX = await import("xlsx");
   // xlsx 라이브러리로 워크북 읽기
   const workbook = XLSX.read(buffer, { type: "array" });
   // 첫 번째 시트 사용
@@ -136,7 +137,7 @@ function refreshCacheInBackground(division: string): void {
     .then(async (response) => {
       if (!response.ok) return;
       const buffer = await response.arrayBuffer();
-      const data = parseXlsx(buffer);
+      const data = await parseXlsx(buffer);
       // 새 데이터로 캐시 교체
       cache.set(division, { data, fetchedAt: Date.now() });
     })
@@ -188,7 +189,7 @@ async function fetchBdrRankings(
   }
 
   const buffer = await response.arrayBuffer();
-  const data = parseXlsx(buffer);
+  const data = await parseXlsx(buffer);
 
   // 캐시 저장
   cache.set(division, { data, fetchedAt: Date.now() });
