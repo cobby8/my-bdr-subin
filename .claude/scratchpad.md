@@ -99,6 +99,7 @@
 ## 작업 로그 (최근 10건)
 | 날짜 | 담당 | 작업 | 결과 |
 |------|------|------|------|
+| 03-30 | developer | 성능캐싱: unstable_cache(코트5분+홈3함수60초)+HeatmapOverlay동적import | tsc 통과 |
 | 03-30 | developer | 웹푸시알림: Prisma모델+서비스+API2개+SW핸들러+배너컴포넌트+알림연동 | tsc 통과 |
 | 03-30 | developer | 소셜보강4단계: 프로필팔로워수+API2개+알림연동 | tsc 통과 |
 | 03-30 | developer | Phase1 정리: tsc에러수정+xlsx동적import+캐시삭제 | tsc 0건 |
@@ -109,4 +110,3 @@
 | 03-29 | developer | GPS 히트맵: API+Canvas오버레이+토글UI | tsc 통과 |
 | 03-29 | developer | 코트 앰배서더: 신청/조회/승인/직접수정 | tsc 통과 |
 | 03-29 | developer | 카카오 전국 농구장 수집+등록: 1,045개 | 완료 |
-| 03-29 | planner-architect | 장기 로드맵 4건 기획설계 | 완료 |
