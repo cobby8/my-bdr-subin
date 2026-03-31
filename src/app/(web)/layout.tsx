@@ -30,6 +30,11 @@ const TextSizeToggle = dynamic(
   () => import("@/components/shared/text-size-toggle").then((m) => m.TextSizeToggle),
   { ssr: false }
 );
+/* PC 우측 사이드바: xl(1280px) 이상에서만 표시, SSR 불필요 */
+const RightSidebar = dynamic(
+  () => import("@/components/layout/right-sidebar").then((m) => m.RightSidebar),
+  { ssr: false }
+);
 
 /* ============================================================
  * 하단 탭 네비바 항목: 5개 탭 (모바일+데스크탑 공통)
@@ -559,12 +564,20 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
        * pt-14 (헤더 56px) + pb-20 (하단 네비 80px)
        * ======================================== */}
       <main className="min-h-screen flex-1 pb-20 pt-14 lg:ml-60 lg:pb-8 animate-fade-in">
-        <div className="mx-auto max-w-[640px] px-5 py-4 lg:max-w-[960px] lg:px-8">
-          {/* PWA 설치 유도 배너 (미설치 + 7일 미표시 아닐 때) */}
-          <PwaInstallBanner />
-          {/* 로그인 상태에서 프로필 미완성이면 상단 유도 배너 표시 */}
-          {user && <ProfileCompletionBanner userName={user.name} />}
-          {children}
+        {/* xl 이상: 콘텐츠 + 우측 사이드바를 flex 가로 배치 */}
+        <div className="mx-auto flex max-w-[1320px] gap-6 px-5 py-4 lg:px-8">
+          {/* 메인 콘텐츠 영역 — 기존 max-w 유지, flex-1로 나머지 공간 차지 */}
+          <div className="mx-auto min-w-0 max-w-[640px] flex-1 lg:max-w-[960px]">
+            {/* PWA 설치 유도 배너 (미설치 + 7일 미표시 아닐 때) */}
+            <PwaInstallBanner />
+            {/* 로그인 상태에서 프로필 미완성이면 상단 유도 배너 표시 */}
+            {user && <ProfileCompletionBanner userName={user.name} />}
+            {children}
+          </div>
+          {/* PC 우측 사이드바: xl(1280px) 이상에서만 표시, 너비 320px 고정 */}
+          <div className="hidden w-80 shrink-0 xl:block">
+            <RightSidebar />
+          </div>
         </div>
       </main>
 

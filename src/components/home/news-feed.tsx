@@ -120,8 +120,11 @@ export function NewsFeed({ preferredRegions }: NewsFeedProps) {
       >
         소식
       </h3>
-      {/* 가로 스크롤 + snap 스크롤 */}
-      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
+      {/* 카드 1~2개면 세로 스택으로 꽉 채움, 3개 이상이면 가로 스크롤 */}
+      <div className={items.length <= 2
+        ? "flex flex-col gap-3"
+        : "flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory"
+      }>
         {items.map((item) => (
           <NewsCard key={`${item.type}-${item.id}`} item={item} />
         ))}
@@ -136,7 +139,7 @@ function NewsCard({ item }: { item: NewsItem }) {
   if (item.type === "promo") {
     return (
       <div
-        className="min-w-[280px] snap-start rounded-xl p-5 flex flex-col justify-between shrink-0"
+        className="min-w-[280px] flex-1 snap-start rounded-xl p-5 flex flex-col justify-between shrink-0"
         style={{
           background:
             "linear-gradient(135deg, var(--color-primary) 0%, var(--color-navy, #1B3C87) 100%)",
