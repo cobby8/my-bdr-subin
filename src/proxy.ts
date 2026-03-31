@@ -136,9 +136,13 @@ export async function proxy(req: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    // admin 경로: super_admin만 접근 가능
-    if (matchesPath(pathname, ADMIN_PATHS) && payload.role !== "super_admin") {
-      return NextResponse.redirect(new URL("/", req.url));
+    // admin 경로: super_admin 또는 admin_role 보유자만 접근 가능
+    // 기존 isAdmin=true(role=super_admin) 호환 + admin_role 세분화 지원
+    if (matchesPath(pathname, ADMIN_PATHS)) {
+      const isAdmin = payload.role === "super_admin" || !!(payload as Record<string, unknown>).admin_role;
+      if (!isAdmin) {
+        return NextResponse.redirect(new URL("/", req.url));
+      }
     }
   }
 

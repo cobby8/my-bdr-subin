@@ -141,6 +141,9 @@ model User {
   // 비밀번호 재설정: 토큰 + 만료시간
   reset_token                                                               String?              @db.VarChar
   reset_token_expires                                                       DateTime?            @db.Timestamp(6)
+  // 관리자 세분화 역할: null=일반, "super_admin"/"org_admin"/"content_admin" 등
+  // 기존 isAdmin=true → super_admin과 동일하게 취급 (호환성 유지)
+  admin_role                                                                String?              @db.VarChar
   // 단체(Organization) 관계: 소유한 단체 / 멤버로 소속된 단체
   organizations_owned                                                       organizations[]      @relation("org_owner")
   organization_members                                                      organization_members[]
@@ -1976,9 +1979,15 @@ model organizations {
   contact_phone  String?              @db.VarChar
   website_url    String?              @db.VarChar
   owner_id       BigInt                                  // 단체 소유자 FK
-  status         String               @default("active") @db.VarChar
+  status         String               @default("approved") @db.VarChar  // pending → approved/rejected
   is_public      Boolean              @default(true)     // 공개 여부
   series_count   Int                  @default(0)        // 소속 시리즈 수 (캐시)
+  // 승인 워크플로 필드
+  approved_at    DateTime?            @db.Timestamp(6)   // 승인된 시각
+  approved_by    BigInt?                                  // 승인한 관리자 ID
+  rejection_reason String?                                // 거절 사유
+  rejection_at   DateTime?            @db.Timestamp(6)   // 거절 시각
+  apply_note     String?                                  // 신청 시 메모 (단체 목적 등)
   created_at     DateTime             @default(now()) @db.Timestamp(6)
   updated_at     DateTime             @updatedAt @db.Timestamp(6)
 

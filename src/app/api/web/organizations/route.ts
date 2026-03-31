@@ -33,11 +33,16 @@ export const POST = withWebAuth(async (req: Request, ctx: WebAuthContext) => {
     const logoUrl = (body.logo_url as string)?.trim() || null;
     const contactEmail = (body.contact_email as string)?.trim() || null;
     const websiteUrl = (body.website_url as string)?.trim() || null;
+    const applyNote = (body.apply_note as string)?.trim() || null; // 신청 메모
 
     // 이름 필수 검증
     if (!name) {
       return apiError("단체 이름은 필수입니다.", 400);
     }
+
+    // 관리자는 즉시 approved, 일반 유저는 pending (승인 대기)
+    const isAdmin = ctx.session.role === "super_admin" || !!ctx.session.admin_role;
+    const initialStatus = isAdmin ? "approved" : "pending";
 
     // slug 결정: 커스텀이 있으면 사용, 없으면 이름 기반 자동 생성
     let slug = customSlug
@@ -67,9 +72,11 @@ export const POST = withWebAuth(async (req: Request, ctx: WebAuthContext) => {
           contact_email: contactEmail,
           website_url: websiteUrl,
           owner_id: ctx.userId,
-          status: "active",
+          status: initialStatus,     // 관리자=approved, 일반유저=pending
           is_public: true,
           series_count: 0,
+          apply_note: applyNote,     // 신청 메모
+          ...(isAdmin && { approved_at: new Date(), approved_by: ctx.userId }), // 관리자 즉시 승인
         },
       });
 
@@ -92,6 +99,7 @@ export const POST = withWebAuth(async (req: Request, ctx: WebAuthContext) => {
       uuid: org.uuid,
       slug: org.slug,
       name: org.name,
+      status: org.status,  // pending 또는 approved
     });
   } catch {
     return apiError("단체 생성 중 오류가 발생했습니다.", 500);

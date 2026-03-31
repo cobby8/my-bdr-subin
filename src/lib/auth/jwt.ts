@@ -22,6 +22,7 @@ export interface JwtPayload {
   email: string;
   name: string;
   role: string;
+  admin_role?: string; // 세분화 관리자 역할: "super_admin" | "org_admin" | "content_admin" 등
   exp?: number;
   iat?: number;
   jti?: string;
@@ -33,16 +34,24 @@ export async function generateToken(user: {
   nickname: string | null;
   membershipType: number;
   isAdmin?: boolean | null;
+  admin_role?: string | null; // 세분화 관리자 역할 (DB 필드)
 }): Promise<string> {
+  // 역할 결정: isAdmin=true → super_admin (기존 호환)
   const role = user.isAdmin
     ? "super_admin"
     : (MEMBERSHIP_TO_ROLE[user.membershipType] ?? "free");
+
+  // admin_role: DB에 저장된 세분화 역할. isAdmin=true면 자동으로 super_admin
+  const adminRole = user.isAdmin
+    ? "super_admin"
+    : (user.admin_role ?? undefined);
 
   return new jose.SignJWT({
     sub: user.id.toString(),
     email: user.email,
     name: user.nickname ?? "",
     role,
+    ...(adminRole && { admin_role: adminRole }), // admin_role이 있을 때만 JWT에 포함
   })
     .setProtectedHeader({ alg: ALGORITHM })
     .setIssuedAt()
@@ -69,6 +78,7 @@ export async function refreshToken(token: string): Promise<string | null> {
     email: payload.email,
     name: payload.name,
     role: payload.role,
+    ...(payload.admin_role && { admin_role: payload.admin_role }), // admin_role 유지
   })
     .setProtectedHeader({ alg: ALGORITHM })
     .setIssuedAt()
