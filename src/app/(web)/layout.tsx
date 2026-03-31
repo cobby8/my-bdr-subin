@@ -399,7 +399,7 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
         {/* 로고 */}
         <div className="p-6 pb-4">
           <Link href="/">
-            <Image src="/images/logo.png" alt="BDR" width={100} height={30} className="h-7 w-auto" />
+            <Image src="/images/logo.png" alt="BDR" width={250} height={75} className="h-[70px] w-auto" />
           </Link>
         </div>
 
@@ -504,12 +504,12 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
             </button>
           )}
           <Link href="/" prefetch={true}>
-            <Image src="/images/logo.png" alt="BDR" width={100} height={30} className="h-7 w-auto" />
+            <Image src="/images/logo.png" alt="BDR" width={250} height={75} className="h-[70px] w-auto" />
           </Link>
         </div>
 
         {/* 우측: 테마+검색+선호필터+알림+프로필 */}
-        <div className="flex items-center gap-1 shrink-0">
+        <div className="flex items-center gap-1 shrink-0 ml-auto">
           <ThemeToggle />
           <TextSizeToggle />
           {/* 선호 필터 토글: 로그인 시에만 표시, ON=파란 아이콘 / OFF=회색 아이콘 */}

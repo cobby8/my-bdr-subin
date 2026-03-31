@@ -1,0 +1,252 @@
+"use client";
+
+/* ============================================================
+ * ProfileWidget — 로그인 유저 게이미피케이션 위젯
+ *
+ * 홈 히어로 상단에 표시되는 프로필 카드.
+ * XP 진행률, 스트릭, 체크인, 뱃지 + 오늘의 미션을 보여준다.
+ * 비로그인 시에는 home-hero에서 이 컴포넌트를 렌더링하지 않는다.
+ * ============================================================ */
+
+import useSWR from "swr";
+
+// API 응답 타입 — /api/web/profile/gamification
+interface GamificationData {
+  xp: number;
+  level: number;
+  title: string;
+  emoji: string;
+  progress: number; // 0~1 사이 진행률
+  next_level_xp: number;
+  xp_to_next_level: number;
+  streak: number;
+  streak_last_date: string | null;
+  badges: { id: string; badge_type: string; badge_name: string }[];
+  court_stamps: { count: number };
+}
+
+// API 응답 타입 — /api/web/me
+interface MeData {
+  name: string;
+  nickname?: string;
+}
+
+// 오늘 날짜를 YYYY-MM-DD 문자열로 반환 (한국 시간)
+function getKoreanDateString(date: Date): string {
+  return date.toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" }).replace(/\. /g, "-").replace(".", "");
+}
+
+// 날짜를 간단히 YYYY-MM-DD로 비교하기 위한 헬퍼
+function toDateOnly(isoString: string): string {
+  return isoString.split("T")[0];
+}
+
+export function ProfileWidget() {
+  // 게이미피케이션 데이터 (XP, 레벨, 스트릭, 뱃지)
+  const { data: gData, isLoading: gLoading } = useSWR<GamificationData>(
+    "/api/web/profile/gamification",
+    { dedupingInterval: 30000 }
+  );
+
+  // 유저 기본 정보 (닉네임)
+  const { data: meData, isLoading: meLoading } = useSWR<MeData>(
+    "/api/web/me",
+    { dedupingInterval: 30000 }
+  );
+
+  const isLoading = gLoading || meLoading;
+
+  // 로딩 중: 스켈레톤 카드
+  if (isLoading) {
+    return (
+      <div
+        className="rounded-xl border p-5 animate-pulse"
+        style={{
+          backgroundColor: "var(--color-card)",
+          borderColor: "var(--color-border)",
+        }}
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-12 h-12 rounded-full" style={{ backgroundColor: "var(--color-surface)" }} />
+          <div className="space-y-2 flex-1">
+            <div className="h-4 w-24 rounded" style={{ backgroundColor: "var(--color-surface)" }} />
+            <div className="h-3 w-16 rounded" style={{ backgroundColor: "var(--color-surface)" }} />
+          </div>
+        </div>
+        <div className="h-1.5 rounded-full" style={{ backgroundColor: "var(--color-surface)" }} />
+      </div>
+    );
+  }
+
+  // 데이터 없으면 렌더링 안 함
+  if (!gData || !meData) return null;
+
+  const displayName = meData.nickname || meData.name;
+  // 아바타 이니셜: 이름의 첫 글자
+  const initial = displayName.charAt(0).toUpperCase();
+
+  // 오늘의 미션 결정 로직
+  const today = new Date();
+  const todayStr = getKoreanDateString(today);
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = getKoreanDateString(yesterday);
+
+  let missionIcon = "location_on";
+  let missionText = "코트에 체크인하기";
+  let missionXp = 10;
+
+  if (gData.streak_last_date) {
+    const lastDate = toDateOnly(gData.streak_last_date);
+    if (lastDate === todayStr) {
+      // 오늘 이미 체크인함 → 리뷰 미션
+      missionIcon = "rate_review";
+      missionText = "리뷰 작성하기";
+      missionXp = 15;
+    } else if (lastDate === yesterdayStr) {
+      // 어제 체크인함 → 스트릭 이어가기
+      missionIcon = "local_fire_department";
+      missionText = "스트릭 이어가기! 체크인";
+      missionXp = 10;
+    }
+  }
+
+  return (
+    <div
+      className="rounded-xl border p-5"
+      style={{
+        backgroundColor: "var(--color-card)",
+        borderColor: "var(--color-border)",
+      }}
+    >
+      {/* 상단: 아바타 + 닉네임 + 레벨 뱃지 */}
+      <div className="flex items-center gap-3 mb-4">
+        {/* 이니셜 원형 아바타 */}
+        <div
+          className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-white shrink-0"
+          style={{ backgroundColor: "var(--color-primary)" }}
+        >
+          {initial}
+        </div>
+        <div className="min-w-0 flex-1">
+          <p
+            className="text-base font-bold truncate"
+            style={{ color: "var(--color-text-primary)" }}
+          >
+            {displayName}
+          </p>
+          {/* 레벨 뱃지 */}
+          <span
+            className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full"
+            style={{
+              backgroundColor: "var(--color-surface)",
+              color: "var(--color-text-secondary)",
+            }}
+          >
+            {gData.emoji} Lv.{gData.level} {gData.title}
+          </span>
+        </div>
+      </div>
+
+      {/* XP 진행률 바 */}
+      <div className="mb-4">
+        <div className="flex justify-between text-xs mb-1">
+          <span style={{ color: "var(--color-text-muted)" }}>
+            XP {gData.xp}
+          </span>
+          <span style={{ color: "var(--color-text-muted)" }}>
+            다음 레벨까지 {gData.xp_to_next_level}
+          </span>
+        </div>
+        {/* 배경 바 */}
+        <div
+          className="h-1.5 rounded-full overflow-hidden"
+          style={{ backgroundColor: "var(--color-surface)" }}
+        >
+          {/* 진행률 바: primary 색상, 부드러운 애니메이션 */}
+          <div
+            className="h-full rounded-full transition-all duration-500"
+            style={{
+              backgroundColor: "var(--color-primary)",
+              width: `${Math.min(gData.progress * 100, 100)}%`,
+            }}
+          />
+        </div>
+      </div>
+
+      {/* 3칸 통계: 스트릭 / 체크인 / 뱃지 */}
+      <div className="grid grid-cols-3 gap-2 mb-4">
+        <StatBox icon="local_fire_department" value={gData.streak} label="스트릭" />
+        <StatBox icon="location_on" value={gData.court_stamps.count} label="체크인" />
+        <StatBox icon="military_tech" value={gData.badges.length} label="뱃지" />
+      </div>
+
+      {/* 구분선 */}
+      <div
+        className="border-t mb-3"
+        style={{ borderColor: "var(--color-border)" }}
+      />
+
+      {/* 오늘의 미션 */}
+      <div className="flex items-center gap-3">
+        <span
+          className="material-symbols-outlined text-xl"
+          style={{ color: "var(--color-primary)" }}
+        >
+          {missionIcon}
+        </span>
+        <div className="flex-1 min-w-0">
+          <p
+            className="text-sm font-medium truncate"
+            style={{ color: "var(--color-text-primary)" }}
+          >
+            {missionText}
+          </p>
+        </div>
+        <span
+          className="text-xs font-bold whitespace-nowrap"
+          style={{ color: "var(--color-primary)" }}
+        >
+          +{missionXp} XP
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* 3칸 통계용 작은 박스 컴포넌트 */
+function StatBox({
+  icon,
+  value,
+  label,
+}: {
+  icon: string;
+  value: number;
+  label: string;
+}) {
+  return (
+    <div
+      className="flex flex-col items-center gap-1 py-2 rounded-lg"
+      style={{ backgroundColor: "var(--color-surface)" }}
+    >
+      <span
+        className="material-symbols-outlined text-lg"
+        style={{ color: "var(--color-text-muted)" }}
+      >
+        {icon}
+      </span>
+      <span
+        className="text-lg font-bold"
+        style={{ color: "var(--color-text-primary)" }}
+      >
+        {value}
+      </span>
+      <span
+        className="text-[11px]"
+        style={{ color: "var(--color-text-muted)" }}
+      >
+        {label}
+      </span>
+    </div>
+  );
+}

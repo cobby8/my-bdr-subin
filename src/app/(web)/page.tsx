@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "MyBDR | 농구 매칭 플랫폼",
   description: "픽업 게임, 팀 대결, 대회까지 — 농구인을 위한 올인원 매칭 플랫폼",
 };
-import { HomeGreeting } from "@/components/home/home-greeting";
+import { HomeHero } from "@/components/home/home-hero";
 import { RecommendedGames } from "@/components/home/recommended-games";
 import { RecommendedTournaments } from "@/components/home/recommended-tournaments";
 import { NotableTeams } from "@/components/home/notable-teams";
@@ -63,8 +63,8 @@ export default async function HomePage() {
      * 토스 앱처럼 섹션별로 구분감 있게 배치 */
     <div className="space-y-10">
 
-      {/* [섹션 0] 인사말/요약: 로그인 시 인사말+맞춤요약카드, 비로그인 시 소개 히어로 */}
-      <HomeGreeting />
+      {/* [섹션 0] 히어로: 로그인 시 프로필위젯+퀵액션+소식, 비로그인 시 소개+퀵액션+소식 */}
+      <HomeHero />
 
       {/* [섹션 1] 추천/인기 경기: TossSectionHeader + TossCard 가로 스크롤 */}
       <RecommendedGames fallbackData={gamesData} />
