@@ -55,6 +55,11 @@ export default function ProfileEditPage() {
   const [maskedAccount, setMaskedAccount] = useState<string | null>(null);
   const [hasExistingAccount, setHasExistingAccount] = useState(false);
   const [generatingBio, setGeneratingBio] = useState(false);
+  // 회원 탈퇴 모달 상태
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [withdrawPassword, setWithdrawPassword] = useState("");
+  const [withdrawLoading, setWithdrawLoading] = useState(false);
+  const [withdrawError, setWithdrawError] = useState("");
 
   useEffect(() => {
     fetch("/api/web/profile")
@@ -169,6 +174,31 @@ export default function ProfileEditPage() {
       setError(e instanceof Error ? e.message : "오류가 발생했습니다.");
     } finally {
       setSaving(false);
+    }
+  };
+
+  // 회원 탈퇴 처리 함수
+  const handleWithdraw = async () => {
+    setWithdrawError("");
+    if (!withdrawPassword) {
+      setWithdrawError("비밀번호를 입력해주세요.");
+      return;
+    }
+    setWithdrawLoading(true);
+    try {
+      const res = await fetch("/api/web/auth/withdraw", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: withdrawPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "탈퇴 처리에 실패했습니다.");
+      // 탈퇴 완료 후 홈으로 이동
+      router.push("/");
+    } catch (e) {
+      setWithdrawError(e instanceof Error ? e.message : "오류가 발생했습니다.");
+    } finally {
+      setWithdrawLoading(false);
     }
   };
 
@@ -438,6 +468,85 @@ export default function ProfileEditPage() {
       >
         {saving ? "저장 중..." : "저장"}
       </button>
+
+      {/* 회원 탈퇴 영역 */}
+      <div className="mt-8 rounded-[20px] border p-5" style={{ borderColor: "var(--color-error, #EF4444)", backgroundColor: "rgba(239,68,68,0.05)" }}>
+        <h2 className="mb-1 font-semibold text-[var(--color-error,#EF4444)]" style={{ fontFamily: "var(--font-heading)" }}>
+          회원 탈퇴
+        </h2>
+        <p className="mb-3 text-xs" style={{ color: "var(--color-text-secondary)" }}>
+          탈퇴 시 개인정보가 삭제되며, 동일 이메일로 재가입할 수 있습니다.
+        </p>
+        <button
+          type="button"
+          onClick={() => setShowWithdrawModal(true)}
+          className="rounded-[10px] border px-4 py-2 text-sm font-medium transition-colors"
+          style={{ borderColor: "var(--color-error, #EF4444)", color: "var(--color-error, #EF4444)" }}
+        >
+          회원 탈퇴
+        </button>
+      </div>
+
+      {/* 회원 탈퇴 확인 모달 */}
+      {showWithdrawModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          onClick={(e) => { if (e.target === e.currentTarget) { setShowWithdrawModal(false); setWithdrawError(""); setWithdrawPassword(""); } }}
+        >
+          <div
+            className="mx-4 w-full max-w-sm rounded-[20px] p-6"
+            style={{ backgroundColor: "var(--color-card)", boxShadow: "var(--shadow-elevated)" }}
+          >
+            <div className="mb-4 flex items-center gap-2">
+              <span className="material-symbols-outlined text-2xl" style={{ color: "var(--color-error, #EF4444)" }}>
+                warning
+              </span>
+              <h3 className="text-lg font-bold" style={{ color: "var(--color-text-primary)" }}>
+                정말 탈퇴하시겠습니까?
+              </h3>
+            </div>
+            <p className="mb-4 text-sm" style={{ color: "var(--color-text-secondary)" }}>
+              탈퇴하면 모든 활동 기록이 익명화되며 복구할 수 없습니다.
+              계속하려면 비밀번호를 입력해주세요.
+            </p>
+
+            {withdrawError && (
+              <div className="mb-3 rounded-[10px] px-3 py-2 text-sm" style={{ backgroundColor: "rgba(239,68,68,0.1)", color: "var(--color-error, #EF4444)" }}>
+                {withdrawError}
+              </div>
+            )}
+
+            <input
+              type="password"
+              value={withdrawPassword}
+              onChange={(e) => setWithdrawPassword(e.target.value)}
+              placeholder="현재 비밀번호"
+              className={inp}
+              onKeyDown={(e) => { if (e.key === "Enter") handleWithdraw(); }}
+            />
+
+            <div className="mt-4 flex gap-2">
+              <button
+                type="button"
+                onClick={() => { setShowWithdrawModal(false); setWithdrawError(""); setWithdrawPassword(""); }}
+                className="flex-1 rounded-[10px] border py-2.5 text-sm font-medium transition-colors"
+                style={{ borderColor: "var(--color-border)", color: "var(--color-text-secondary)" }}
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                onClick={handleWithdraw}
+                disabled={withdrawLoading}
+                className="flex-1 rounded-[10px] py-2.5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
+                style={{ backgroundColor: "var(--color-error, #EF4444)" }}
+              >
+                {withdrawLoading ? "처리 중..." : "탈퇴하기"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="h-6" />
     </div>

@@ -107,7 +107,7 @@ export default function LoginPage() {
           <div className="mt-4 flex items-center justify-center gap-3 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
             <Link href="/signup" className="transition-colors font-medium" style={{ color: 'var(--color-text-secondary)' }}>회원가입</Link>
             <span style={{ color: 'var(--color-text-muted)' }}>|</span>
-            <Link href="/find-account" className="transition-colors font-medium" style={{ color: 'var(--color-text-secondary)' }}>아이디, 비밀번호 찾기</Link>
+            <Link href="/forgot-password" className="transition-colors font-medium" style={{ color: 'var(--color-text-secondary)' }}>비밀번호 찾기</Link>
           </div>
         </div>
 
@@ -197,7 +197,7 @@ export default function LoginPage() {
             <div className="mt-4 flex items-center justify-center gap-3 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
               <Link href="/signup" className="transition-colors font-medium" onClick={() => setShowEmailModal(false)}>회원가입</Link>
               <span style={{ color: 'var(--color-text-muted)' }}>|</span>
-              <Link href="/find-account" className="transition-colors font-medium" onClick={() => setShowEmailModal(false)}>아이디, 비밀번호 찾기</Link>
+              <Link href="/forgot-password" className="transition-colors font-medium" onClick={() => setShowEmailModal(false)}>비밀번호 찾기</Link>
             </div>
           </div>
         </div>

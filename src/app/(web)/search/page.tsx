@@ -4,7 +4,7 @@ import Link from "next/link";
 /* ============================================================
  * /search?q=키워드 — 통합 검색 결과 페이지
  *
- * 서버 컴포넌트에서 Prisma로 4개 테이블 직접 검색.
+ * 서버 컴포넌트에서 Prisma로 5개 테이블 직접 검색.
  * API를 거치지 않고 서버에서 바로 쿼리하여 응답 속도 최적화.
  * 카테고리별(경기/대회/팀/커뮤니티) 섹션으로 결과 표시.
  * ============================================================ */
@@ -65,14 +65,14 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           검색어를 입력해주세요
         </p>
         <p className="mt-2 text-sm" style={{ color: "var(--color-text-muted)" }}>
-          경기, 대회, 팀, 커뮤니티 글을 한번에 검색할 수 있어요
+          경기, 대회, 팀, 코트, 커뮤니티 글을 한번에 검색할 수 있어요
         </p>
       </div>
     );
   }
 
-  // 4개 테이블 동시 검색 (서버 컴포넌트이므로 Prisma 직접 사용)
-  const [games, tournaments, teams, posts] = await Promise.all([
+  // 5개 테이블 동시 검색 (서버 컴포넌트이므로 Prisma 직접 사용)
+  const [games, tournaments, teams, posts, courts] = await Promise.all([
     prisma.games.findMany({
       where: { title: { contains: q, mode: "insensitive" } },
       orderBy: { scheduled_at: "desc" },
@@ -126,10 +126,38 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         created_at: true,
       },
     }),
+    // 코트: name 또는 address에서 키워드 검색
+    prisma.court_infos.findMany({
+      where: {
+        status: "active",
+        OR: [
+          { name: { contains: q, mode: "insensitive" } },
+          { address: { contains: q, mode: "insensitive" } },
+        ],
+      },
+      orderBy: { checkins_count: "desc" },
+      take: 5,
+      select: {
+        id: true,
+        name: true,
+        address: true,
+        city: true,
+        district: true,
+        court_type: true,
+        average_rating: true,
+      },
+    }),
   ]);
 
+  // 코트 유형 한글 매핑
+  const COURT_TYPE_LABELS: Record<string, string> = {
+    outdoor: "야외",
+    indoor: "실내",
+    rooftop: "옥상",
+  };
+
   // 전체 결과가 0건인지 확인
-  const totalCount = games.length + tournaments.length + teams.length + posts.length;
+  const totalCount = games.length + tournaments.length + teams.length + posts.length + courts.length;
 
   return (
     <div className="space-y-6">
@@ -240,6 +268,34 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               subtitle={[
                 team.city,
                 team.members_count != null ? `${team.members_count}명` : null,
+              ]
+                .filter(Boolean)
+                .join(" · ")}
+            />
+          ))}
+        </SearchSection>
+      )}
+
+      {/* 코트 섹션 */}
+      {courts.length > 0 && (
+        <SearchSection
+          icon="location_on"
+          iconBg="var(--color-info)"
+          title="코트"
+          count={courts.length}
+          moreHref={`/courts`}
+        >
+          {courts.map((court) => (
+            <SearchResultItem
+              key={court.id.toString()}
+              href={`/courts/${court.id}`}
+              title={court.name}
+              subtitle={[
+                COURT_TYPE_LABELS[court.court_type] || court.court_type,
+                court.district || court.city,
+                court.average_rating
+                  ? `${Number(court.average_rating).toFixed(1)}점`
+                  : null,
               ]
                 .filter(Boolean)
                 .join(" · ")}

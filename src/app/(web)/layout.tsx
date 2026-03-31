@@ -10,6 +10,7 @@ import { SWRProvider } from "@/components/providers/swr-provider";
 import { PreferFilterProvider, usePreferFilter } from "@/contexts/prefer-filter-context";
 import { ToastProvider } from "@/contexts/toast-context";
 import { ProfileCompletionBanner } from "@/components/shared/profile-completion-banner";
+import { PwaInstallBanner } from "@/components/shared/pwa-install-banner";
 
 /* ============================================================
  * dynamic import: 초기 번들 크기를 줄이기 위해
@@ -95,6 +96,7 @@ interface SearchResult {
   tournaments: { id: string; name: string; city?: string }[];
   teams: { id: string; name: string; city?: string }[];
   posts: { id: string; title: string; category?: string }[];
+  courts: { id: string; name: string; city?: string; district?: string }[];
 }
 
 function SearchAutocomplete() {
@@ -155,6 +157,7 @@ function SearchAutocomplete() {
     { label: "경기", icon: "sports_basketball", items: results.games.slice(0, 3).map(g => ({ id: g.id, title: g.title, sub: g.venue_name, href: `/games/${g.id}` })) },
     { label: "대회", icon: "emoji_events", items: results.tournaments.slice(0, 3).map(t => ({ id: t.id, title: t.name, sub: t.city, href: `/tournaments/${t.id}` })) },
     { label: "팀", icon: "groups", items: results.teams.slice(0, 3).map(t => ({ id: t.id, title: t.name, sub: t.city, href: `/teams/${t.id}` })) },
+    { label: "코트", icon: "location_on", items: results.courts.slice(0, 3).map(c => ({ id: c.id, title: c.name, sub: c.district || c.city, href: `/courts/${c.id}` })) },
     { label: "커뮤니티", icon: "forum", items: results.posts.slice(0, 3).map(p => ({ id: p.id, title: p.title, sub: p.category, href: `/community/${p.id}` })) },
   ].filter(cat => cat.items.length > 0) : [];
 
@@ -465,6 +468,8 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
        * ======================================== */}
       <main className="min-h-screen flex-1 pb-20 pt-14 lg:ml-60 lg:pb-8 animate-fade-in">
         <div className="mx-auto max-w-[640px] px-5 py-4 lg:max-w-[960px] lg:px-8">
+          {/* PWA 설치 유도 배너 (미설치 + 7일 미표시 아닐 때) */}
+          <PwaInstallBanner />
           {/* 로그인 상태에서 프로필 미완성이면 상단 유도 배너 표시 */}
           {user && <ProfileCompletionBanner userName={user.name} />}
           {children}

@@ -144,6 +144,170 @@ export async function createPostAction(_prevState: { error: string } | null, for
   redirect(`/community/${publicId}`);
 }
 
+/**
+ * updatePostAction - 게시글 수정
+ *
+ * 본인 게시글만 수정 가능 (session.sub === post.user_id)
+ * useActionState 패턴에 맞춰 prevState + formData 시그니처 사용
+ */
+export async function updatePostAction(_prevState: { error?: string } | null, formData: FormData) {
+  const session = await getWebSession();
+  if (!session) redirect("/login");
+
+  const publicId = formData.get("public_id") as string;
+  const title = (formData.get("title") as string)?.trim();
+  const content = (formData.get("content") as string)?.trim();
+  const category = (formData.get("category") as string) || "general";
+
+  if (!title || !content) {
+    return { error: "제목과 내용을 입력하세요." };
+  }
+
+  try {
+    // public_id로 게시글 조회 + 소유자 확인
+    const post = await prisma.community_posts.findUnique({
+      where: { public_id: publicId },
+      select: { id: true, user_id: true },
+    });
+    if (!post) return { error: "게시글을 찾을 수 없습니다." };
+
+    // 본인 확인: session.sub(문자열)과 post.user_id(BigInt) 비교
+    if (post.user_id !== BigInt(session.sub)) {
+      return { error: "본인의 글만 수정할 수 있습니다." };
+    }
+
+    await prisma.community_posts.update({
+      where: { id: post.id },
+      data: { title, content, category, updated_at: new Date() },
+    });
+  } catch {
+    return { error: "글 수정 중 오류가 발생했습니다." };
+  }
+
+  // 수정 후 상세 페이지로 리다이렉트
+  revalidatePath(`/community/${publicId}`);
+  redirect(`/community/${publicId}`);
+}
+
+/**
+ * deletePostAction - 게시글 삭제
+ *
+ * 본인 게시글만 삭제 가능. soft delete 대신 status를 "deleted"로 변경.
+ * 실제 데이터는 남겨두되 목록/상세에서 필터링.
+ */
+export async function deletePostAction(publicId: string): Promise<{ error?: string; success?: boolean }> {
+  const session = await getWebSession();
+  if (!session) return { error: "로그인이 필요합니다." };
+
+  try {
+    const post = await prisma.community_posts.findUnique({
+      where: { public_id: publicId },
+      select: { id: true, user_id: true },
+    });
+    if (!post) return { error: "게시글을 찾을 수 없습니다." };
+
+    // 본인 확인
+    if (post.user_id !== BigInt(session.sub)) {
+      return { error: "본인의 글만 삭제할 수 있습니다." };
+    }
+
+    // soft delete: status를 "deleted"로 변경
+    await prisma.community_posts.update({
+      where: { id: post.id },
+      data: { status: "deleted", updated_at: new Date() },
+    });
+
+    revalidatePath("/community");
+    return { success: true };
+  } catch {
+    return { error: "글 삭제 중 오류가 발생했습니다." };
+  }
+}
+
+/**
+ * updateCommentAction - 댓글 수정
+ *
+ * 본인 댓글만 수정 가능. 인라인 편집에서 사용.
+ */
+export async function updateCommentAction(
+  commentId: string,
+  content: string,
+  postPublicId: string,
+): Promise<{ error?: string; success?: boolean }> {
+  const session = await getWebSession();
+  if (!session) return { error: "로그인이 필요합니다." };
+
+  const trimmed = content.trim();
+  if (!trimmed) return { error: "댓글 내용을 입력하세요." };
+
+  try {
+    const comment = await prisma.comments.findUnique({
+      where: { id: BigInt(commentId) },
+      select: { id: true, user_id: true },
+    });
+    if (!comment) return { error: "댓글을 찾을 수 없습니다." };
+
+    // 본인 확인
+    if (comment.user_id !== BigInt(session.sub)) {
+      return { error: "본인의 댓글만 수정할 수 있습니다." };
+    }
+
+    await prisma.comments.update({
+      where: { id: comment.id },
+      data: { content: trimmed, updated_at: new Date() },
+    });
+
+    revalidatePath(`/community/${postPublicId}`);
+    return { success: true };
+  } catch {
+    return { error: "댓글 수정 중 오류가 발생했습니다." };
+  }
+}
+
+/**
+ * deleteCommentAction - 댓글 삭제
+ *
+ * 본인 댓글만 삭제 가능. soft delete (status → "deleted").
+ * comments_count 카운터도 1 감소.
+ */
+export async function deleteCommentAction(
+  commentId: string,
+  postPublicId: string,
+): Promise<{ error?: string; success?: boolean }> {
+  const session = await getWebSession();
+  if (!session) return { error: "로그인이 필요합니다." };
+
+  try {
+    const comment = await prisma.comments.findUnique({
+      where: { id: BigInt(commentId) },
+      select: { id: true, user_id: true, commentable_id: true },
+    });
+    if (!comment) return { error: "댓글을 찾을 수 없습니다." };
+
+    // 본인 확인
+    if (comment.user_id !== BigInt(session.sub)) {
+      return { error: "본인의 댓글만 삭제할 수 있습니다." };
+    }
+
+    // 트랜잭션: 댓글 soft delete + 게시글 댓글 수 감소
+    await prisma.$transaction([
+      prisma.comments.update({
+        where: { id: comment.id },
+        data: { status: "deleted", updated_at: new Date() },
+      }),
+      prisma.community_posts.update({
+        where: { id: comment.commentable_id },
+        data: { comments_count: { decrement: 1 } },
+      }),
+    ]);
+
+    revalidatePath(`/community/${postPublicId}`);
+    return { success: true };
+  } catch {
+    return { error: "댓글 삭제 중 오류가 발생했습니다." };
+  }
+}
+
 export async function createCommentAction(_prevState: { error?: string; success?: boolean } | null, formData: FormData) {
   const session = await getWebSession();
   if (!session) return { error: "로그인이 필요합니다." };

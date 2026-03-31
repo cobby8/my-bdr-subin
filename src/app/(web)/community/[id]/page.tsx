@@ -8,6 +8,8 @@ import { CommentForm } from "./comment-form";
 import { PostDetailSidebar } from "./_components/post-detail-sidebar";
 import { ShareButton } from "./_components/share-button";
 import { LikeButton } from "./_components/like-button";
+import { PostActions } from "./_components/post-actions";
+import { CommentList } from "./_components/comment-list";
 import { getWebSession } from "@/lib/auth/web-session";
 
 export const revalidate = 30;
@@ -83,13 +85,15 @@ export default async function CommunityPostPage({ params }: { params: Promise<{ 
     getPost(id),
     getWebSession(),
   ]);
-  if (!post) return notFound();
+  if (!post || post.status === "deleted") return notFound();
 
   // 2단계: post.id가 필요한 댓글 + 좋아요/팔로우를 병렬 실행
   let isLiked = false;
   let isFollowing = false;
   const isLoggedIn = !!session;
   const currentUserId = session?.sub ?? undefined;
+  // 본인 게시글인지 확인 (수정/삭제 버튼 표시용)
+  const isPostOwner = !!session && post.user_id === BigInt(session.sub);
 
   // 댓글 쿼리 함수 (post.id 필요하므로 1단계 이후 실행)
   const fetchComments = () => prisma.comments.findMany({
@@ -225,12 +229,17 @@ export default async function CommunityPostPage({ params }: { params: Promise<{ 
                   >
                     <span className="material-symbols-outlined">bookmark</span>
                   </button>
-                  <button
-                    className="p-2 transition-colors"
-                    style={{ color: "var(--color-text-muted)" }}
-                  >
-                    <span className="material-symbols-outlined">more_vert</span>
-                  </button>
+                  {/* 본인 게시글이면 수정/삭제 드롭다운, 아니면 빈 more_vert */}
+                  {isPostOwner ? (
+                    <PostActions postPublicId={id} />
+                  ) : (
+                    <button
+                      className="p-2 transition-colors"
+                      style={{ color: "var(--color-text-muted)" }}
+                    >
+                      <span className="material-symbols-outlined">more_vert</span>
+                    </button>
+                  )}
                 </div>
               </div>
             </header>
@@ -274,95 +283,24 @@ export default async function CommunityPostPage({ params }: { params: Promise<{ 
               {/* 댓글 입력 폼 */}
               <CommentForm postId={id} />
 
-              {/* 댓글 리스트 */}
-              <div className="space-y-8 mt-8">
-                {comments.map((c) => (
-                  <div key={c.id.toString()} className="flex gap-4">
-                    {/* 댓글 작성자 아바타 */}
-                    {c.users?.profile_image_url ? (
-                      <Image
-                        src={c.users.profile_image_url}
-                        alt={c.users.nickname ?? ""}
-                        width={40}
-                        height={40}
-                        className="w-10 h-10 rounded-full object-cover shrink-0"
-                      />
-                    ) : (
-                      <div
-                        className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-                        style={{ backgroundColor: "var(--color-primary)" }}
-                      >
-                        {(c.users?.nickname ?? "?").charAt(0)}
-                      </div>
-                    )}
-                    <div className="flex-1">
-                      {/* 댓글 작성자 정보 */}
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className="text-sm font-bold"
-                            style={{ color: "var(--color-text-primary)" }}
-                          >
-                            {c.users?.nickname ?? "익명"}
-                          </span>
-                          {/* 게시글 작성자 표시 */}
-                          {c.user_id === post.user_id && (
-                            <span
-                              className="text-[8px] px-1 py-0.5 rounded font-bold uppercase tracking-tighter"
-                              style={{ backgroundColor: "var(--color-primary)", color: "var(--color-on-primary)" }}
-                            >
-                              작성자
-                            </span>
-                          )}
-                          <span
-                            className="text-xs ml-2"
-                            style={{ color: "var(--color-text-muted)" }}
-                          >
-                            {formatRelativeTime(c.created_at)}
-                          </span>
-                        </div>
-                        <button style={{ color: "var(--color-text-muted)" }}>
-                          <span className="material-symbols-outlined text-lg">more_horiz</span>
-                        </button>
-                      </div>
-
-                      {/* 댓글 내용 */}
-                      <p
-                        className="text-sm leading-relaxed"
-                        style={{ color: "var(--color-text-secondary)" }}
-                      >
-                        {c.content}
-                      </p>
-
-                      {/* 댓글 좋아요 + 답글 쓰기 */}
-                      <div className="flex items-center gap-4 mt-3">
-                        <button
-                          className="flex items-center gap-1 text-xs transition-colors"
-                          style={{ color: "var(--color-text-muted)" }}
-                        >
-                          <span className="material-symbols-outlined text-sm">thumb_up</span>
-                          {c.likes_count > 0 ? c.likes_count : ""}
-                        </button>
-                        <button
-                          className="text-xs font-medium"
-                          style={{ color: "var(--color-text-muted)" }}
-                        >
-                          답글 쓰기
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-
-                {/* 댓글 없음 */}
-                {comments.length === 0 && (
-                  <p
-                    className="text-center py-8 text-sm"
-                    style={{ color: "var(--color-text-muted)" }}
-                  >
-                    아직 댓글이 없습니다. 첫 댓글을 남겨보세요!
-                  </p>
-                )}
+              {/* 댓글 리스트: 클라이언트 컴포넌트로 분리 (인라인 편집/삭제 지원) */}
+              <div className="mt-8">
+                <CommentList
+                  comments={comments
+                    .filter((c) => c.status !== "deleted")
+                    .map((c) => ({
+                      id: c.id.toString(),
+                      userId: c.user_id.toString(),
+                      content: c.content,
+                      likesCount: c.likes_count,
+                      createdAt: c.created_at.toISOString(),
+                      isPostAuthor: c.user_id === post.user_id,
+                      nickname: c.users?.nickname ?? "익명",
+                      profileImage: c.users?.profile_image_url ?? null,
+                    }))}
+                  postPublicId={id}
+                  currentUserId={currentUserId}
+                />
               </div>
             </div>
           </section>

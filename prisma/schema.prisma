@@ -133,8 +133,13 @@ model User {
   // 3x3 이벤트: 주최자 / 선수 참가
   court_events_organized                                                    court_events[]               @relation("event_organizer")
   court_event_players                                                       court_event_players[]        @relation("event_player")
+  // 알림 설정: 유형별 ON/OFF (기본 전체 ON)
+  notification_settings                                                     Json?                        @default("{}")
   // 웹 푸시 구독: 유저가 등록한 브라우저 푸시 구독 목록
   push_subscriptions                                                        push_subscriptions[]
+  // 비밀번호 재설정: 토큰 + 만료시간
+  reset_token                                                               String?              @db.VarChar
+  reset_token_expires                                                       DateTime?            @db.Timestamp(6)
 
   @@unique([provider, uid], map: "index_users_on_provider_and_uid")
   @@index([createdAt], map: "index_users_on_created_at")

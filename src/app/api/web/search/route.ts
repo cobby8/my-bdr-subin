@@ -7,11 +7,12 @@ import { getClientIp } from "@/lib/security/get-client-ip";
 /**
  * GET /api/web/search?q=키워드
  *
- * 통합 검색 API — 4개 테이블에서 동시 검색
+ * 통합 검색 API — 5개 테이블에서 동시 검색
  * - games: title 검색
  * - Tournament: name 검색
  * - Team: name 검색
  * - community_posts: title 검색
+ * - court_infos: name/address 검색
  * 각 최대 5건, BigInt/Date 직렬화 처리
  */
 export async function GET(request: NextRequest) {
@@ -28,8 +29,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // 4개 테이블 동시 검색 (Promise.all로 병렬 처리)
-    const [games, tournaments, teams, posts] = await Promise.all([
+    // 5개 테이블 동시 검색 (Promise.all로 병렬 처리)
+    const [games, tournaments, teams, posts, courts] = await Promise.all([
       // 경기: title에서 키워드 검색
       prisma.games.findMany({
         where: { title: { contains: q, mode: "insensitive" } },
@@ -95,6 +96,28 @@ export async function GET(request: NextRequest) {
           created_at: true,
         },
       }),
+
+      // 코트: name 또는 address에서 키워드 검색
+      prisma.court_infos.findMany({
+        where: {
+          status: "active",
+          OR: [
+            { name: { contains: q, mode: "insensitive" } },
+            { address: { contains: q, mode: "insensitive" } },
+          ],
+        },
+        orderBy: { checkins_count: "desc" },
+        take: 5,
+        select: {
+          id: true,
+          name: true,
+          address: true,
+          city: true,
+          district: true,
+          court_type: true,
+          average_rating: true,
+        },
+      }),
     ]);
 
     // BigInt/Date를 JSON 직렬화 가능한 형태로 변환
@@ -117,6 +140,7 @@ export async function GET(request: NextRequest) {
       tournaments: tournaments.map((t) => serialize(t as unknown as Record<string, unknown>)),
       teams: teams.map((t) => serialize(t as unknown as Record<string, unknown>)),
       posts: posts.map((p) => serialize(p as unknown as Record<string, unknown>)),
+      courts: courts.map((c) => serialize(c as unknown as Record<string, unknown>)),
     });
   } catch (error) {
     console.error("[search] error:", error);
