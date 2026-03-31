@@ -14,10 +14,39 @@
  * ============================================================ */
 
 import { useState, useEffect } from "react";
+import useSWR from "swr";
 import Link from "next/link";
 import { ProfileWidget } from "./profile-widget";
 import { QuickActions } from "./quick-actions";
 import { NewsFeed } from "./news-feed";
+
+// 대시보드 API 응답 타입 (QuickActions/ProfileWidget/NewsFeed에 props로 전달)
+export interface DashboardData {
+  nextGame: {
+    title: string;
+    scheduledAt: string | null;
+    venueName: string | null;
+    city: string | null;
+    gameType: string | null;
+    uuid: string;
+  } | null;
+  activeTournament: {
+    id: number;
+    name: string;
+    status: string;
+    teamName: string | null;
+    startDate: string | null;
+  } | null;
+  frequentCourts: { id: string; name: string; visitCount: number }[];
+  activityProfile: {
+    dominantType: "new" | "checkin" | "game" | "pickup";
+    checkinCount: number;
+    gameCount: number;
+    pickupCount: number;
+  };
+  preferredRegions: string[];
+  preferredDays: string[];
+}
 
 export function HomeHero() {
   // undefined: 로딩 중, null: 비로그인, object: 로그인
@@ -33,6 +62,12 @@ export function HomeHero() {
       .catch(() => setUser(null));
   }, []);
 
+  // 로그인 시에만 대시보드 데이터 패치 (개인화용)
+  const { data: dashboardData } = useSWR<DashboardData>(
+    user ? "/api/web/dashboard" : null,
+    { dedupingInterval: 30000 }
+  );
+
   // 로딩 중: 높이 예약으로 레이아웃 시프트 방지
   if (user === undefined) {
     return <div className="h-48" />;
@@ -46,12 +81,12 @@ export function HomeHero() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* 왼쪽: 프로필 위젯 + 퀵 액션 (세로 스택) */}
           <div className="space-y-4">
-            <ProfileWidget />
-            <QuickActions />
+            <ProfileWidget dashboardData={dashboardData ?? null} />
+            <QuickActions dashboardData={dashboardData ?? null} />
           </div>
           {/* 오른쪽: 소식 피드 (PC에서 옆에 배치) */}
           <div className="md:flex md:flex-col">
-            <NewsFeed />
+            <NewsFeed preferredRegions={dashboardData?.preferredRegions} />
           </div>
         </div>
       </div>

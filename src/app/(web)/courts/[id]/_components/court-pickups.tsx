@@ -27,6 +27,7 @@ interface Participant {
 interface PickupData {
   id: string;
   court_info_id: string;
+  court_type: string; // indoor | outdoor | unknown — 실내/야외 구분
   host_id: string;
   host_nickname: string;
   host_image: string | null;
@@ -475,7 +476,11 @@ export function CourtPickups({ courtId, currentUserId }: CourtPickupsProps) {
                       )}
                     </p>
                   </div>
-                  <StatusBadge status={p.status} />
+                  <div className="flex items-center gap-1.5">
+                    {/* 실내/야외 뱃지 */}
+                    <CourtTypeBadge courtType={p.court_type} />
+                    <StatusBadge status={p.status} />
+                  </div>
                 </div>
 
                 {/* 정보 행 */}
@@ -630,6 +635,39 @@ function StatusBadge({ status }: { status: string }) {
       {label}
     </span>
   );
+}
+
+// 실내/야외 뱃지 — indoor=파란, outdoor=초록
+function CourtTypeBadge({ courtType }: { courtType: string }) {
+  if (courtType === "indoor") {
+    return (
+      <span
+        className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[10px] font-semibold"
+        style={{
+          backgroundColor: "color-mix(in srgb, var(--color-info) 15%, transparent)",
+          color: "var(--color-info)",
+        }}
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: "11px" }}>stadium</span>
+        실내
+      </span>
+    );
+  }
+  if (courtType === "outdoor") {
+    return (
+      <span
+        className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[10px] font-semibold"
+        style={{
+          backgroundColor: "color-mix(in srgb, var(--color-success) 15%, transparent)",
+          color: "var(--color-success)",
+        }}
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: "11px" }}>park</span>
+        야외
+      </span>
+    );
+  }
+  return null; // unknown이면 표시 안 함
 }
 
 // 날짜 포맷: 2026-03-30 → 3/30(월)

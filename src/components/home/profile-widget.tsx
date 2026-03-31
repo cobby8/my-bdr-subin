@@ -9,6 +9,8 @@
  * ============================================================ */
 
 import useSWR from "swr";
+import Link from "next/link";
+import type { DashboardData } from "./home-hero";
 
 // API 응답 타입 — /api/web/profile/gamification
 interface GamificationData {
@@ -36,12 +38,25 @@ function getKoreanDateString(date: Date): string {
   return date.toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" }).replace(/\. /g, "-").replace(".", "");
 }
 
+// D-Day 계산 헬퍼 (짧은 형태)
+function getDDayShort(dateStr: string): string {
+  const diff = Math.ceil(
+    (new Date(dateStr).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+  );
+  if (diff <= 0) return "오늘";
+  return `D-${diff}`;
+}
+
 // 날짜를 간단히 YYYY-MM-DD로 비교하기 위한 헬퍼
 function toDateOnly(isoString: string): string {
   return isoString.split("T")[0];
 }
 
-export function ProfileWidget() {
+interface ProfileWidgetProps {
+  dashboardData?: DashboardData | null;
+}
+
+export function ProfileWidget({ dashboardData }: ProfileWidgetProps) {
   // 게이미피케이션 데이터 (XP, 레벨, 스트릭, 뱃지)
   const { data: gData, isLoading: gLoading } = useSWR<GamificationData>(
     "/api/web/profile/gamification",
@@ -210,6 +225,72 @@ export function ProfileWidget() {
           +{missionXp} XP
         </span>
       </div>
+
+      {/* ─── 개인화 정보: 자주 가는 코트 + 다음 경기 ─── */}
+      {dashboardData && (dashboardData.frequentCourts.length > 0 || dashboardData.nextGame) && (
+        <>
+          <div
+            className="border-t mt-3 mb-3"
+            style={{ borderColor: "var(--color-border)" }}
+          />
+          <div className="space-y-2">
+            {/* 자주 가는 코트 */}
+            {dashboardData.frequentCourts.length > 0 && (
+              <Link
+                href={`/courts/${dashboardData.frequentCourts[0].id}`}
+                className="flex items-center gap-2 group"
+              >
+                <span
+                  className="material-symbols-outlined text-base"
+                  style={{ color: "var(--color-text-muted)" }}
+                >
+                  pin_drop
+                </span>
+                <span
+                  className="text-xs truncate flex-1 group-hover:underline"
+                  style={{ color: "var(--color-text-secondary)" }}
+                >
+                  자주 가는 코트: {dashboardData.frequentCourts[0].name}
+                </span>
+                <span
+                  className="text-[10px]"
+                  style={{ color: "var(--color-text-disabled)" }}
+                >
+                  {dashboardData.frequentCourts[0].visitCount}회
+                </span>
+              </Link>
+            )}
+            {/* 다음 경기 */}
+            {dashboardData.nextGame && (
+              <Link
+                href={`/games/${dashboardData.nextGame.uuid}`}
+                className="flex items-center gap-2 group"
+              >
+                <span
+                  className="material-symbols-outlined text-base"
+                  style={{ color: "var(--color-info)" }}
+                >
+                  sports_basketball
+                </span>
+                <span
+                  className="text-xs truncate flex-1 group-hover:underline"
+                  style={{ color: "var(--color-text-secondary)" }}
+                >
+                  다음 경기: {dashboardData.nextGame.title}
+                </span>
+                {dashboardData.nextGame.scheduledAt && (
+                  <span
+                    className="text-[10px] font-bold whitespace-nowrap"
+                    style={{ color: "var(--color-info)" }}
+                  >
+                    {getDDayShort(dashboardData.nextGame.scheduledAt)}
+                  </span>
+                )}
+              </Link>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }

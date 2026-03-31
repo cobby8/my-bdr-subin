@@ -27,6 +27,7 @@ interface NewsItem {
   current_players?: number;
   max_players?: number;
   court_name?: string;
+  court_type?: string; // indoor | outdoor | unknown — 실내/야외 구분
   // promo 전용
   description?: string;
   icon?: string;
@@ -55,9 +56,19 @@ function formatShortDate(dateStr: string): string {
   });
 }
 
-export function NewsFeed() {
+interface NewsFeedProps {
+  preferredRegions?: string[];
+}
+
+export function NewsFeed({ preferredRegions }: NewsFeedProps) {
+  // 선호 지역이 있으면 regions 쿼리 파라미터로 전달
+  const regionsQuery =
+    preferredRegions && preferredRegions.length > 0
+      ? `?regions=${encodeURIComponent(preferredRegions.join(","))}`
+      : "";
+
   const { data, isLoading } = useSWR<NewsResponse>(
-    "/api/web/home/news",
+    `/api/web/home/news${regionsQuery}`,
     { dedupingInterval: 60000 }
   );
 
@@ -165,7 +176,7 @@ function NewsCard({ item }: { item: NewsItem }) {
       }}
     >
       <div>
-        {/* 타입 아이콘 + 라벨 */}
+        {/* 타입 아이콘 + 라벨 + 실내/야외 뱃지 */}
         <div className="flex items-center gap-2 mb-2">
           <span
             className="material-symbols-outlined text-lg"
@@ -179,6 +190,10 @@ function NewsCard({ item }: { item: NewsItem }) {
           >
             {config.label}
           </span>
+          {/* 픽업 카드: 실내/야외 뱃지 */}
+          {item.type === "pickup" && item.court_type && item.court_type !== "unknown" && (
+            <CourtTypeBadge courtType={item.court_type} />
+          )}
           {/* D-Day 뱃지 (대회만) */}
           {item.type === "tournament" && item.registration_end_at && (
             <span
@@ -261,4 +276,25 @@ function getCardConfig(item: NewsItem) {
         cta: "보기",
       };
   }
+}
+
+/* 실내/야외 뱃지 — 소식 피드 픽업 카드용 */
+function CourtTypeBadge({ courtType }: { courtType: string }) {
+  const isIndoor = courtType === "indoor";
+  return (
+    <span
+      className="inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-semibold"
+      style={{
+        backgroundColor: isIndoor
+          ? "color-mix(in srgb, var(--color-info) 15%, transparent)"
+          : "color-mix(in srgb, var(--color-success) 15%, transparent)",
+        color: isIndoor ? "var(--color-info)" : "var(--color-success)",
+      }}
+    >
+      <span className="material-symbols-outlined" style={{ fontSize: "11px" }}>
+        {isIndoor ? "stadium" : "park"}
+      </span>
+      {isIndoor ? "실내" : "야외"}
+    </span>
+  );
 }

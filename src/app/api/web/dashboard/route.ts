@@ -12,7 +12,15 @@ import { prisma } from "@/lib/db/prisma";
 export const GET = withWebAuth(async (ctx: WebAuthContext) => {
   const userId = ctx.userId;
 
-  const [nextGame, recentStats, myTeams, activeTournament, recommendedGames] =
+  // 30일 전 / 90일 전 기준 날짜 — 활동 프로필 / 자주 가는 코트 쿼리에 사용
+  const now = new Date();
+  const days30ago = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const days90ago = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+
+  const [
+    nextGame, recentStats, myTeams, activeTournament, recommendedGames,
+    frequentCourtsRaw, checkinCount, gameAppCount, pickupPartCount, userPrefs,
+  ] =
     await Promise.all([
       // 1. 내 다음 경기 — 승인된 신청 중 가장 가까운 미래 경기
       prisma.game_applications
@@ -122,7 +130,77 @@ export const GET = withWebAuth(async (ctx: WebAuthContext) => {
           });
         })
         .catch(() => []),
+
+      // 6. 자주 가는 코트 TOP 3 — 최근 90일 체크인 기준 그룹화
+      prisma.court_sessions
+        .groupBy({
+          by: ["court_id"],
+          where: { user_id: userId, checked_in_at: { gte: days90ago } },
+          _count: { court_id: true },
+          orderBy: { _count: { court_id: "desc" } },
+          take: 3,
+        })
+        .catch(() => []),
+
+      // 7. 활동 프로필 — 최근 30일 체크인 수
+      prisma.court_sessions
+        .count({ where: { user_id: userId, checked_in_at: { gte: days30ago } } })
+        .catch(() => 0),
+
+      // 8. 활동 프로필 — 최근 30일 경기 신청 수
+      prisma.game_applications
+        .count({ where: { user_id: userId, created_at: { gte: days30ago }, status: 1 } })
+        .catch(() => 0),
+
+      // 9. 활동 프로필 — 최근 30일 픽업 참가 수
+      prisma.pickup_participants
+        .count({ where: { user_id: userId, joined_at: { gte: days30ago } } })
+        .catch(() => 0),
+
+      // 10. 선호 설정 — 유저의 preferred_regions, preferred_days
+      prisma.user
+        .findUnique({
+          where: { id: userId },
+          select: { preferred_regions: true, preferred_days: true },
+        })
+        .catch(() => null),
     ]);
+
+  // ─── 자주 가는 코트 이름 조회 (groupBy 결과에서 court_id만 나오므로) ───
+  const frequentCourtIds = (frequentCourtsRaw ?? []).map((r) => r.court_id);
+  let frequentCourts: { id: string; name: string; visitCount: number }[] = [];
+  if (frequentCourtIds.length > 0) {
+    const courtNames = await prisma.court_infos.findMany({
+      where: { id: { in: frequentCourtIds } },
+      select: { id: true, name: true },
+    });
+    const nameMap = new Map(courtNames.map((c) => [c.id.toString(), c.name]));
+    frequentCourts = (frequentCourtsRaw ?? []).map((r) => ({
+      id: r.court_id.toString(),
+      name: nameMap.get(r.court_id.toString()) ?? "코트",
+      visitCount: r._count.court_id,
+    }));
+  }
+
+  // ─── 활동 프로필: 주된 활동 유형 판별 ───
+  const cCount = checkinCount ?? 0;
+  const gCount = gameAppCount ?? 0;
+  const pCount = pickupPartCount ?? 0;
+  const totalActivity = cCount + gCount + pCount;
+  let dominantType: "new" | "checkin" | "game" | "pickup" = "new";
+  if (totalActivity > 0) {
+    if (cCount >= gCount && cCount >= pCount) dominantType = "checkin";
+    else if (gCount >= cCount && gCount >= pCount) dominantType = "game";
+    else dominantType = "pickup";
+  }
+
+  // 선호 지역 파싱 (Json 타입이므로 배열로 캐스팅)
+  const preferredRegions = Array.isArray(userPrefs?.preferred_regions)
+    ? (userPrefs.preferred_regions as string[])
+    : [];
+  const preferredDays = Array.isArray(userPrefs?.preferred_days)
+    ? (userPrefs.preferred_days as string[])
+    : [];
 
   return apiSuccess({
     nextGame: nextGame
@@ -179,5 +257,20 @@ export const GET = withWebAuth(async (ctx: WebAuthContext) => {
           : null,
       gameType: g.game_type,
     })),
+
+    // 자주 가는 코트 TOP 3 (최근 90일 기준)
+    frequentCourts,
+
+    // 활동 프로필 (최근 30일)
+    activityProfile: {
+      dominantType,
+      checkinCount: cCount,
+      gameCount: gCount,
+      pickupCount: pCount,
+    },
+
+    // 선호 설정
+    preferredRegions,
+    preferredDays,
   });
 });

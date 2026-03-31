@@ -11,7 +11,13 @@ import { apiSuccess } from "@/lib/api/response";
 // 소식 항목 타입 (클라이언트에서도 import 가능)
 export type NewsItemType = "tournament" | "pickup" | "event" | "promo";
 
-export async function GET() {
+export async function GET(req: Request) {
+  // regions 쿼리 파라미터: 선호 지역 우선 정렬 (예: ?regions=서울,경기)
+  const url = new URL(req.url);
+  const regionsParam = url.searchParams.get("regions");
+  const preferredRegions = regionsParam
+    ? regionsParam.split(",").map((r) => r.trim()).filter(Boolean)
+    : [];
   // 3가지 데이터를 병렬로 조회 — 하나가 실패해도 나머지는 응답
   const [tournamentsResult, pickupsResult, eventsResult] =
     await Promise.allSettled([
@@ -45,7 +51,7 @@ export async function GET() {
           start_time: true,
           max_players: true,
           _count: { select: { participants: true } },
-          court_infos: { select: { name: true } },
+          court_infos: { select: { name: true, id: true, court_type: true } },
         },
       }),
 
@@ -99,7 +105,8 @@ export async function GET() {
       current_players: p._count.participants,
       max_players: p.max_players,
       court_name: p.court_infos.name,
-      link: `/courts/${p.court_infos.name}`, // 픽업은 코트 페이지에서 접근
+      court_type: p.court_infos.court_type ?? "unknown", // 실내/야외 구분
+      link: `/courts/${p.court_infos.id}`, // 픽업은 코트 페이지에서 접근
     });
   }
 
@@ -113,6 +120,26 @@ export async function GET() {
       start_time: e.start_time ?? null,
       court_name: e.court_info.name,
       link: `/courts/${e.court_info.id}/events/${e.id}`,
+    });
+  }
+
+  // 선호 지역이 있으면 해당 지역 소식을 앞으로 정렬
+  // venue_name / court_name에 지역명이 포함되면 우선 배치
+  if (preferredRegions.length > 0) {
+    items.sort((a, b) => {
+      const aMatch = preferredRegions.some(
+        (r) =>
+          (typeof a.venue_name === "string" && a.venue_name.includes(r)) ||
+          (typeof a.court_name === "string" && a.court_name.includes(r))
+      );
+      const bMatch = preferredRegions.some(
+        (r) =>
+          (typeof b.venue_name === "string" && b.venue_name.includes(r)) ||
+          (typeof b.court_name === "string" && b.court_name.includes(r))
+      );
+      if (aMatch && !bMatch) return -1;
+      if (!aMatch && bMatch) return 1;
+      return 0; // 동일 우선순위면 기존 순서 유지
     });
   }
 

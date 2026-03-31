@@ -7,22 +7,27 @@
 
 ### 구현 기록
 
-구현한 기능: 홈 히어로 영역 리디자인 — 프로필 위젯 + 퀵 액션 + 소식 피드
+구현한 기능: 홈 히어로 개인화 + 픽업게임 실내/야외 구분 (7파일)
 
 | 파일 경로 | 변경 내용 | 신규/수정 |
 |----------|----------|----------|
-| src/app/api/web/home/news/route.ts | 소식 피드 API (대회/픽업/이벤트+프로모) | 신규 |
-| src/components/home/profile-widget.tsx | 로그인 유저 XP/스트릭/미션 위젯 | 신규 |
-| src/components/home/quick-actions.tsx | 체크인/경기찾기/픽업 3버튼 | 신규 |
-| src/components/home/news-feed.tsx | 가로 스크롤 소식 카드 리스트 | 신규 |
-| src/components/home/home-hero.tsx | 로그인 분기 통합 히어로 | 신규 |
-| src/app/(web)/page.tsx | HomeGreeting → HomeHero 교체 | 수정 |
+| src/app/api/web/dashboard/route.ts | 자주가는코트TOP3+활동프로필+선호설정 3쿼리 추가 | 수정 |
+| src/app/api/web/home/news/route.ts | court_type 포함 + regions 파라미터 우선정렬 | 수정 |
+| src/app/api/web/courts/[id]/pickups/route.ts | 응답에 courtType 필드 추가 | 수정 |
+| src/components/home/home-hero.tsx | useSWR(dashboard) + props 전달 + DashboardData 타입 | 수정 |
+| src/components/home/quick-actions.tsx | 활동프로필 기반 동적 버튼 생성 | 수정 |
+| src/components/home/profile-widget.tsx | 자주가는코트+다음경기 링크 추가 | 수정 |
+| src/components/home/news-feed.tsx | preferredRegions prop + 픽업 실내/야외 뱃지 | 수정 |
+| src/app/(web)/courts/[id]/_components/court-pickups.tsx | 실내/야외 뱃지 추가 | 수정 |
 
 tester 참고:
-- 비로그인: 파란 그라디언트 소개 + 퀵액션 3버튼 + 소식 피드
-- 로그인: 프로필 위젯(XP바+통계) + 퀵액션 + 소식 피드
-- PC(md:이상): 프로필위젯+소식이 2열 그리드
-- /api/web/home/news 직접 호출하여 데이터 확인 가능
+- 비로그인: 기존과 동일 (퀵액션 3고정버튼 + 소식피드)
+- 로그인(신규유저): dominantType="new" → 기본 버튼 3개
+- 로그인(체크인많은유저): 퀵액션 1번에 "코트명 체크인", 프로필위젯에 자주가는코트 표시
+- 로그인(경기참가유저): 퀵액션 1번에 "다음 경기 D-N"
+- 픽업게임 카드에 실내(파란)/야외(초록) 뱃지 표시
+- /api/web/home/news?regions=서울,경기 호출 시 해당 지역 소식 우선 정렬
+- /api/web/dashboard 응답에 frequentCourts, activityProfile, preferredRegions 추가 확인
 
 ## 전체 프로젝트 현황 대시보드 (2026-03-31)
 
@@ -82,4 +87,5 @@ tester 참고:
 | 03-31 | developer | middleware+error.tsx+헬스체크 (3파일 신규) | 완료 |
 | 03-31 | developer | #7메타데이터(9파일)+#9loading(7파일)+#12모바일검색(1파일) | 완료 |
 | 03-31 | developer | #13SVG차단+#14sitemap동적+#15user_id주석 (3파일) | 완료 |
+| 03-31 | developer | 홈 히어로 개인화+픽업 실내/야외 (대시보드API확장+동적버튼+뱃지, 8파일) | 완료 |
 | 03-31 | developer | 홈 히어로 리디자인 (프로필위젯+퀵액션+소식피드, 6파일) | 완료 |

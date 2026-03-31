@@ -52,6 +52,12 @@ export async function GET(
   const take = Math.min(Number(url.searchParams.get("take") ?? 20), 50);
   const skip = Number(url.searchParams.get("skip") ?? 0);
 
+  // 코트의 court_type 조회 (실내/야외 구분용)
+  const courtInfo = await prisma.court_infos.findUnique({
+    where: { id: courtId },
+    select: { court_type: true },
+  });
+
   // 오늘 이후 + recruiting/full 상태만 조회
   const pickups = await prisma.pickup_games.findMany({
     where: {
@@ -72,10 +78,11 @@ export async function GET(
     },
   });
 
-  // BigInt → string 직렬화
+  // BigInt → string 직렬화 (courtType: 코트의 실내/야외 구분 포함)
   const serialized = pickups.map((p) => ({
     id: p.id.toString(),
     courtInfoId: p.court_info_id.toString(),
+    courtType: courtInfo?.court_type ?? "unknown",
     hostId: p.host_id.toString(),
     hostNickname: p.host?.nickname ?? "사용자",
     hostImage: p.host?.profile_image_url ?? null,
