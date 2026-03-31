@@ -495,21 +495,10 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
         className="fixed top-0 z-50 flex h-14 items-center justify-between border-b border-[var(--color-border)] px-4 backdrop-blur-xl left-0 right-0 lg:left-60"
         style={{ backgroundColor: "color-mix(in srgb, var(--color-background) 85%, transparent)" }}
       >
-        {/* 좌측: 뒤로가기 + 로고 (모바일만, PC는 사이드네비에 있음) */}
+        {/* 좌측: 로고 (모바일만, PC는 사이드네비에 있음) */}
         <div className="flex items-center gap-2 lg:hidden">
-          {pathname !== "/" && (
-            <button
-              onClick={() => {
-                if (window.history.length > 1) router.back();
-                else router.push("/");
-              }}
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-surface-bright)]"
-            >
-              <span className="material-symbols-outlined text-xl">arrow_back</span>
-            </button>
-          )}
           <Link href="/" prefetch={true}>
-            <Image src="/images/logo.png" alt="BDR" width={100} height={30} className="h-7 w-auto" />
+            <Image src="/images/logo.png" alt="BDR" width={115} height={34} className="h-8 w-auto" />
           </Link>
         </div>
 
