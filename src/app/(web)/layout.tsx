@@ -509,7 +509,7 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
             </button>
           )}
           <Link href="/" prefetch={true}>
-            <Image src="/images/logo.png" alt="BDR" width={250} height={75} className="h-[70px] w-auto" />
+            <Image src="/images/logo.png" alt="BDR" width={100} height={30} className="h-7 w-auto" />
           </Link>
         </div>
 
