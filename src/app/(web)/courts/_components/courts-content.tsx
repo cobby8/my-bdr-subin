@@ -14,8 +14,15 @@
 
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { KakaoMap, type MapMarker } from "@/components/shared/kakao-map";
-import { HeatmapOverlay, type HeatmapPoint } from "@/components/shared/heatmap-overlay";
+// HeatmapOverlay: Canvas 기반 히트맵은 초기 렌더에 불필요하므로 동적 import로 분리
+// 사용자가 히트맵 토글을 켤 때만 로드되어 초기 번들 크기를 줄임
+import { type HeatmapPoint } from "@/components/shared/heatmap-overlay";
+const HeatmapOverlay = dynamic(
+  () => import("@/components/shared/heatmap-overlay").then((mod) => mod.HeatmapOverlay),
+  { ssr: false } // Canvas API는 서버에서 실행 불가
+);
 
 // ─── Haversine 공식: 두 좌표 사이의 거리(km)를 계산 ───
 // 지구를 완벽한 구로 가정하고, 위경도 차이를 호도법으로 변환하여 대원거리를 구한다

@@ -11,6 +11,7 @@
  * 이렇게 해야 useSWR의 fallbackData와 실제 API 응답의 형식이 일치한다.
  */
 
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/db/prisma";
 import { convertKeysToSnakeCase } from "@/lib/utils/case";
 
@@ -19,7 +20,9 @@ import { convertKeysToSnakeCase } from "@/lib/utils/case";
  * - /api/web/teams API와 동일한 쿼리 + 직렬화
  * - 검색/필터 없이 기본 목록만 (홈 프리페치용)
  * ============================================================ */
-export async function prefetchTeams() {
+// unstable_cache로 감싸서 60초간 DB 결과를 재사용
+// 홈페이지는 접속 빈도가 높으므로, 동일 데이터를 매번 DB에서 가져오지 않도록 캐시
+export const prefetchTeams = unstable_cache(async () => {
   const [teams, citiesRaw] = await Promise.all([
     prisma.team.findMany({
       where: { status: "active", is_public: true },
@@ -81,13 +84,13 @@ export async function prefetchTeams() {
     }>;
     cities: string[];
   };
-}
+}, ["home-teams"], { revalidate: 60 });
 
 /* ============================================================
  * 2. 플랫폼 통계 프리페치
  * - /api/web/stats API와 동일한 3개 COUNT 쿼리
  * ============================================================ */
-export async function prefetchStats() {
+export const prefetchStats = unstable_cache(async () => {
   const [teamCount, matchCount, userCount] = await Promise.all([
     prisma.team.count({ where: { status: "active", is_public: true } }),
     prisma.games.count(),
@@ -100,14 +103,14 @@ export async function prefetchStats() {
     match_count: number;
     user_count: number;
   };
-}
+}, ["home-stats"], { revalidate: 60 });
 
 /* ============================================================
  * 3. 커뮤니티 게시글 프리페치
  * - /api/web/community API와 동일한 쿼리 (필터 없이 기본 목록)
  * - 홈 프리페치용이므로 prefer/category/q 파라미터 없음
  * ============================================================ */
-export async function prefetchCommunity() {
+export const prefetchCommunity = unstable_cache(async () => {
   // content 전체를 가져오지 않고 필요한 컬럼만 select (수천자 본문 → DB 레벨에서 제외)
   const posts = await prisma.community_posts.findMany({
     where: {},
@@ -166,12 +169,13 @@ export async function prefetchCommunity() {
     }>;
     preferred_categories: string[];
   };
-}
+}, ["home-community"], { revalidate: 60 });
 
 /* ============================================================
  * 4. 추천 경기 프리페치
  * - /api/web/recommended-games API와 동일한 쿼리
  * - 로그인/비로그인 분기: session이 있으면 개인화, 없으면 최신 경기
+ * - unstable_cache: sessionSub를 캐시 키에 포함하여 유저별 캐시 분리
  * ============================================================ */
 export async function prefetchRecommendedGames(sessionSub?: string) {
   // 비로그인: 최신 경기 6개
