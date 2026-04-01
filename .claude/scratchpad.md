@@ -1,29 +1,29 @@
 # 작업 스크래치패드
 
 ## 현재 작업
-- **요청**: 접근 제어 + 관리 링크 5가지 수정
+- **요청**: 대회 캘린더 뷰 (월간/주간) 구현
 - **상태**: 구현 완료 (tsc 통과, 기존 lucide-react 에러 1건만 잔존)
 - **현재 담당**: developer
 
 ### 구현 기록
 
-구현한 기능: 역할별 관리 링크 + 경로 보호 + 권한 에러 메시지 (6파일 수정)
+구현한 기능: 대회 캘린더 3뷰 시스템 (리스트/월간/주간) — 6파일 신규/수정
 
 | 파일 경로 | 변경 내용 | 신규/수정 |
 |----------|----------|----------|
-| src/components/shared/slide-menu.tsx | 역할별 관리 링크 (admin/tournament-admin/partner-admin) | 수정 |
-| src/app/(web)/layout.tsx | PC 사이드네비 하단에 역할별 관리 링크 추가 | 수정 |
-| src/proxy.ts | PROTECTED_PATHS에 community/new, organizations/apply, partner-admin, tournament-admin 추가 | 수정 |
-| src/app/(web)/organizations/page.tsx | "단체 개설 신청" 버튼 추가 | 수정 |
-| src/app/(web)/tournament-admin/layout.tsx + src/app/(admin)/admin/layout.tsx | redirect("/login?error=no_permission") | 수정 |
-| src/app/(web)/login/page.tsx | no_permission 에러 메시지 표시 | 수정 |
+| src/lib/constants/calendar-colors.ts | 8색 상수 + getCalendarColor() + CALENDAR_COLOR_LEGEND | 신규 |
+| src/app/api/web/tournaments/calendar/route.ts | GET (year/month/category/gender) 캘린더 전용 API | 신규 |
+| src/app/(web)/tournaments/_components/view-toggle.tsx | 3뷰 전환 토글 (list/calendar/week) | 신규 |
+| src/app/(web)/tournaments/_components/calendar-view.tsx | 월간 CSS Grid 캘린더 + 범례 + 날짜 클릭 상세 | 신규 |
+| src/app/(web)/tournaments/_components/week-view.tsx | 주간 7열 타임라인 뷰 | 신규 |
+| src/app/(web)/tournaments/_components/tournaments-content.tsx | ViewToggle 추가 + 뷰별 조건부 렌더링 | 수정 |
 
 tester 참고:
-- 슬라이드 메뉴/사이드네비: super_admin이면 관리자+대회관리+파트너관리 3개 표시
-- tournament_admin이면 대회관리+파트너관리 2개 표시
-- 일반 유저면 파트너관리 1개만 표시 (접근 시 소속 확인은 layout에서)
-- /community/new, /organizations/apply: 미로그인 시 /login으로 리다이렉트
-- 권한 없는 관리 페이지 접근 시 /login?error=no_permission → "해당 페이지에 접근할 권한이 없습니다." 표시
+- /tournaments 페이지에서 "대회 찾기" 옆에 리스트/월간/주간 토글 버튼 확인
+- 월간 뷰: 좌우 화살표로 월 이동, 날짜 클릭 시 해당일 대회 목록 표시, "범례" 버튼으로 8색 범례 토글
+- 주간 뷰: 7일 타임라인, 좌우 화살표로 주 이동, "이번주" 버튼
+- 리스트 뷰: 기존과 100% 동일 (변경 없음)
+- 종별/성별 필터가 캘린더/주간 뷰에도 전달됨
 
 ## 전체 프로젝트 현황 대시보드 (2026-04-01)
 
@@ -33,7 +33,7 @@ tester 참고:
 | 웹 페이지 (web) | 84개 (+6: partner-admin 5P + venues 1P + invite 1P) |
 | 관리자 페이지 (admin) | 16개 |
 | Prisma 모델 | 73개 |
-| Web API | 110개 라우트 (+7: partner/* 6개 + venues 1개) |
+| Web API | 111개 라우트 (+1: tournaments/calendar) |
 
 ---
 
