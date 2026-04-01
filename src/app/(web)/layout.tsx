@@ -22,9 +22,9 @@ const SlideMenu = dynamic(
   () => import("@/components/shared/slide-menu").then((m) => m.SlideMenu),
   { ssr: false }
 );
-/* ProfileAccordion: 사이드네비 하단 프로필 4카테고리 아코디언 */
-const ProfileAccordion = dynamic(
-  () => import("@/components/shared/profile-accordion").then((m) => m.ProfileAccordion),
+/* ProfileDropdown: 헤더 우측 프로필 아이콘 → 드롭다운 메뉴 */
+const ProfileDropdown = dynamic(
+  () => import("@/components/shared/profile-dropdown").then((m) => m.ProfileDropdown),
   { ssr: false }
 );
 const ThemeToggle = dynamic(
@@ -439,19 +439,15 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
           })}
         </nav>
 
-        {/* 하단: 프로필 아코디언 (로그인) 또는 로그인 버튼 (비로그인) */}
+        {/* 하단: 관리 링크 (로그인) 또는 로그인 버튼 (비로그인) */}
         <div className="border-t border-[var(--color-border)] p-3 space-y-2">
           {user ? (
-            <>
-              {/* 프로필 4카테고리 아코디언 메뉴 */}
-              <ProfileAccordion name={user.name} />
-              {/* 관리 링크: 아코디언 아래에 배치 */}
-              <Link href="/admin"
-                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--color-primary)] hover:bg-[var(--color-surface)] transition-colors">
-                <span className="material-symbols-outlined text-lg">admin_panel_settings</span>
-                관리
-              </Link>
-            </>
+            /* 관리 링크만 표시 (프로필은 헤더 드롭다운으로 이동) */
+            <Link href="/admin"
+              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--color-primary)] hover:bg-[var(--color-surface)] transition-colors">
+              <span className="material-symbols-outlined text-lg">admin_panel_settings</span>
+              관리
+            </Link>
           ) : (
             <Link href="/login" className="block w-full rounded-xl bg-[var(--color-primary)] py-3 text-center text-sm font-bold text-white">
               로그인
@@ -502,14 +498,9 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
               )}
             </Link>
           )}
-          {/* 프로필 (PC에서도 유지) */}
+          {/* 프로필: 로그인 시 드롭다운 메뉴, 비로그인 시 로그인 버튼 */}
           {user ? (
-            <Link
-              href="/profile"
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-primary)] text-xs font-bold text-white"
-            >
-              {user.name?.trim() ? user.name.trim()[0].toUpperCase() : "U"}
-            </Link>
+            <ProfileDropdown name={user.name} />
           ) : (
             <Link
               href="/login"

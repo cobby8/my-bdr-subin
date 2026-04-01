@@ -1,40 +1,31 @@
 # 작업 스크래치패드
 
 ## 현재 작업
-- **요청**: 프로필 메뉴 4개 카테고리 아코디언 재구성
+- **요청**: 프로필 드롭다운 메뉴 + 하위 페이지 분리
 - **상태**: 구현 완료 (tsc 통과)
 - **현재 담당**: developer
 
 ### 구현 기록
 
-구현한 기능: 프로필 4카테고리 아코디언 메뉴 (내 농구/내 성장/내 정보/계정)
+구현한 기능: 프로필을 사이드네비에서 제거, 헤더 우측 드롭다운으로 이동 + 하위 페이지 분리 (basketball/growth)
 
 | 파일 경로 | 변경 내용 | 신규/수정 |
 |----------|----------|----------|
-| src/components/shared/profile-accordion.tsx | 4카테고리 아코디언 컴포넌트 (grid-template-rows 애니메이션) | 신규 |
-| src/app/(web)/layout.tsx | PC 사이드네비 하단에 ProfileAccordion 삽입 | 수정 |
-| src/components/shared/slide-menu.tsx | 모바일 슬라이드 메뉴에 ProfileAccordion 적용, 기존 설정/로그아웃 제거 | 수정 |
+| src/components/shared/profile-dropdown.tsx | 헤더 우측 프로필 드롭다운 (4카테고리 플랫 목록, 외부클릭/ESC 닫힘) | 신규 |
+| src/app/(web)/layout.tsx | 사이드네비에서 ProfileAccordion 제거, 헤더에 ProfileDropdown 교체 | 수정 |
+| src/app/(web)/profile/basketball/page.tsx | 내 농구 페이지 (팀/경기/대회/통계 이동) | 신규 |
+| src/app/(web)/profile/growth/page.tsx | 내 성장 페이지 (XP/레벨/스트릭/뱃지/도장깨기 이동) | 신규 |
+| src/app/(web)/profile/page.tsx | 4카테고리 허브 카드로 간소화 | 수정 |
 
 tester 참고:
-- PC 사이드네비 하단: 로그인 시 아바타+닉네임 클릭 → 4카테고리 펼침 → 각 카테고리 클릭 → 하위 링크
-- 모바일 더보기 메뉴: 동일한 아코디언 표시, 링크 클릭 시 메뉴 자동 닫힘
-- 비로그인: 아코디언 미표시, 로그인 버튼만
-- 로그아웃/회원탈퇴: 빨간색으로 구분
-
-| 파일 경로 | 변경 내용 | 신규/수정 |
-|----------|----------|----------|
-| src/components/admin/sidebar.tsx | roles prop 받아 권한별 메뉴 필터링 (NavItem에 roles 배열) | 수정 |
-| src/app/(admin)/admin/layout.tsx | 접근 권한 확장: DB 조회로 partner_members/organization_members 소속 확인 | 수정 |
-| src/components/shared/slide-menu.tsx | 3개 관리 링크 → "관리" 1개로 통합 | 수정 |
-| src/app/(web)/layout.tsx | PC 사이드네비 3개 관리 링크 → "관리" 1개로 통합 | 수정 |
-| src/proxy.ts | ADMIN_PATHS 미들웨어 체크 제거 (layout에서 DB 기반 권한 판단으로 위임) | 수정 |
-
-tester 참고:
-- super_admin 계정: /admin 접속 시 전체 메뉴 표시
-- tournament_admin 계정: /admin 접속 시 대시보드 + 대회관리 링크만 표시
-- partner_members 소속 유저: /admin 접속 시 대시보드 + 협력업체/캠페인 메뉴 표시
-- 권한 없는 유저: /admin 접속 시 /login?error=no_permission으로 리다이렉트
-- 슬라이드 메뉴/PC 사이드네비: 로그인 유저에게 "관리" 링크 1개만 표시
+- 헤더 우측 프로필 아이콘(B) 클릭 → 드롭다운 메뉴 표시 (4카테고리 + 로그아웃)
+- 외부 클릭 또는 ESC로 드롭다운 닫힘
+- 각 링크 클릭 시 드롭다운 닫힘 + 해당 페이지 이동
+- /profile: 아바타+닉네임+레벨 + 4개 카테고리 카드 그리드
+- /profile/basketball: 통계+팀+경기+대회+주간리포트
+- /profile/growth: XP/레벨+스트릭+도장깨기+뱃지
+- PC 사이드네비: 프로필 아코디언 제거됨, 관리 링크만 남음
+- 모바일 슬라이드 메뉴: 기존 ProfileAccordion 유지 (변경 없음)
 
 ## 전체 프로젝트 현황 대시보드 (2026-04-01)
 
