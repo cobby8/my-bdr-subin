@@ -9,8 +9,12 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const session = await getWebSession();
-  if (!session || session.role !== "super_admin") {
-    redirect("/");
+  if (!session) {
+    redirect("/login");
+  }
+  // 권한 부족: 에러 메시지 포함 로그인 페이지로 리다이렉트
+  if (session.role !== "super_admin") {
+    redirect("/login?error=no_permission");
   }
 
   // 배경: 프론트 디자인 시스템과 동일한 CSS 변수 사용

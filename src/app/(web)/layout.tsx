@@ -459,8 +459,30 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
           </a>
         </div>
 
-        {/* 하단: 프로필 + 로그아웃 */}
+        {/* 하단: 역할별 관리 링크 + 프로필 + 로그아웃 */}
         <div className="border-t border-[var(--color-border)] p-4 space-y-2">
+          {/* 역할별 관리 링크: 해당 역할을 가진 유저에게만 표시 */}
+          {user?.role === "super_admin" && (
+            <Link href="/admin"
+              className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[var(--color-primary)] hover:bg-[var(--color-surface)] transition-colors">
+              <span className="material-symbols-outlined text-lg">admin_panel_settings</span>
+              관리자
+            </Link>
+          )}
+          {(user?.role === "tournament_admin" || user?.role === "super_admin") && (
+            <Link href="/tournament-admin"
+              className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-surface)] transition-colors">
+              <span className="material-symbols-outlined text-lg">emoji_events</span>
+              대회 관리
+            </Link>
+          )}
+          {user && (
+            <Link href="/partner-admin"
+              className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-surface)] transition-colors">
+              <span className="material-symbols-outlined text-lg">storefront</span>
+              파트너 관리
+            </Link>
+          )}
           {user ? (
             <>
               <Link href="/profile" className="flex items-center gap-3 px-2 py-2">

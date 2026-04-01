@@ -1,40 +1,29 @@
 # 작업 스크래치패드
 
 ## 현재 작업
-- **요청**: #7 업체 셀프서비스 + #8 대관 페이지 + #9 카페 이전
+- **요청**: 접근 제어 + 관리 링크 5가지 수정
 - **상태**: 구현 완료 (tsc 통과, 기존 lucide-react 에러 1건만 잔존)
 - **현재 담당**: developer
 
 ### 구현 기록
 
-구현한 기능: #7 파트너 셀프서비스(API6+페이지5) + #8 체육관 대관(API1+페이지1) + #9 카페 초대 랜딩(1) — 총 14파일
+구현한 기능: 역할별 관리 링크 + 경로 보호 + 권한 에러 메시지 (6파일 수정)
 
 | 파일 경로 | 변경 내용 | 신규/수정 |
 |----------|----------|----------|
-| src/app/api/web/partner/me/route.ts | GET 내 파트너 조회 (partner_members로 소속확인) | 신규 |
-| src/app/api/web/partner/campaigns/route.ts | GET 캠페인 목록 + POST 생성 (pending_review) | 신규 |
-| src/app/api/web/partner/campaigns/[id]/route.ts | GET 상세 + PATCH 수정 (draft/pending/rejected만) | 신규 |
-| src/app/api/web/partner/campaigns/[id]/placements/route.ts | GET 배치목록 + POST 배치추가 | 신규 |
-| src/app/api/web/partner/venue/route.ts | PATCH 대관정보 수정 (court_infos 필드) | 신규 |
-| src/app/api/web/partner/stats/route.ts | GET 캠페인 통계 집계 | 신규 |
-| src/app/(web)/partner-admin/layout.tsx | partner_members 소속확인 + 네비 | 신규 |
-| src/app/(web)/partner-admin/page.tsx | 대시보드 (통계카드+상태분포+빠른액션) | 신규 |
-| src/app/(web)/partner-admin/campaigns/page.tsx | 캠페인 목록+필터+생성폼 | 신규 |
-| src/app/(web)/partner-admin/campaigns/[id]/page.tsx | 캠페인 상세/수정+배치관리 | 신규 |
-| src/app/(web)/partner-admin/venue/page.tsx | 대관 관리 (코트별 대관정보 설정) | 신규 |
-| src/app/api/web/venues/[slug]/route.ts | GET 체육관 공개 상세 (ISR 5분) | 신규 |
-| src/app/(web)/venues/[slug]/page.tsx | 체육관 상세 SEO (대관+시설+경기+지도) | 신규 |
-| src/app/(web)/invite/page.tsx | 카페 이전 랜딩 (히어로+기능소개+CTA) | 신규 |
+| src/components/shared/slide-menu.tsx | 역할별 관리 링크 (admin/tournament-admin/partner-admin) | 수정 |
+| src/app/(web)/layout.tsx | PC 사이드네비 하단에 역할별 관리 링크 추가 | 수정 |
+| src/proxy.ts | PROTECTED_PATHS에 community/new, organizations/apply, partner-admin, tournament-admin 추가 | 수정 |
+| src/app/(web)/organizations/page.tsx | "단체 개설 신청" 버튼 추가 | 수정 |
+| src/app/(web)/tournament-admin/layout.tsx + src/app/(admin)/admin/layout.tsx | redirect("/login?error=no_permission") | 수정 |
+| src/app/(web)/login/page.tsx | no_permission 에러 메시지 표시 | 수정 |
 
 tester 참고:
-- /partner-admin: partner_members에 소속된 유저만 접근 가능
-- 캠페인 생성 시 status=pending_review (관리자 승인 대기)
-- /venues/[id]: court_infos.id 기반 (slug 필드 없음)
-- /invite: 정적 페이지, 로그인 불필요
-
-reviewer 참고:
-- partner/venue API: court_infos.user_id == partner.owner_id 확인으로 IDOR 방지
-- 캠페인 수정은 draft/pending_review/rejected 상태에서만 허용
+- 슬라이드 메뉴/사이드네비: super_admin이면 관리자+대회관리+파트너관리 3개 표시
+- tournament_admin이면 대회관리+파트너관리 2개 표시
+- 일반 유저면 파트너관리 1개만 표시 (접근 시 소속 확인은 layout에서)
+- /community/new, /organizations/apply: 미로그인 시 /login으로 리다이렉트
+- 권한 없는 관리 페이지 접근 시 /login?error=no_permission → "해당 페이지에 접근할 권한이 없습니다." 표시
 
 ## 전체 프로젝트 현황 대시보드 (2026-04-01)
 

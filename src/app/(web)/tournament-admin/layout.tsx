@@ -10,8 +10,12 @@ import { TournamentAdminNav } from "./_components/tournament-admin-nav";
 export default async function TournamentAdminLayout({ children }: { children: React.ReactNode }) {
   // 서버사이드 권한 체크: 대회관리자 또는 슈퍼관리자만 허용
   const session = await getWebSession();
-  if (!session || (session.role !== "tournament_admin" && session.role !== "super_admin")) {
-    redirect("/");
+  if (!session) {
+    redirect("/login");
+  }
+  // 권한 부족: 에러 메시지 포함 로그인 페이지로 리다이렉트
+  if (session.role !== "tournament_admin" && session.role !== "super_admin") {
+    redirect("/login?error=no_permission");
   }
 
   return (

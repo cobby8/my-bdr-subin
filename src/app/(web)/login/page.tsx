@@ -13,6 +13,7 @@ const OAUTH_ERRORS: Record<string, string> = {
   naver_fail: "네이버 로그인 중 오류가 발생했습니다.",
   google_token: "구글 로그인에 실패했습니다.",
   google_fail: "구글 로그인 중 오류가 발생했습니다.",
+  no_permission: "해당 페이지에 접근할 권한이 없습니다.",
 };
 
 export default function LoginPage() {

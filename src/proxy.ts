@@ -7,8 +7,16 @@ import * as jose from "jose";
 const isProduction = process.env.NODE_ENV === "production";
 const COOKIE_NAME = isProduction ? "__Host-bdr_session" : "bdr_session";
 
-// 로그인 필요 경로
-const PROTECTED_PATHS = ["/profile", "/notifications", "/admin"];
+// 로그인 필요 경로 (미로그인 시 /login으로 리다이렉트)
+const PROTECTED_PATHS = [
+  "/profile",
+  "/notifications",
+  "/admin",
+  "/community/new",       // 글쓰기
+  "/organizations/apply", // 단체 개설 신청
+  "/partner-admin",       // 파트너 관리
+  "/tournament-admin",    // 대회 관리
+];
 // admin 전용 (super_admin만)
 const ADMIN_PATHS = ["/admin"];
 

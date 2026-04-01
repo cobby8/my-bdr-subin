@@ -36,12 +36,22 @@ export default async function OrganizationsPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold text-[var(--color-text-primary)]">
-        <span className="material-symbols-outlined mr-2 align-middle text-[var(--color-primary)]">
-          corporate_fare
-        </span>
-        대회 단체
-      </h1>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
+          <span className="material-symbols-outlined mr-2 align-middle text-[var(--color-primary)]">
+            corporate_fare
+          </span>
+          대회 단체
+        </h1>
+        {/* 단체 개설 신청 버튼: 로그인 여부는 proxy.ts에서 보호 */}
+        <Link
+          href="/organizations/apply"
+          className="inline-flex items-center gap-1.5 rounded bg-[var(--color-primary)] px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[var(--color-primary-hover)]"
+        >
+          <span className="material-symbols-outlined text-lg">add</span>
+          단체 개설 신청
+        </Link>
+      </div>
 
       {orgs.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
