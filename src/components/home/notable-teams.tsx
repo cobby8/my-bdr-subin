@@ -98,7 +98,7 @@ export function NotableTeams({ fallbackData }: NotableTeamsProps = {}) {
 
               {/* 엠블럼 (평행사변형 컷아웃 박스) */}
               <div
-                className="w-10 h-10 flex-none flex items-center justify-center clip-slant shadow-inner"
+                className="w-10 h-10 flex-none flex items-center justify-center rounded-sm shadow-inner"
                 style={{
                   background: `linear-gradient(135deg, ${iconBg} 0%, rgba(0,0,0,0.5) 100%)`,
                 }}
@@ -124,7 +124,7 @@ export function NotableTeams({ fallbackData }: NotableTeamsProps = {}) {
                     {subtitle || "LOCATION TBD"}
                   </span>
                   {team.accepting_members && !isFallback && (
-                    <span className="text-[9px] font-black text-[var(--color-on-primary)] bg-[var(--color-info)] px-2 py-0.5 clip-slant-reverse ml-2 shrink-0">
+                    <span className="text-[9px] font-black text-[var(--color-on-primary)] bg-[var(--color-info)] px-2 py-0.5 rounded-sm ml-2 shrink-0">
                       RECRUIT
                     </span>
                   )}

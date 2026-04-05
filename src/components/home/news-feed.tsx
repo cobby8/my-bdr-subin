@@ -198,7 +198,7 @@ function NewsCard({ item }: { item: NewsItem }) {
       {/* D-Day 뱃지 (대회만) 또는 CTA 화살표 */}
       {item.type === "tournament" && item.registration_end_at ? (
         <span
-          className="text-[9px] font-black uppercase px-1.5 py-0.5 clip-slant shrink-0"
+          className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded-sm shrink-0"
           style={{
             backgroundColor: "var(--color-primary)",
             color: "#fff",

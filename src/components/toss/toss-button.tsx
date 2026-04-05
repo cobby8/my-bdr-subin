@@ -39,13 +39,13 @@ export function TossButton({
   const variantStyles = {
     /* primary: 풀와이드 CTA
      * h-14 (56px): 토스 표준 CTA 높이
-     * clip-slant: 2K 사이버펑크 버튼 요소
+     * rounded-sm: 살짝 둥근 버튼 모서리
      * bg-primary: 토스 블루 배경 */
-    primary: `h-14 clip-slant bg-[var(--color-primary)] text-white text-sm shadow-glow-primary hover:bg-[var(--color-primary-hover)] ${fullWidth !== false ? "w-full" : ""}`,
+    primary: `h-14 rounded-sm bg-[var(--color-primary)] text-white text-sm shadow-glow-primary hover:bg-[var(--color-primary-hover)] ${fullWidth !== false ? "w-full" : ""}`,
 
-    secondary: `h-14 clip-slant border border-[var(--color-primary)] bg-[var(--color-surface)] text-[var(--color-primary)] text-sm hover:bg-[var(--color-surface-bright)] ${fullWidth ? "w-full" : ""}`,
+    secondary: `h-14 rounded-sm border border-[var(--color-primary)] bg-[var(--color-surface)] text-[var(--color-primary)] text-sm hover:bg-[var(--color-surface-bright)] ${fullWidth ? "w-full" : ""}`,
 
-    small: `h-10 clip-slant-sm px-4 bg-[var(--color-primary)] text-[11px] text-white hover:bg-[var(--color-primary-hover)] ${fullWidth ? "w-full" : ""}`,
+    small: `h-10 rounded-sm px-4 bg-[var(--color-primary)] text-[11px] text-white hover:bg-[var(--color-primary-hover)] ${fullWidth ? "w-full" : ""}`,
   };
 
   return (

@@ -74,7 +74,7 @@ export function TossListItem({
           )}
           {/* 부가 정보(우측 하단)는 네온 뱃지로 처리 */}
           {rightSub && (
-            <span className="text-[9px] font-black text-[var(--color-card)] bg-[var(--color-text-primary)] px-2 py-0.5 clip-slant-reverse ml-2 shrink-0">
+            <span className="text-[9px] font-black text-[var(--color-card)] bg-[var(--color-text-primary)] px-2 py-0.5 rounded-sm ml-2 shrink-0">
                {rightSub}
             </span>
           )}

@@ -111,7 +111,7 @@ function PillButton({
     <button
       type="button"
       onClick={onClick}
-      className={`clip-slant px-4 py-2 text-[11px] font-black uppercase tracking-widest transition-all duration-200 ${
+      className={`rounded-sm px-4 py-2 text-[11px] font-black uppercase tracking-widest transition-all duration-200 ${
         selected
           ? "bg-[var(--color-primary)] text-white shadow-[0_0_15px_rgba(var(--color-primary-rgb),0.5)]"
           : "bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface-bright)]"
@@ -168,7 +168,7 @@ function ThemeSelector() {
           key={opt.value}
           type="button"
           onClick={() => applyTheme(opt.value)}
-          className={`flex items-center gap-2 clip-slant px-4 py-2.5 text-[11px] font-black uppercase tracking-widest transition-all duration-200 ${
+          className={`flex items-center gap-2 rounded-sm px-4 py-2.5 text-[11px] font-black uppercase tracking-widest transition-all duration-200 ${
             theme === opt.value
               ? "bg-[var(--color-primary)] text-white shadow-[0_0_15px_rgba(var(--color-primary-rgb),0.5)]"
               : "bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface-bright)]"
@@ -218,7 +218,7 @@ function TextSizeSelector() {
             key={String(opt.value)}
             type="button"
             onClick={() => applySize(opt.value)}
-            className={`flex items-center gap-2 clip-slant px-4 py-2.5 text-[11px] font-black uppercase tracking-widest transition-all duration-200 ${
+            className={`flex items-center gap-2 rounded-sm px-4 py-2.5 text-[11px] font-black uppercase tracking-widest transition-all duration-200 ${
               large === opt.value
                 ? "bg-[var(--color-primary)] text-white shadow-[0_0_15px_rgba(var(--color-primary-rgb),0.5)]"
                 : "bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface-bright)]"
@@ -451,7 +451,7 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
           <button
             type="button"
             onClick={togglePreferFilter}
-            className={`relative inline-flex h-8 w-[52px] shrink-0 cursor-pointer items-center rounded-sm clip-slant transition-colors duration-300 ${
+            className={`relative inline-flex h-8 w-[52px] shrink-0 cursor-pointer items-center rounded-sm transition-colors duration-300 ${
               preferFilter
                 ? "bg-[var(--color-primary)] shadow-[0_0_15px_var(--color-primary)]"
                 : "bg-[var(--color-surface-bright)] shadow-inner"
@@ -462,7 +462,7 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
           >
             {/* 토글 원형 노브: ON=오른쪽, OFF=왼쪽 */}
             <span
-              className={`inline-block h-6 w-6 rounded-sm bg-white shadow-md transition-transform duration-300 clip-slant-reverse ${
+              className={`inline-block h-6 w-6 rounded-sm bg-white shadow-md transition-transform duration-300 ${
                 preferFilter ? "translate-x-[26px]" : "translate-x-[3px]"
               }`}
             />

@@ -168,14 +168,14 @@ function TournamentCard({ tournament }: { tournament: TournamentItem }) {
           <div className="flex items-center gap-1.5 flex-wrap">
             {statusLabel && (
               <span
-                className="px-1.5 py-0.5 text-[9px] font-black uppercase clip-slant-sm bg-white/90 leading-none"
+                className="px-1.5 py-0.5 text-[9px] font-black uppercase rounded-sm bg-white/90 leading-none"
                 style={{ color: "var(--color-primary)" }}
               >
                 {statusLabel}
               </span>
             )}
             {formatLabel && (
-              <span className="clip-slant-reverse bg-black/60 px-1.5 py-0.5 text-[9px] font-black text-white leading-none">
+              <span className="rounded-sm bg-black/60 px-1.5 py-0.5 text-[9px] font-black text-white leading-none">
                 {formatLabel}
               </span>
             )}

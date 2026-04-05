@@ -7,23 +7,15 @@
 
 ### 구현 기록
 
-구현한 기능: 추천 경기 카드 + 추천 대회 카드를 세로형(300px+) → 가로형 컴팩트(88px)로 축소
+구현한 기능: 전체 프로젝트에서 clip-slant/clip-slant-sm/clip-slant-reverse CSS 클래스 제거 (18개 파일)
 
 | 파일 경로 | 변경 내용 | 신규/수정 |
 |----------|----------|----------|
-| src/components/home/recommended-games.tsx | GameCard를 가로형(썸네일64+우측정보)으로 변경, 스켈레톤 축소 | 수정 |
-| src/components/home/recommended-tournaments.tsx | TournamentCard를 가로형(아이콘64+우측정보)으로 변경, 스켈레톤 축소 | 수정 |
+| 18개 tsx 파일 | clip-slant 계열 클래스를 rounded-sm으로 교체 또는 제거 | 수정 |
 
 tester 참고:
-- 테스트 방법: 홈 페이지에서 추천 경기/추천 대회 섹션 확인
-- 정상 동작: 카드가 가로형(좌측 썸네일/아이콘 + 우측 텍스트 정보)으로 표시, 높이 약 88px
-- 가로 스크롤 캐러셀 동작 유지 확인
-- 호버 시 네온 글로우 + 위로 살짝 이동 효과 유지 확인
-- 뱃지(clip-slant), 장소/시간 표시, 잔여석/참가현황 표시 확인
-
-reviewer 참고:
-- API/데이터 패칭 로직 변경 없음 (UI 렌더링만 교체)
-- 기존 tsc 에러 1건(personal-hero.tsx lucide-react)은 레거시 파일로 무관
+- tsc --noEmit 통과 (기존 레거시 에러 1건만 존재)
+- globals.css의 clip-slant CSS 정의는 유지됨
 
 ## 기획설계 (planner-architect)
 

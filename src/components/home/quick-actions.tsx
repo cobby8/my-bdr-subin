@@ -70,7 +70,7 @@ export function QuickActions({ dashboardData }: QuickActionsProps) {
         <Link
           key={action.label}
           href={action.href}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 clip-slant text-white transition-all hover:brightness-110 shadow-glow-primary hover:-translate-y-0.5"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-sm text-white transition-all hover:brightness-110 shadow-glow-primary hover:-translate-y-0.5"
           style={{ backgroundColor: action.bgColor }}
         >
           {/* 아이콘 — 축소된 20px */}

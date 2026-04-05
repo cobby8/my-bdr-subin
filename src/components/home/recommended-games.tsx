@@ -185,13 +185,13 @@ function GameCard({ game, photoUrl }: { game: RecommendedGame; photoUrl?: string
           {/* 1행: 유형 뱃지 + 추천 이유 */}
           <div className="flex items-center gap-1.5 flex-wrap">
             <span
-              className="px-1.5 py-0.5 text-[9px] font-black uppercase clip-slant-sm leading-none"
+              className="px-1.5 py-0.5 text-[9px] font-black uppercase rounded-sm leading-none"
               style={{ backgroundColor: badge.bg, color: badge.color }}
             >
               {badge.label}
             </span>
             {game.match_reason.length > 0 && (
-              <span className="clip-slant-reverse bg-white px-1.5 py-0.5 text-[9px] font-black text-[var(--color-primary)] leading-none">
+              <span className="rounded-sm bg-white px-1.5 py-0.5 text-[9px] font-black text-[var(--color-primary)] leading-none">
                 {game.match_reason[0]}
               </span>
             )}

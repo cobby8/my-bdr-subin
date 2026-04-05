@@ -451,7 +451,7 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
               ADMIN
             </Link>
           ) : (
-            <Link href="/login" className="block w-full bg-[var(--color-primary)] py-3 text-center text-sm font-black uppercase tracking-wider text-white clip-slant shadow-glow-primary hover:bg-[var(--color-primary-hover)] transition-colors">
+            <Link href="/login" className="block w-full bg-[var(--color-primary)] py-3 text-center text-sm font-black uppercase tracking-wider text-white rounded-sm shadow-glow-primary hover:bg-[var(--color-primary-hover)] transition-colors">
               로그인
             </Link>
           )}
@@ -506,7 +506,7 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
           ) : (
             <Link
               href="/login"
-              className="bg-[var(--color-primary)] px-3 py-1.5 text-xs font-black uppercase tracking-wider text-white transition-colors hover:bg-[var(--color-primary-hover)] clip-slant shadow-glow-primary"
+              className="bg-[var(--color-primary)] px-3 py-1.5 text-xs font-black uppercase tracking-wider text-white transition-colors hover:bg-[var(--color-primary-hover)] rounded-sm shadow-glow-primary"
             >
               로그인
             </Link>

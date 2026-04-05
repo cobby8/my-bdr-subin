@@ -161,7 +161,7 @@ export function PushPermissionBanner() {
         <button
           onClick={handleUnsubscribe}
           disabled={loading}
-          className="text-[10px] font-black uppercase px-3 py-1.5 clip-slant transition-colors disabled:opacity-50"
+          className="text-[10px] font-black uppercase px-3 py-1.5 rounded-sm transition-colors disabled:opacity-50"
           style={{ color: "var(--color-text-muted)", backgroundColor: "var(--color-surface-alt)" }}
         >
           {loading ? "처리 중..." : "해제"}
@@ -229,7 +229,7 @@ export function PushPermissionBanner() {
         <button
           onClick={handleSubscribe}
           disabled={loading}
-          className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white transition-colors disabled:opacity-50 clip-slant"
+          className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white transition-colors disabled:opacity-50 rounded-sm"
           style={{ backgroundColor: "var(--color-primary)" }}
         >
           {loading ? "요청 중..." : "허용하기"}

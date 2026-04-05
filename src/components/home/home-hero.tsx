@@ -122,7 +122,7 @@ export function HomeHero() {
           {/* 시작하기 버튼 (2K 버튼 스타일) */}
           <Link
             href="/signup"
-            className="inline-block rounded-none clip-slant-sm bg-[var(--color-card)] text-[var(--color-text-primary)] px-8 py-3 text-sm font-black uppercase transition-all duration-300 hover:scale-[1.03] hover:bg-[var(--color-primary)] hover:text-white hover:shadow-glow-primary hover:tracking-wide active:scale-95"
+            className="inline-block rounded-sm bg-[var(--color-card)] text-[var(--color-text-primary)] px-8 py-3 text-sm font-black uppercase transition-all duration-300 hover:scale-[1.03] hover:bg-[var(--color-primary)] hover:text-white hover:shadow-glow-primary hover:tracking-wide active:scale-95"
           >
             PLAY NOW
           </Link>

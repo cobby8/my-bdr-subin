@@ -60,7 +60,7 @@ export function ProfileCompletionBanner({ userName }: ProfileCompletionBannerPro
         </span>
         <Link
           href="/profile/complete"
-          className="ml-1 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-primary bg-white clip-slant transition-opacity hover:opacity-80"
+          className="ml-1 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-primary bg-white rounded-sm transition-opacity hover:opacity-80"
         >
           완성하기
         </Link>

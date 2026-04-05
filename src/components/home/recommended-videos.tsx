@@ -6,7 +6,7 @@
  * 2K 스타일 적용:
  * - 인라인 2K 헤더 "HIGHLIGHTS" (font-black uppercase)
  * - 카드에 hover:shadow-glow-primary + hover:border-primary 효과
- * - LIVE 뱃지에 clip-slant-sm 적용
+ * - LIVE 뱃지에 rounded-sm 적용
  * - 제목 font-extrabold uppercase
  *
  * API/데이터 패칭 로직은 기존과 100% 동일.
@@ -135,9 +135,9 @@ export function RecommendedVideos() {
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30">
                       <span className="material-symbols-outlined text-white text-4xl">play_circle</span>
                     </div>
-                    {/* LIVE 뱃지: clip-slant-sm으로 2K 스타일 적용 */}
+                    {/* LIVE 뱃지 */}
                     {v.is_live && (
-                      <span className="absolute top-2 left-2 bg-[var(--color-primary)] text-white text-[10px] px-2.5 py-1 font-black uppercase clip-slant-sm flex items-center gap-1">
+                      <span className="absolute top-2 left-2 bg-[var(--color-primary)] text-white text-[10px] px-2.5 py-1 font-black uppercase rounded-sm flex items-center gap-1">
                         <span className="relative flex h-1.5 w-1.5">
                           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
                           <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white" />
@@ -180,8 +180,8 @@ export function RecommendedVideos() {
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30">
                       <span className="material-symbols-outlined text-white text-4xl">play_circle</span>
                     </div>
-                    {/* 재생시간 뱃지: clip-slant-sm 스타일 */}
-                    <span className="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] px-2 py-0.5 font-black clip-slant-sm">
+                    {/* 재생시간 뱃지 */}
+                    <span className="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] px-2 py-0.5 font-black rounded-sm">
                       {v.duration}
                     </span>
                   </div>

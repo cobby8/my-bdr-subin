@@ -589,7 +589,7 @@ function RegistrationPage({
             href={`https://mybdr.kr/tournaments/${tournament.id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="block w-full rounded-sm clip-slant py-4 text-center text-[13px] font-black uppercase tracking-widest text-white transition-opacity hover:opacity-90 shadow-glow-primary"
+            className="block w-full rounded-sm py-4 text-center text-[13px] font-black uppercase tracking-widest text-white transition-opacity hover:opacity-90 shadow-glow-primary"
             style={{ backgroundColor: primary }}
           >
             신청하기 →

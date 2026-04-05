@@ -140,7 +140,7 @@ export function ProfileWidget({ dashboardData }: ProfileWidgetProps) {
           </p>
           {/* 레벨 뱃지: 크기 축소 */}
           <span
-            className="inline-flex items-center gap-0.5 text-[10px] font-black uppercase px-1.5 py-0.5 clip-slant shrink-0"
+            className="inline-flex items-center gap-0.5 text-[10px] font-black uppercase px-1.5 py-0.5 rounded-sm shrink-0"
             style={{
               backgroundColor: "var(--color-surface-bright)",
               color: "var(--color-text-primary)",

@@ -123,7 +123,7 @@ export function PwaInstallBanner() {
         {!isIos && (
           <button
             onClick={handleInstall}
-            className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white clip-slant hover:brightness-110 transition-all shadow-glow-primary"
+            className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white rounded-sm hover:brightness-110 transition-all shadow-glow-primary"
             style={{
               backgroundColor: "var(--color-primary)",
             }}

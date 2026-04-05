@@ -80,7 +80,7 @@ export function DivisionGeneratorModal({ open, onClose, onApply }: Props) {
               STEP 1. 성별 선택
             </p>
             <div
-              className="flex rounded-sm clip-slant overflow-hidden"
+              className="flex rounded-sm overflow-hidden"
               style={{ backgroundColor: "var(--color-surface)" }}
             >
               {GENDERS_LIST.map((g) => (
@@ -119,7 +119,7 @@ export function DivisionGeneratorModal({ open, onClose, onApply }: Props) {
                     setCategory(cat.key);
                     setSelectedDivs([]);
                   }}
-                  className="rounded-sm clip-slant px-4 py-2 text-[11px] font-black uppercase tracking-wider transition-all"
+                  className="rounded-sm px-4 py-2 text-[11px] font-black uppercase tracking-wider transition-all"
                   style={
                     category === cat.key
                       ? { backgroundColor: "var(--color-primary)", color: "#fff" }
@@ -151,7 +151,7 @@ export function DivisionGeneratorModal({ open, onClose, onApply }: Props) {
                     key={div.key}
                     type="button"
                     onClick={() => toggleDiv(div.key)}
-                    className="flex items-center gap-1 rounded-sm px-4 py-2.5 text-[11px] font-black uppercase tracking-wider transition-all border clip-slant-reverse"
+                    className="flex items-center gap-1 rounded-sm px-4 py-2.5 text-[11px] font-black uppercase tracking-wider transition-all border"
                     style={
                       active
                         ? {
