@@ -1,17 +1,14 @@
 "use client";
 
 /* ============================================================
- * RecentActivity — 홈 페이지 "최근 활동" 섹션
+ * RecentActivity — 홈 페이지 "최근 활동" 섹션 (NBA 2K 스타일)
  *
  * /api/web/feed에서 전체 최근 활동 5건을 조회하여 표시.
  * 경기 참가 / 대회 참가 / 커뮤니티 글 작성 3가지 타입.
- * 팔로우 기능이 아직 없으므로 전체 공개 활동을 표시.
- *
- * TossSectionHeader + TossListItem 패턴으로 통일.
+ * 인라인 2K 헤더 "RECENT PLAYS" + TossListItem 패턴.
  * ============================================================ */
 
 import useSWR from "swr";
-import { TossSectionHeader } from "@/components/toss/toss-section-header";
 import { TossListItem } from "@/components/toss/toss-list-item";
 
 /* 피드 아이템 타입 (API 응답과 동일) */
@@ -61,7 +58,12 @@ export function RecentActivity() {
 
   return (
     <section>
-      <TossSectionHeader title="최근 활동" />
+      {/* 2K 스타일 인라인 헤더: "RECENT PLAYS" (다른 홈 섹션과 동일 패턴) */}
+      <div className="flex items-end justify-between mb-4 pb-2 border-b-2 border-[var(--color-border)]">
+        <h2 className="text-xl md:text-2xl font-black italic uppercase tracking-tighter drop-shadow-sm">
+          RECENT PLAYS
+        </h2>
+      </div>
 
       {/* 로딩 중: 스켈레톤 3개 표시 */}
       {isLoading && (
