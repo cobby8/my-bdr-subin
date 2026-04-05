@@ -255,14 +255,14 @@ function SearchAutocomplete() {
           onKeyDown={(e) => { if (e.key === "Escape") setIsOpen(false); }}
           placeholder="경기, 대회, 팀 검색..."
           autoComplete="off"
-          className="w-full rounded-xl py-2.5 pl-10 pr-4 text-sm outline-none"
+          className="w-full rounded-md py-2.5 pl-10 pr-4 text-sm outline-none"
           style={{ backgroundColor: "var(--color-surface)", color: "var(--color-text-primary)" }}
         />
 
         {/* 최근 검색어 드롭다운: 입력이 비어있고 검색 결과가 없을 때만 표시 */}
         {showRecent && !isOpen && recentSearches.length > 0 && (
           <div
-            className="absolute left-0 top-full mt-2 w-full overflow-hidden rounded-xl border shadow-xl"
+            className="absolute left-0 top-full mt-2 w-full overflow-hidden rounded-md border shadow-xl"
             style={{ backgroundColor: "var(--color-card)", borderColor: "var(--color-border)", zIndex: 100 }}
           >
             <div className="flex items-center justify-between px-4 py-2" style={{ backgroundColor: "var(--color-surface)" }}>
@@ -297,7 +297,7 @@ function SearchAutocomplete() {
         {/* 자동완성 드롭다운 */}
         {isOpen && categories.length > 0 && (
           <div
-            className="absolute left-0 top-full mt-2 w-full overflow-hidden rounded-xl border shadow-xl"
+            className="absolute left-0 top-full mt-2 w-full overflow-hidden rounded-md border shadow-xl"
             style={{ backgroundColor: "var(--color-card)", borderColor: "var(--color-border)", zIndex: 100 }}
           >
             {categories.map((cat) => (
@@ -426,10 +426,10 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
             const active = isActive(item.href);
             return (
               <Link key={item.href} href={item.href} prefetch={true}
-                className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
+                className={`flex items-center gap-3 px-4 py-3 text-sm font-black italic uppercase tracking-wide transition-all rounded-none ${
                   active
-                    ? "bg-[var(--color-surface)] text-[var(--color-primary)] font-semibold"
-                    : "text-[var(--color-text-secondary)] hover:bg-[var(--color-surface)]"
+                    ? "bg-[var(--color-surface)] text-[var(--color-primary)] border-l-4 border-[var(--color-primary)]"
+                    : "text-[var(--color-text-secondary)] border-l-4 border-transparent hover:bg-[var(--color-surface)] hover:text-[var(--color-text-primary)]"
                 }`}
               >
                 <span className="material-symbols-outlined text-xl"
@@ -446,12 +446,12 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
           {user ? (
             /* 관리 링크만 표시 (프로필은 헤더 드롭다운으로 이동) */
             <Link href="/admin"
-              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--color-primary)] hover:bg-[var(--color-surface)] transition-colors">
+              className="flex items-center gap-3 px-3 py-2.5 text-sm font-black italic uppercase tracking-wide text-[var(--color-primary)] hover:bg-[var(--color-surface)] transition-colors border-l-4 border-transparent hover:border-[var(--color-primary)]">
               <span className="material-symbols-outlined text-lg">admin_panel_settings</span>
-              관리
+              ADMIN
             </Link>
           ) : (
-            <Link href="/login" className="block w-full rounded-xl bg-[var(--color-primary)] py-3 text-center text-sm font-bold text-white">
+            <Link href="/login" className="block w-full bg-[var(--color-primary)] py-3 text-center text-sm font-black italic uppercase tracking-wider text-white clip-slant shadow-glow-primary hover:bg-[var(--color-primary-hover)] transition-colors">
               로그인
             </Link>
           )}
@@ -506,7 +506,7 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
           ) : (
             <Link
               href="/login"
-              className="rounded-lg bg-[var(--color-primary)] px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-primary-hover)]"
+              className="bg-[var(--color-primary)] px-3 py-1.5 text-xs font-black italic uppercase tracking-wider text-white transition-colors hover:bg-[var(--color-primary-hover)] clip-slant shadow-glow-primary"
             >
               로그인
             </Link>
@@ -569,7 +569,7 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
                 className="flex flex-col items-center justify-center gap-0.5 text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-text-secondary)]"
               >
                 <span className="material-symbols-outlined text-2xl">menu</span>
-                <span className="text-[10px] font-medium">{item.label}</span>
+                <span className="text-[9px] font-black italic uppercase tracking-widest">{item.label}</span>
               </button>
             );
           }
@@ -592,7 +592,7 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
               >
                 {item.icon}
               </span>
-              <span className="text-[10px] font-medium">{item.label}</span>
+              <span className="text-[9px] font-black italic uppercase tracking-widest">{item.label}</span>
             </Link>
           );
         })}

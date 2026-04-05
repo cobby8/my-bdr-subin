@@ -137,7 +137,7 @@ function MatchCard({ match, isLive }: { match: LiveMatch; isLive?: boolean }) {
   return (
     <Link href={`/live/${match.id}`}>
       <div
-        className={`bg-[#111118] rounded-xl p-4 transition-all hover:bg-[#16161F] ${
+        className={`bg-[#111118] rounded-md p-4 transition-all hover:bg-[#16161F] ${
           isLive ? "ring-1 ring-red-500/30" : ""
         }`}
       >

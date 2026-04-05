@@ -73,7 +73,7 @@ export function RecommendedVideos() {
         <Skeleton className="h-6 w-32 mb-4" />
         <div className="flex gap-4 overflow-hidden">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="aspect-video w-56 rounded-2xl shrink-0" />
+            <Skeleton key={i} className="aspect-video w-56 rounded-md shrink-0" />
           ))}
         </div>
       </section>
@@ -104,7 +104,7 @@ export function RecommendedVideos() {
                 className="block shrink-0 w-56"
               >
                 <div
-                  className="group rounded-2xl overflow-hidden bg-[var(--color-card)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[var(--shadow-elevated)]"
+                  className="group rounded-md overflow-hidden bg-[var(--color-card)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[var(--shadow-elevated)]"
                   style={{ boxShadow: "var(--shadow-card)" }}
                 >
                   {/* 썸네일 */}
@@ -143,7 +143,7 @@ export function RecommendedVideos() {
             DUMMY_VIDEOS.map((v) => (
               <div key={v.video_id} className="shrink-0 w-56">
                 <div
-                  className="group rounded-2xl overflow-hidden bg-[var(--color-card)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[var(--shadow-elevated)]"
+                  className="group rounded-md overflow-hidden bg-[var(--color-card)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[var(--shadow-elevated)]"
                   style={{ boxShadow: "var(--shadow-card)" }}
                 >
                   <div className="aspect-video relative overflow-hidden">

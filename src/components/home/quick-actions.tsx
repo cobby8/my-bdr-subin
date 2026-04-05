@@ -69,18 +69,18 @@ export function QuickActions({ dashboardData }: QuickActionsProps) {
         <Link
           key={action.label}
           href={action.href}
-          className="flex-1 flex flex-col items-center justify-center gap-2 py-4 rounded-xl text-white transition-opacity hover:opacity-90 active:opacity-80"
+          className="flex-1 flex flex-col items-center justify-center gap-2 py-4 clip-slant text-white transition-all hover:brightness-110 shadow-glow-primary hover:-translate-y-1"
           style={{ backgroundColor: action.bgColor }}
         >
           {/* Material Symbols 아이콘 (32px) */}
           <span
             className="material-symbols-outlined"
-            style={{ fontSize: "32px" }}
+            style={{ fontSize: "28px" }}
           >
             {action.icon}
           </span>
-          {/* 버튼 라벨 — 긴 텍스트 잘림 방지 */}
-          <span className="text-sm font-medium text-center leading-tight px-1 truncate max-w-full">
+          {/* 버튼 라벨 — 긴 텍스트 잘림 방지 및 이탤릭 적용 */}
+          <span className="text-[11px] font-black italic uppercase tracking-wider text-center leading-tight px-1 truncate max-w-full">
             {action.label}
           </span>
         </Link>

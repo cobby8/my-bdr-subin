@@ -192,7 +192,7 @@ export default function LiveBoxScorePage() {
 
         {/* 쿼터별 점수 */}
         {quarters.some((q) => q.home > 0 || q.away > 0) && (
-          <div className="mt-4 bg-[#111118] rounded-xl overflow-hidden">
+          <div className="mt-4 bg-[#111118] rounded-md overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-white/10">
@@ -284,7 +284,7 @@ function BoxScoreTable({
         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
         <span className="text-sm font-semibold text-gray-200">{teamName}</span>
       </div>
-      <div className="bg-[#111118] rounded-xl overflow-hidden">
+      <div className="bg-[#111118] rounded-md overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>

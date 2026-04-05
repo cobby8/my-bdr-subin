@@ -65,13 +65,13 @@ export function StepConfirm({ data, updateData, generateTitle, submitError }: St
       )}
 
       {/* 최종 확인 카드 */}
-      <div className="bg-[var(--color-card)] p-8 rounded-xl border border-[var(--color-border)] shadow-sm">
+      <div className="bg-[var(--color-card)] p-8 rounded-md border border-[var(--color-border)] shadow-sm">
         <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-6">
           Step 3. 최종 확인
         </h2>
 
         {/* 미리보기 카드 (네이비 배경) */}
-        <div className="bg-[var(--color-accent)] text-white p-6 rounded-xl mb-6">
+        <div className="bg-[var(--color-accent)] text-white p-6 rounded-md mb-6">
           {/* 타입 배지 */}
           <div className="mb-3">
             <span className="inline-block px-3 py-1 bg-white/10 rounded-full text-xs font-medium">
@@ -142,7 +142,7 @@ export function StepConfirm({ data, updateData, generateTitle, submitError }: St
         </div>
 
         {/* 추가 설정 (접기/펼치기) */}
-        <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden">
+        <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden">
           <button
             type="button"
             onClick={() => setShowAdvanced(!showAdvanced)}

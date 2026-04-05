@@ -13,6 +13,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { TossCard } from "@/components/toss/toss-card";
+import { PushNotificationToggle } from "@/components/shared/push-notification-toggle";
 
 // 직렬화된 알림 타입 (서버에서 전달)
 interface SerializedNotification {
@@ -178,6 +179,9 @@ export function NotificationsClient({ notifications: initialNotifications }: Pro
           </button>
         )}
       </div>
+
+      {/* ==== 푸시 알림 권한 설정 토글 ==== */}
+      <PushNotificationToggle />
 
       {/* ==== pill 탭: 유형별 필터 ==== */}
       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">

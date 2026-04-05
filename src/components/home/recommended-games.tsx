@@ -123,7 +123,7 @@ export function RecommendedGames({ fallbackData }: RecommendedGamesProps) {
         <Skeleton className="h-6 w-40 mb-4" />
         <div className="flex gap-4 overflow-hidden">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="h-44 w-56 rounded-2xl shrink-0" />
+            <Skeleton key={i} className="h-44 w-56 rounded-md shrink-0" />
           ))}
         </div>
       </section>
@@ -159,28 +159,36 @@ function GameCard({ game, photoUrl }: { game: RecommendedGame; photoUrl?: string
   const spotsText = game.spots_left !== null ? `${game.spots_left}자리 남음` : null;
 
   return (
-    <Link href={href} className="block shrink-0 w-56">
-      {/* 토스 카드: 둥근 모서리(16px) + 가벼운 그림자 + 호버 효과 */}
+    <Link href={href} className="block shrink-0 w-[240px]">
+      {/* 2K 스타일 카드: 약간 각진 모서리, 강렬한 그림자, 네온 호버 효과 */}
       <div
-        className="group rounded-2xl overflow-hidden bg-[var(--color-card)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[var(--shadow-elevated)] h-full"
+        className="group rounded-md overflow-hidden bg-[var(--color-card)] transition-all duration-300 hover:-translate-y-2 hover:shadow-glow-primary border border-transparent hover:border-[var(--color-primary)] h-full flex flex-col relative"
         style={{ boxShadow: "var(--shadow-card)" }}
       >
-        {/* 이미지 영역: 장소 사진 또는 유형별 그라디언트 */}
+        {/* OVR/번호 워터마크 효과 (호버 시 살짝 확대) */}
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-5 font-black italic text-8xl transition-all duration-500 pointer-events-none z-0">
+          99
+        </div>
+
+        {/* 이미지 영역 */}
         <div
-          className={`relative h-28 flex items-center justify-center bg-cover bg-center ${photoUrl === undefined ? "animate-pulse bg-[var(--color-surface)]" : ""}`}
+          className={`relative h-32 flex items-center justify-center bg-cover bg-center shrink-0 z-10 ${photoUrl === undefined ? "animate-pulse bg-[var(--color-surface)]" : ""}`}
           style={photoUrl
             ? { backgroundImage: `url(${photoUrl})` }
             : photoUrl === null ? { background: badge.gradient } : undefined
           }
         >
+          {/* 그라디언트 하프 오버레이 (텍스트 가독성 + 드라마틱 연출) */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-card)] via-transparent to-black/30" />
+
           {/* 사진 없을 때 아이콘 */}
           {photoUrl === null && (
-            <span className="material-symbols-outlined text-5xl text-white/20">{badge.icon}</span>
+            <span className="material-symbols-outlined text-6xl text-white/30 drop-shadow-md">{badge.icon}</span>
           )}
 
-          {/* 유형 뱃지 (좌상단) */}
+          {/* 유형 뱃지 (좌상단) - 네온 스타일로 변형 */}
           <span
-            className="absolute top-2 left-2 rounded-md px-2 py-0.5 text-xs font-bold"
+            className="absolute top-2 left-2 px-2.5 py-1 text-[10px] font-black italic uppercase clip-slant-sm backdrop-blur-md"
             style={{ backgroundColor: badge.bg, color: badge.color }}
           >
             {badge.label}
@@ -188,40 +196,43 @@ function GameCard({ game, photoUrl }: { game: RecommendedGame; photoUrl?: string
 
           {/* 추천 이유 (우상단) */}
           {game.match_reason.length > 0 && (
-            <span className="absolute top-2 right-2 rounded-md bg-white/90 px-1.5 py-0.5 text-xs font-bold text-[var(--color-primary)]">
+            <span className="absolute top-2 right-2 clip-slant-reverse bg-white px-2 py-0.5 text-[10px] font-black italic text-[var(--color-primary)] shadow-sm">
               {game.match_reason[0]}
             </span>
           )}
         </div>
 
-        {/* 정보 영역: 토스 스타일 패딩 + 계층적 텍스트 */}
-        <div className="p-3.5">
+        {/* 정보 영역: 밀도를 높이고 폰트 두께 조절 (2K 스탯 패널 느낌) */}
+        <div className="p-3.5 flex flex-col grow z-10 bg-gradient-to-br from-[var(--color-card)] to-[var(--color-surface)]">
           {/* 제목 */}
-          <h4 className="text-sm font-bold text-[var(--color-text-primary)] line-clamp-1 mb-1.5">
-            {game.title ?? "경기"}
+          <h4 className="text-base font-extrabold italic text-[var(--color-text-primary)] line-clamp-2 leading-tight tracking-tight mb-2 uppercase group-hover:text-[var(--color-primary)] transition-colors">
+            {game.title ?? "GAME"}
           </h4>
 
-          {/* 장소 + 시간 */}
-          <div className="space-y-1">
+          {/* 장소 + 시간 (스탯처럼 위아래로 좁게 배치) */}
+          <div className="mt-auto space-y-1.5 border-t border-[var(--color-border-subtle)] pt-2">
             {location && (
-              <p className="flex items-center gap-1 text-xs text-[var(--color-text-muted)]">
-                <span className="material-symbols-outlined text-xs">location_on</span>
+              <p className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)] font-medium">
+                <span className="material-symbols-outlined text-[14px]">location_on</span>
                 <span className="truncate">{location}</span>
               </p>
             )}
             {scheduleStr && (
-              <p className="flex items-center gap-1 text-xs text-[var(--color-text-muted)]">
-                <span className="material-symbols-outlined text-xs">schedule</span>
+              <p className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)] font-medium">
+                <span className="material-symbols-outlined text-[14px]">schedule</span>
                 {scheduleStr}
               </p>
             )}
           </div>
 
-          {/* 잔여석 */}
+          {/* 잔여석 - 네온 강조 느낌 */}
           {spotsText && (
-            <p className="mt-2 text-xs font-bold text-[var(--color-primary)]">
-              {spotsText}
-            </p>
+            <div className="mt-3 flex items-center justify-between">
+              <span className="text-[10px] uppercase font-black tracking-wider text-[var(--color-text-muted)]">SPOT</span>
+              <span className="text-sm font-black italic text-[var(--color-primary)] animate-pulse">
+                {spotsText}
+              </span>
+            </div>
           )}
         </div>
       </div>

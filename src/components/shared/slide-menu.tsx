@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ThemeToggle } from "@/components/shared/theme-toggle";
-import { TextSizeToggle } from "@/components/shared/text-size-toggle";
-import { PushNotificationToggle } from "@/components/shared/push-notification-toggle";
+
 import { ProfileAccordion } from "@/components/shared/profile-accordion";
 
 /* ============================================================
@@ -73,32 +71,22 @@ export function SlideMenu({
         <div className="border-b border-[var(--color-border)] p-6">
           {isLoggedIn ? (
             <>
-              {/* 로그인 상태: 아바타 + 이름 + 역할 */}
-              <div className="flex items-center gap-4">
-                {/* 아바타: 이름 첫 글자, 빨간 테두리 */}
-                <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full border-2 border-[var(--color-primary)] bg-[var(--color-card)] text-xl font-bold text-[var(--color-text-primary)]">
-                  {name?.trim() ? name.trim()[0].toUpperCase() : "U"}
+              {/* PRO 업그레이드 한줄 알림 */}
+              <Link
+                href="/pricing"
+                onClick={onClose}
+                className="mb-4 flex items-center justify-between gap-2 rounded-md border border-[var(--color-primary)]/30 bg-[var(--color-primary-light)] p-2 px-3"
+              >
+                <span className="text-[11px] font-semibold text-[var(--color-text-primary)] leading-tight">
+                  PRO로 업그레이드하고 모든 기능 사용
+                </span>
+                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary)] text-[8px] font-black italic text-white shadow-sm">
+                  GO
                 </div>
-                <div>
-                  <p className="text-lg font-bold text-[var(--color-text-primary)]">{name || "사용자"}</p>
-                  {/* 역할 뱃지 */}
-                  <p className="text-xs font-medium text-[var(--color-primary)]">
-                    {role === "super_admin" ? "관리자" : role === "tournament_admin" ? "대회 운영자" : "플레이어"}
-                  </p>
-                </div>
-              </div>
+              </Link>
 
-              {/* PRO 업그레이드 배너 */}
-              <div className="mt-4 rounded-lg border border-[var(--color-primary)]/30 bg-[var(--color-primary-light)] p-3">
-                <p className="mb-2 text-xs text-[var(--color-text-primary)]">PRO로 업그레이드하고 모든 기능을 사용하세요</p>
-                <Link
-                  href="/pricing"
-                  onClick={onClose}
-                  className="block w-full rounded bg-[var(--color-primary)] py-2 text-center text-sm font-bold text-white transition-colors hover:bg-[var(--color-primary-hover)]"
-                >
-                  프로 업그레이드
-                </Link>
-              </div>
+              {/* 프로필 4카테고리 아코디언 (하단에서 최상단으로 이동) */}
+              <ProfileAccordion name={name} onNavigate={onClose} />
             </>
           ) : (
             /* 비로그인 상태: 로그인/회원가입 버튼 */
@@ -153,33 +141,7 @@ export function SlideMenu({
           })}
         </nav>
 
-        {/* 하단: 프로필 아코디언 + 관리 + 유틸리티 */}
-        <div className="border-t border-[var(--color-border)] p-4 space-y-2">
-          {/* 프로필 4카테고리 아코디언 (로그인 시) */}
-          {isLoggedIn && (
-            <ProfileAccordion name={name} onNavigate={onClose} />
-          )}
 
-          {/* 관리 링크 */}
-          {isLoggedIn && (
-            <Link
-              href="/admin"
-              onClick={onClose}
-              className="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm text-[var(--color-primary)] transition-colors hover:bg-[var(--color-elevated)]"
-            >
-              <span className="material-symbols-outlined text-lg">admin_panel_settings</span>
-              <span>관리</span>
-            </Link>
-          )}
-
-          {/* 테마 전환 + 글씨 크기 버튼 */}
-          <div className="flex items-center gap-2 px-2">
-            <ThemeToggle />
-            <TextSizeToggle />
-          </div>
-          {/* 푸시 알림 권한 요청 토글 */}
-          <PushNotificationToggle />
-        </div>
       </div>
     </>
   );

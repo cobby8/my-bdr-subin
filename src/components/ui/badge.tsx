@@ -20,7 +20,7 @@ export function Badge({
   variant?: BadgeVariant;
 }) {
   return (
-    <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${variants[variant]}`}>
+    <span className={`inline-flex clip-slant-sm px-3 py-1 text-[11px] font-black italic uppercase tracking-wider ${variants[variant]}`}>
       {children}
     </span>
   );

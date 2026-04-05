@@ -93,7 +93,7 @@ export function RecommendedTournaments() {
         <Skeleton className="h-6 w-40 mb-4" />
         <div className="flex gap-4 overflow-hidden">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="h-44 w-56 rounded-2xl shrink-0" />
+            <Skeleton key={i} className="h-44 w-56 rounded-md shrink-0" />
           ))}
         </div>
       </section>
@@ -102,8 +102,15 @@ export function RecommendedTournaments() {
 
   return (
     <section>
-      {/* 토스 스타일 섹션 헤더: 제목 + "전체보기 >" */}
-      <TossSectionHeader title="추천 대회" actionHref="/tournaments" />
+      {/* 2K 스타일 헤더: 두껍고 기울어짐 */}
+      <div className="flex items-end justify-between mb-4 pb-2 border-b-2 border-[var(--color-border)]">
+        <h2 className="text-xl md:text-2xl font-black italic uppercase tracking-tighter drop-shadow-sm">
+          추천 대회
+        </h2>
+        <Link href="/tournaments" className="text-[10px] font-black italic text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors uppercase">
+          VIEW ALL &raquo;
+        </Link>
+      </div>
 
       {/* 가로 스크롤 캐러셀: 추천경기와 동일한 패턴 */}
       <div className="flex gap-3 overflow-x-auto no-scrollbar -mx-5 px-5 pb-2">
@@ -136,30 +143,35 @@ function TournamentCard({ tournament }: { tournament: TournamentItem }) {
     : `${tournament.teamCount}팀 참가`;
 
   return (
-    <Link href={href} className="block shrink-0 w-56">
-      {/* 토스 카드: 둥근 모서리(16px) + 가벼운 그림자 + 호버 효과 */}
+    <Link href={href} className="block shrink-0 w-[240px]">
+      {/* 2K 스타일 카드: 네온 호버 효과, 강렬한 그림자 */}
       <div
-        className="group rounded-2xl overflow-hidden bg-[var(--color-card)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[var(--shadow-elevated)] h-full"
+        className="group rounded-md overflow-hidden bg-[var(--color-card)] transition-all duration-300 hover:-translate-y-2 hover:shadow-glow-primary border border-transparent hover:border-[var(--color-primary)] h-full flex flex-col relative"
         style={{ boxShadow: "var(--shadow-card)" }}
       >
+        {/* 워터마크 효과 */}
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-5 font-black italic text-8xl transition-all duration-500 pointer-events-none z-0 tracking-tighter">
+          CUP
+        </div>
+
         {/* 이미지 영역: 상태별 그라디언트 배경 + 아이콘 */}
         <div
-          className="relative h-28 flex items-center justify-center"
+          className="relative h-32 flex items-center justify-center shrink-0 z-10"
           style={{ background: gradient }}
         >
+          {/* 그라디언트 하프 오버레이 */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-card)] via-transparent to-black/30" />
+
           {/* 대회 아이콘 */}
-          <span className="material-symbols-outlined text-5xl text-white/20">
+          <span className="material-symbols-outlined text-6xl text-white/30 drop-shadow-md">
             emoji_events
           </span>
 
-          {/* 상태 뱃지 (좌상단) */}
+          {/* 상태 뱃지 (좌상단) - 네온 스타일 */}
           {statusLabel && (
             <span
-              className="absolute top-2 left-2 rounded-md px-2 py-0.5 text-xs font-bold"
-              style={{
-                backgroundColor: "rgba(255,255,255,0.9)",
-                color: "var(--color-primary)",
-              }}
+              className="absolute top-2 left-2 px-2.5 py-1 text-[10px] font-black italic uppercase clip-slant-sm bg-white/90"
+              style={{ color: "var(--color-primary)" }}
             >
               {statusLabel}
             </span>
@@ -167,41 +179,44 @@ function TournamentCard({ tournament }: { tournament: TournamentItem }) {
 
           {/* 포맷 뱃지 (우상단) */}
           {formatLabel && (
-            <span className="absolute top-2 right-2 rounded-md bg-black/40 px-1.5 py-0.5 text-xs font-bold text-white">
+            <span className="absolute top-2 right-2 clip-slant-reverse bg-black/60 backdrop-blur-sm px-2 py-0.5 text-[10px] font-black italic text-white shadow-sm">
               {formatLabel}
             </span>
           )}
         </div>
 
-        {/* 정보 영역: 토스 스타일 패딩 + 계층적 텍스트 */}
-        <div className="p-3.5">
+        {/* 정보 영역: 밀도를 높이고 폰트 두께 조절 */}
+        <div className="p-3.5 flex flex-col grow z-10 bg-gradient-to-br from-[var(--color-card)] to-[var(--color-surface)]">
           {/* 대회명 */}
-          <h4 className="text-sm font-bold text-[var(--color-text-primary)] line-clamp-1 mb-1.5">
+          <h4 className="text-base font-extrabold italic text-[var(--color-text-primary)] line-clamp-2 leading-tight tracking-tight mb-2 uppercase group-hover:text-[var(--color-primary)] transition-colors">
             {tournament.name}
           </h4>
 
           {/* 장소 + 일정 */}
-          <div className="space-y-1">
+          <div className="mt-auto space-y-1.5 border-t border-[var(--color-border-subtle)] pt-2">
             {(tournament.venueName || tournament.city) && (
-              <p className="flex items-center gap-1 text-xs text-[var(--color-text-muted)]">
-                <span className="material-symbols-outlined text-xs">location_on</span>
+              <p className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)] font-medium">
+                <span className="material-symbols-outlined text-[14px]">location_on</span>
                 <span className="truncate">
                   {tournament.venueName ?? tournament.city}
                 </span>
               </p>
             )}
             {startStr && (
-              <p className="flex items-center gap-1 text-xs text-[var(--color-text-muted)]">
-                <span className="material-symbols-outlined text-xs">calendar_today</span>
+              <p className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)] font-medium">
+                <span className="material-symbols-outlined text-[14px]">calendar_today</span>
                 {startStr}
               </p>
             )}
           </div>
 
-          {/* 참가 현황 */}
-          <p className="mt-2 text-xs font-bold text-[var(--color-primary)]">
-            {capacityText}
-          </p>
+          {/* 참가 현황 (네온 스타일) */}
+          <div className="mt-3 flex items-center justify-between">
+            <span className="text-[10px] uppercase font-black tracking-wider text-[var(--color-text-muted)]">ENTRY</span>
+            <span className="text-sm font-black italic text-[var(--color-primary)]">
+              {capacityText}
+            </span>
+          </div>
         </div>
       </div>
     </Link>

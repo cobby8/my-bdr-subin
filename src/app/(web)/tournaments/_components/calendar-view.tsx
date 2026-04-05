@@ -191,7 +191,7 @@ export function CalendarView({ categoryFilter = "all", genderFilter = "all" }: C
 
       {/* 범례 (토글) */}
       {showLegend && (
-        <div className="flex flex-wrap gap-x-4 gap-y-1.5 rounded-xl bg-[var(--color-surface)] p-3">
+        <div className="flex flex-wrap gap-x-4 gap-y-1.5 rounded-md bg-[var(--color-surface)] p-3">
           {CALENDAR_COLOR_LEGEND.map(({ key, label, color }) => (
             <div key={key} className="flex items-center gap-1.5">
               <span className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: color }} />
@@ -202,7 +202,7 @@ export function CalendarView({ categoryFilter = "all", genderFilter = "all" }: C
       )}
 
       {/* 달력 그리드 */}
-      <div className="rounded-xl bg-[var(--color-card)] overflow-hidden" style={{ boxShadow: "var(--shadow-card)" }}>
+      <div className="rounded-md bg-[var(--color-card)] overflow-hidden" style={{ boxShadow: "var(--shadow-card)" }}>
         {/* 요일 헤더 */}
         <div className="grid grid-cols-7 border-b border-[var(--color-border)]">
           {WEEKDAYS.map((day, idx) => (
@@ -295,7 +295,7 @@ export function CalendarView({ categoryFilter = "all", genderFilter = "all" }: C
 
       {/* 선택된 날짜의 대회 상세 목록 */}
       {selectedDate && (
-        <div className="rounded-xl bg-[var(--color-card)] p-4" style={{ boxShadow: "var(--shadow-card)" }}>
+        <div className="rounded-md bg-[var(--color-card)] p-4" style={{ boxShadow: "var(--shadow-card)" }}>
           <h3 className="text-sm font-bold text-[var(--color-text-primary)] mb-3">
             {month}월 {selectedDate}일 대회
           </h3>

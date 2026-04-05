@@ -204,7 +204,7 @@ export function WeekView({ categoryFilter = "all", genderFilter = "all" }: WeekV
       </div>
 
       {/* 주간 그리드 */}
-      <div className="rounded-xl bg-[var(--color-card)] overflow-hidden" style={{ boxShadow: "var(--shadow-card)" }}>
+      <div className="rounded-md bg-[var(--color-card)] overflow-hidden" style={{ boxShadow: "var(--shadow-card)" }}>
         {/* 모바일에서 가로 스크롤 */}
         <div className="overflow-x-auto">
           <div className="min-w-[700px]">

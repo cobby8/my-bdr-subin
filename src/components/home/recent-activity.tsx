@@ -67,7 +67,7 @@ export function RecentActivity() {
       {isLoading && (
         <div className="space-y-1">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="flex items-center gap-3 rounded-xl px-4 py-3">
+            <div key={i} className="flex items-center gap-3 rounded-md px-4 py-3">
               <div className="h-10 w-10 animate-pulse rounded-full" style={{ backgroundColor: "var(--color-surface)" }} />
               <div className="flex-1 space-y-2">
                 <div className="h-3.5 w-3/4 animate-pulse rounded" style={{ backgroundColor: "var(--color-surface)" }} />

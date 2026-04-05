@@ -10,7 +10,7 @@ import { usePathname } from "next/navigation";
  * 구조: B 아이콘 클릭 → 드롭다운 패널 (4카테고리 플랫 목록)
  * - 외부 클릭(mousedown) + ESC 키로 닫힘
  * - 각 링크 클릭 시 닫힘 + 페이지 이동
- * - z-50, var(--color-card) 배경, shadow-lg, rounded-xl
+ * - z-50, var(--color-card) 배경, shadow-lg, rounded-md
  *
  * 사용처: layout.tsx 헤더 우측 프로필 아이콘 자리
  * ============================================================ */
@@ -86,7 +86,7 @@ export function ProfileDropdown({ name }: ProfileDropdownProps) {
       {/* 드롭다운 패널 */}
       {isOpen && (
         <div
-          className="absolute right-0 top-full mt-2 w-64 overflow-hidden rounded-xl border shadow-lg"
+          className="absolute right-0 top-full mt-2 w-64 overflow-hidden rounded-md border shadow-glow-primary"
           style={{
             backgroundColor: "var(--color-card)",
             borderColor: "var(--color-border)",
@@ -108,12 +108,12 @@ export function ProfileDropdown({ name }: ProfileDropdownProps) {
             </div>
             <div className="min-w-0 flex-1">
               <p
-                className="truncate text-sm font-bold"
+                className="truncate text-[16px] font-black italic uppercase tracking-wide pr-1"
                 style={{ color: "var(--color-text-primary)" }}
               >
                 {displayName}
               </p>
-              <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>
+              <p className="text-[10px] font-bold italic uppercase" style={{ color: "var(--color-text-muted)" }}>
                 내 프로필 보기
               </p>
             </div>
@@ -141,10 +141,10 @@ export function ProfileDropdown({ name }: ProfileDropdownProps) {
                   {item.icon}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium" style={{ color: "var(--color-text-primary)" }}>
+                  <p className="text-[12px] font-black italic uppercase tracking-wider pr-1" style={{ color: "var(--color-text-primary)" }}>
                     {item.label}
                   </p>
-                  <p className="text-[11px]" style={{ color: "var(--color-text-muted)" }}>
+                  <p className="text-[9px] font-bold italic uppercase tracking-widest" style={{ color: "var(--color-text-muted)" }}>
                     {item.subtitle}
                   </p>
                 </div>
@@ -165,7 +165,7 @@ export function ProfileDropdown({ name }: ProfileDropdownProps) {
           >
             <button
               onClick={handleLogout}
-              className="flex w-full items-center gap-3 rounded-lg px-0 py-2 transition-colors hover:bg-[var(--color-surface)]"
+              className="flex w-full items-center gap-3 rounded-none px-0 py-2 transition-colors hover:bg-[var(--color-surface)]"
             >
               <span
                 className="material-symbols-outlined text-base"
@@ -174,7 +174,7 @@ export function ProfileDropdown({ name }: ProfileDropdownProps) {
                 logout
               </span>
               <span
-                className="text-sm font-medium"
+                className="text-[12px] font-black italic uppercase tracking-wider pr-1"
                 style={{ color: "var(--color-error, #EF4444)" }}
               >
                 로그아웃

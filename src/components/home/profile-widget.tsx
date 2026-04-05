@@ -75,14 +75,10 @@ export function ProfileWidget({ dashboardData }: ProfileWidgetProps) {
   if (isLoading) {
     return (
       <div
-        className="rounded-xl border p-5 animate-pulse"
-        style={{
-          backgroundColor: "var(--color-card)",
-          borderColor: "var(--color-border)",
-        }}
+        className="rounded-md border p-5 animate-pulse bg-[var(--color-card)] border-[var(--color-border)]"
       >
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-full" style={{ backgroundColor: "var(--color-surface)" }} />
+          <div className="w-12 h-12 rounded-md" style={{ backgroundColor: "var(--color-surface)" }} />
           <div className="space-y-2 flex-1">
             <div className="h-4 w-24 rounded" style={{ backgroundColor: "var(--color-surface)" }} />
             <div className="h-3 w-16 rounded" style={{ backgroundColor: "var(--color-surface)" }} />
@@ -128,34 +124,30 @@ export function ProfileWidget({ dashboardData }: ProfileWidgetProps) {
 
   return (
     <div
-      className="rounded-xl border p-5"
-      style={{
-        backgroundColor: "var(--color-card)",
-        borderColor: "var(--color-border)",
-      }}
+      className="rounded-md border p-5 bg-[var(--color-card)] border-[var(--color-border)] shadow-sm hover:shadow-glow-primary transition-shadow duration-300"
     >
       {/* 상단: 아바타 + 닉네임 + 레벨 뱃지 */}
       <div className="flex items-center gap-3 mb-4">
-        {/* 이니셜 원형 아바타 */}
+        {/* 아바타 (기울임 효과 없음) */}
         <div
-          className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-white shrink-0"
-          style={{ backgroundColor: "var(--color-primary)" }}
+          className="w-12 h-12 rounded-md flex items-center justify-center text-xl font-black italic text-white shrink-0 shadow-inner"
+          style={{ background: "linear-gradient(135deg, var(--color-primary) 0%, rgba(0,0,0,0.5) 100%)" }}
         >
           {initial}
         </div>
         <div className="min-w-0 flex-1">
           <p
-            className="text-base font-bold truncate"
+            className="text-lg font-black italic uppercase tracking-wide truncate pr-1"
             style={{ color: "var(--color-text-primary)" }}
           >
             {displayName}
           </p>
           {/* 레벨 뱃지 */}
           <span
-            className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full"
+            className="inline-flex items-center gap-1 text-[10px] font-black italic uppercase px-2 py-0.5 clip-slant"
             style={{
-              backgroundColor: "var(--color-surface)",
-              color: "var(--color-text-secondary)",
+              backgroundColor: "var(--color-surface-bright)",
+              color: "var(--color-text-primary)",
             }}
           >
             {gData.emoji} Lv.{gData.level} {gData.title}
@@ -212,14 +204,14 @@ export function ProfileWidget({ dashboardData }: ProfileWidgetProps) {
         </span>
         <div className="flex-1 min-w-0">
           <p
-            className="text-sm font-medium truncate"
+            className="text-sm font-black italic uppercase tracking-wide truncate pr-1"
             style={{ color: "var(--color-text-primary)" }}
           >
             {missionText}
           </p>
         </div>
         <span
-          className="text-xs font-bold whitespace-nowrap"
+          className="text-[10px] font-black italic uppercase whitespace-nowrap"
           style={{ color: "var(--color-primary)" }}
         >
           +{missionXp} XP
@@ -247,10 +239,10 @@ export function ProfileWidget({ dashboardData }: ProfileWidgetProps) {
                   pin_drop
                 </span>
                 <span
-                  className="text-xs truncate flex-1 group-hover:underline"
+                  className="text-[11px] font-bold italic uppercase tracking-wider truncate flex-1 group-hover:text-[var(--color-primary)] transition-colors pr-1"
                   style={{ color: "var(--color-text-secondary)" }}
                 >
-                  자주 가는 코트: {dashboardData.frequentCourts[0].name}
+                  {dashboardData.frequentCourts[0].name}
                 </span>
                 <span
                   className="text-[10px]"
@@ -273,15 +265,14 @@ export function ProfileWidget({ dashboardData }: ProfileWidgetProps) {
                   sports_basketball
                 </span>
                 <span
-                  className="text-xs truncate flex-1 group-hover:underline"
+                  className="text-[11px] font-bold italic uppercase tracking-wider truncate flex-1 group-hover:text-[var(--color-primary)] transition-colors pr-1"
                   style={{ color: "var(--color-text-secondary)" }}
                 >
-                  다음 경기: {dashboardData.nextGame.title}
+                  {dashboardData.nextGame.title}
                 </span>
                 {dashboardData.nextGame.scheduledAt && (
                   <span
-                    className="text-[10px] font-bold whitespace-nowrap"
-                    style={{ color: "var(--color-info)" }}
+                    className="text-[10px] font-black italic text-[var(--color-card)] bg-[var(--color-info)] whitespace-nowrap px-1.5 py-0.5 clip-slant"
                   >
                     {getDDayShort(dashboardData.nextGame.scheduledAt)}
                   </span>
@@ -307,23 +298,22 @@ function StatBox({
 }) {
   return (
     <div
-      className="flex flex-col items-center gap-1 py-2 rounded-lg"
-      style={{ backgroundColor: "var(--color-surface)" }}
+      className="flex flex-col items-center gap-1 py-2 clip-slant bg-gradient-to-b from-[var(--color-surface)] to-[var(--color-card)] border-b-2 border-transparent hover:border-[var(--color-primary)] transition-all group"
     >
       <span
-        className="material-symbols-outlined text-lg"
+        className="material-symbols-outlined text-xl group-hover:text-[var(--color-primary)] transition-colors"
         style={{ color: "var(--color-text-muted)" }}
       >
         {icon}
       </span>
       <span
-        className="text-lg font-bold"
+        className="text-[18px] font-black italic tracking-tighter"
         style={{ color: "var(--color-text-primary)" }}
       >
         {value}
       </span>
       <span
-        className="text-[11px]"
+        className="text-[9px] font-black italic uppercase tracking-widest"
         style={{ color: "var(--color-text-muted)" }}
       >
         {label}

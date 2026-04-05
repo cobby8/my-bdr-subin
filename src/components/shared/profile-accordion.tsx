@@ -78,6 +78,7 @@ const categories: Category[] = [
     items: [
       { href: "/profile/subscription", label: "구독 관리", icon: "card_membership" },
       { href: "/profile/payments", label: "결제 내역", icon: "receipt_long" },
+      { href: "/admin", label: "관리자 모드", icon: "admin_panel_settings" },
       { href: "/profile/notification-settings", label: "알림 설정", icon: "notifications" },
       { label: "로그아웃", icon: "logout", action: "logout" },
       { href: "/profile/edit#withdraw", label: "회원 탈퇴", icon: "person_remove" },
@@ -87,10 +88,13 @@ const categories: Category[] = [
 
 interface ProfileAccordionProps {
   name?: string;              // 유저 닉네임
+  region?: string;            // 지역
+  teamName?: string;          // 소속 팀
+  position?: string;          // 포지션
   onNavigate?: () => void;    // 링크 클릭 후 콜백 (슬라이드 메뉴 닫기용)
 }
 
-export function ProfileAccordion({ name, onNavigate }: ProfileAccordionProps) {
+export function ProfileAccordion({ name, region = "경기 남양주", teamName = "STIZ", position = "SG", onNavigate }: ProfileAccordionProps) {
   // 전체 아코디언 펼침 여부
   const [expanded, setExpanded] = useState(false);
   // 각 카테고리별 열림 상태 (id를 키로 관리)
@@ -116,22 +120,29 @@ export function ProfileAccordion({ name, onNavigate }: ProfileAccordionProps) {
       {/* 유저 프로필 헤더: 클릭 시 전체 아코디언 토글 */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-[var(--color-surface)]"
+        className="flex w-full items-center gap-3.5 rounded-md px-2 py-3 transition-colors hover:bg-[var(--color-surface)]"
       >
-        {/* 아바타 원형 */}
+        {/* 아바타 원형 (130% 확대: h-8 w-8 -> h-11 w-11) */}
         <div
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-base font-black italic text-white shadow-sm border border-[var(--color-primary)]/50"
           style={{ backgroundColor: "var(--color-primary)" }}
         >
           {initial}
         </div>
-        {/* 닉네임 */}
-        <span
-          className="flex-1 truncate text-left text-sm font-semibold"
-          style={{ color: "var(--color-text-primary)" }}
-        >
-          {displayName}
-        </span>
+        
+        {/* 텍스트 영역: 닉네임 + 부가 정보 */}
+        <div className="flex-1 flex flex-col items-start truncate overflow-hidden">
+          <span
+            className="w-full truncate text-left text-sm font-black italic uppercase tracking-wide"
+            style={{ color: "var(--color-text-primary)" }}
+          >
+            {displayName}
+          </span>
+          <span className="w-full truncate text-left text-[10px] font-medium text-[var(--color-text-muted)] mt-0.5">
+            {region} • {teamName} • {position}
+          </span>
+        </div>
+
         {/* 화살표 아이콘: 펼침/접힘 회전 */}
         <span
           className="material-symbols-outlined text-lg transition-transform duration-200"

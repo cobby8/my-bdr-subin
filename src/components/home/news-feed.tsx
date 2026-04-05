@@ -79,20 +79,15 @@ export function NewsFeed({ preferredRegions }: NewsFeedProps) {
     return (
       <div>
         <h3
-          className="text-sm font-bold mb-3"
-          style={{ color: "var(--color-text-secondary)" }}
+          className="text-lg font-black italic uppercase text-[var(--color-text-secondary)] mb-3 tracking-wide"
         >
-          소식
+          LATEST NEWS
         </h3>
         <div className="flex gap-3 overflow-hidden">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="min-w-[280px] h-[140px] rounded-xl border animate-pulse"
-              style={{
-                backgroundColor: "var(--color-card)",
-                borderColor: "var(--color-border)",
-              }}
+              className="min-w-[280px] h-[140px] rounded-md border animate-pulse bg-[var(--color-card)] border-[var(--color-border)]"
             />
           ))}
         </div>
@@ -117,10 +112,9 @@ export function NewsFeed({ preferredRegions }: NewsFeedProps) {
   return (
     <div>
       <h3
-        className="text-sm font-bold mb-3"
-        style={{ color: "var(--color-text-secondary)" }}
+        className="text-lg font-black italic uppercase text-[var(--color-text-secondary)] mb-3 tracking-wide"
       >
-        소식
+        LATEST NEWS
       </h3>
       {/* 카드 1~2개면 세로 스택으로 꽉 채움, 3개 이상이면 가로 스크롤 */}
       <div className={items.length <= 2
@@ -145,7 +139,7 @@ function NewsCard({ item }: { item: NewsItem }) {
   if (item.type === "promo") {
     return (
       <div
-        className="min-w-[280px] flex-1 snap-start rounded-xl p-5 flex flex-col justify-between shrink-0"
+        className="min-w-[280px] flex-1 snap-start rounded-md p-5 flex flex-col justify-between shrink-0 shadow-glow-primary border-b-2 border-[var(--color-primary)]"
         style={{
           background:
             "linear-gradient(135deg, var(--color-primary) 0%, var(--color-navy, #1B3C87) 100%)",
@@ -154,12 +148,12 @@ function NewsCard({ item }: { item: NewsItem }) {
       >
         <div>
           <span
-            className="material-symbols-outlined text-2xl text-white/80 mb-2 block"
+            className="material-symbols-outlined text-2xl text-white/80 mb-2 block font-extrabold"
           >
             {item.icon ?? "campaign"}
           </span>
-          <p className="text-sm font-bold text-white mb-1">{item.title}</p>
-          <p className="text-xs text-white/70">{item.description}</p>
+          <p className="text-[16px] font-black italic uppercase tracking-wider text-white mb-1 pr-1">{item.title}</p>
+          <p className="text-[10px] font-bold text-white/70 italic uppercase">{item.description}</p>
         </div>
         <Link
           href={item.link}
@@ -177,14 +171,13 @@ function NewsCard({ item }: { item: NewsItem }) {
   return (
     <Link
       href={item.link}
-      className="min-w-[280px] snap-start rounded-xl border p-5 flex flex-col justify-between shrink-0 transition-all hover:shadow-md active:scale-[0.98]"
+      className="min-w-[280px] snap-start rounded-md border p-5 flex flex-col justify-between shrink-0 transition-all bg-[var(--color-card)] border-[var(--color-border)] hover:border-[var(--color-primary)] hover:shadow-glow-primary active:scale-[0.99] group overflow-hidden relative"
       style={{
-        backgroundColor: "var(--color-card)",
-        borderColor: "var(--color-border)",
         minHeight: "140px",
       }}
     >
-      <div>
+      <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[var(--color-surface)] opacity-0 group-hover:opacity-40 transition-opacity pointer-events-none" />
+      <div className="relative z-10">
         {/* 타입 아이콘 + 라벨 + 실내/야외 뱃지 */}
         <div className="flex items-center gap-2 mb-2">
           <span
@@ -194,7 +187,7 @@ function NewsCard({ item }: { item: NewsItem }) {
             {config.icon}
           </span>
           <span
-            className="text-xs font-medium"
+            className="text-[10px] font-black italic uppercase tracking-widest"
             style={{ color: config.color }}
           >
             {config.label}
@@ -206,7 +199,7 @@ function NewsCard({ item }: { item: NewsItem }) {
           {/* D-Day 뱃지 (대회만) */}
           {item.type === "tournament" && item.registration_end_at && (
             <span
-              className="ml-auto text-xs font-bold px-2 py-0.5 rounded-full"
+              className="ml-auto text-[10px] font-black italic uppercase px-2 py-0.5 clip-slant"
               style={{
                 backgroundColor: "var(--color-primary)",
                 color: "#fff",
@@ -219,7 +212,7 @@ function NewsCard({ item }: { item: NewsItem }) {
 
         {/* 제목 */}
         <p
-          className="text-sm font-bold truncate mb-1"
+          className="text-base font-black italic uppercase tracking-wide truncate mb-1 pr-1 group-hover:text-[var(--color-primary)] transition-colors"
           style={{ color: "var(--color-text-primary)" }}
         >
           {item.title}
@@ -227,7 +220,7 @@ function NewsCard({ item }: { item: NewsItem }) {
 
         {/* 부가 정보 */}
         <p
-          className="text-xs truncate"
+          className="text-[11px] font-bold italic uppercase tracking-wider truncate"
           style={{ color: "var(--color-text-muted)" }}
         >
           {config.subtitle}
@@ -236,10 +229,10 @@ function NewsCard({ item }: { item: NewsItem }) {
 
       {/* 하단 CTA */}
       <span
-        className="text-xs font-medium mt-3"
+        className="relative z-10 text-[10px] font-black italic uppercase tracking-widest mt-3 transition-colors"
         style={{ color: config.color }}
       >
-        {config.cta} →
+        {config.cta} <span className="material-symbols-outlined text-[10px]">arrow_forward_ios</span>
       </span>
     </Link>
   );

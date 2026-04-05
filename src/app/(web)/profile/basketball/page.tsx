@@ -84,7 +84,7 @@ export default function BasketballPage() {
         <div className="text-center">
           <span className="material-symbols-outlined text-5xl mb-4 block" style={{ color: "var(--color-text-disabled)" }}>person_off</span>
           <p className="mb-4 text-sm" style={{ color: "var(--color-text-secondary)" }}>로그인이 필요합니다</p>
-          <Link href="/login" className="inline-block rounded-xl px-8 py-3 text-sm font-bold text-white" style={{ backgroundColor: "var(--color-primary)" }}>로그인</Link>
+          <Link href="/login" className="inline-block rounded-md px-8 py-3 text-sm font-bold text-white" style={{ backgroundColor: "var(--color-primary)" }}>로그인</Link>
         </div>
       </div>
     );

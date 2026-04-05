@@ -44,7 +44,7 @@ export function SessionCompleteCard({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-sm rounded-2xl p-6 space-y-4"
+        className="w-full max-w-sm rounded-md p-6 space-y-4"
         style={{
           backgroundColor: "var(--color-card)",
           boxShadow: "var(--shadow-card)",
@@ -72,7 +72,7 @@ export function SessionCompleteCard({
 
         {/* XP 획득 */}
         <div
-          className="rounded-xl p-4 text-center"
+          className="rounded-md p-4 text-center"
           style={{
             backgroundColor: "color-mix(in srgb, var(--color-primary) 10%, transparent)",
           }}
@@ -91,7 +91,7 @@ export function SessionCompleteCard({
         {/* 레벨업 알림 */}
         {gamification.leveled_up && (
           <div
-            className="rounded-xl p-3 text-center"
+            className="rounded-md p-3 text-center"
             style={{
               backgroundColor: "color-mix(in srgb, var(--color-accent) 10%, transparent)",
             }}

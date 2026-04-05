@@ -111,9 +111,9 @@ function PillButton({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 ${
+      className={`clip-slant px-4 py-2 text-[11px] font-black italic uppercase tracking-widest transition-all duration-200 ${
         selected
-          ? "bg-[var(--color-primary)] text-white shadow-sm"
+          ? "bg-[var(--color-primary)] text-white shadow-[0_0_15px_rgba(var(--color-primary-rgb),0.5)]"
           : "bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface-bright)]"
       }`}
     >
@@ -168,9 +168,9 @@ function ThemeSelector() {
           key={opt.value}
           type="button"
           onClick={() => applyTheme(opt.value)}
-          className={`flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
+          className={`flex items-center gap-2 clip-slant px-4 py-2.5 text-[11px] font-black italic uppercase tracking-widest transition-all duration-200 ${
             theme === opt.value
-              ? "bg-[var(--color-primary)] text-white shadow-sm"
+              ? "bg-[var(--color-primary)] text-white shadow-[0_0_15px_rgba(var(--color-primary-rgb),0.5)]"
               : "bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface-bright)]"
           }`}
         >
@@ -218,9 +218,9 @@ function TextSizeSelector() {
             key={String(opt.value)}
             type="button"
             onClick={() => applySize(opt.value)}
-            className={`flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
+            className={`flex items-center gap-2 clip-slant px-4 py-2.5 text-[11px] font-black italic uppercase tracking-widest transition-all duration-200 ${
               large === opt.value
-                ? "bg-[var(--color-primary)] text-white shadow-sm"
+                ? "bg-[var(--color-primary)] text-white shadow-[0_0_15px_rgba(var(--color-primary-rgb),0.5)]"
                 : "bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface-bright)]"
             }`}
           >
@@ -429,7 +429,7 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
         <div className="flex items-center justify-between gap-4">
           <div className="flex-1">
             {/* 토글 라벨 */}
-            <h3 className="text-base font-bold text-[var(--color-text-primary)]">
+            <h3 className="text-lg font-black italic uppercase tracking-widest text-[var(--color-text-primary)] pr-1">
               원하는 정보만 보기
             </h3>
             {/* 토글 설명 - 모드에 따라 다른 안내 문구 */}
@@ -451,10 +451,10 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
           <button
             type="button"
             onClick={togglePreferFilter}
-            className={`relative inline-flex h-8 w-[52px] shrink-0 cursor-pointer items-center rounded-full transition-colors duration-300 ${
+            className={`relative inline-flex h-8 w-[52px] shrink-0 cursor-pointer items-center rounded-sm clip-slant transition-colors duration-300 ${
               preferFilter
-                ? "bg-[var(--color-primary)]"
-                : "bg-[var(--color-surface-bright)]"
+                ? "bg-[var(--color-primary)] shadow-[0_0_15px_var(--color-primary)]"
+                : "bg-[var(--color-surface-bright)] shadow-inner"
             }`}
             role="switch"
             aria-checked={preferFilter}
@@ -462,7 +462,7 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
           >
             {/* 토글 원형 노브: ON=오른쪽, OFF=왼쪽 */}
             <span
-              className={`inline-block h-6 w-6 rounded-full bg-white shadow-md transition-transform duration-300 ${
+              className={`inline-block h-6 w-6 rounded-sm bg-white shadow-md transition-transform duration-300 clip-slant-reverse ${
                 preferFilter ? "translate-x-[26px]" : "translate-x-[3px]"
               }`}
             />
@@ -525,7 +525,7 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
                   setSelectedDivisions((prev) => [...new Set([...prev, ...currentDivisions])]);
                 }
               }}
-              className="text-sm font-medium"
+              className="text-[11px] font-black italic uppercase pr-1"
               style={{ color: "var(--color-primary)" }}
             >
               {currentDivisions.every((d) => selectedDivisions.includes(d)) ? "전체해제" : "전체선택"}
@@ -869,7 +869,7 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
         {/* 성공/실패 메시지 — 토스 스타일 라운드 카드 */}
         {message && (
           <div
-            className={`px-4 py-3 rounded-2xl text-sm font-medium ${
+            className={`px-4 py-3 rounded-md text-sm font-medium ${
               message.type === "success"
                 ? "bg-[var(--color-surface)] text-[var(--color-primary)]"
                 : "bg-[var(--color-surface)] text-[var(--color-error,#E31B23)]"

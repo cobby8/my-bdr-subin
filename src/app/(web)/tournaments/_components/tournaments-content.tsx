@@ -94,7 +94,7 @@ function TournamentGridSkeleton() {
   return (
     <div className="space-y-6">
       {Array.from({ length: 6 }).map((_, i) => (
-        <Skeleton key={i} className="h-24 rounded-2xl" />
+        <Skeleton key={i} className="h-24 rounded-md" />
       ))}
     </div>
   );
@@ -126,12 +126,12 @@ function TournamentCard({ tournament: t, photoUrl }: { tournament: TournamentFro
     <Link href={`/tournaments/${t.id}`} prefetch={true}>
       {/* 토스 카드: 둥근 모서리 + 가벼운 그림자 + 가로 배치 */}
       <div
-        className={`group flex gap-3.5 rounded-2xl p-3.5 bg-[var(--color-card)] transition-all duration-200 hover:scale-[1.01] hover:shadow-[var(--shadow-elevated)] ${isFull ? "opacity-60" : ""}`}
+        className={`group flex gap-3.5 rounded-md p-3.5 bg-[var(--color-card)] transition-all duration-200 hover:scale-[1.01] hover:shadow-[var(--shadow-elevated)] ${isFull ? "opacity-60" : ""}`}
         style={{ boxShadow: "var(--shadow-card)" }}
       >
         {/* 좌: 이미지/아이콘 (정사각형 80px) */}
         <div
-          className={`relative w-20 h-20 shrink-0 rounded-xl overflow-hidden flex items-center justify-center bg-cover bg-center ${photoUrl === undefined ? "animate-pulse bg-[var(--color-surface)]" : ""}`}
+          className={`relative w-20 h-20 shrink-0 rounded-md overflow-hidden flex items-center justify-center bg-cover bg-center ${photoUrl === undefined ? "animate-pulse bg-[var(--color-surface)]" : ""}`}
           style={photoUrl
             ? { backgroundImage: `url(${photoUrl})` }
             : photoUrl === null ? { background: formatStyle.gradient } : undefined
@@ -238,7 +238,7 @@ function Pagination({
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="w-10 h-10 flex items-center justify-center rounded-xl transition-colors disabled:opacity-30 bg-[var(--color-surface)] text-[var(--color-text-muted)]"
+        className="w-10 h-10 flex items-center justify-center rounded-md transition-colors disabled:opacity-30 bg-[var(--color-surface)] text-[var(--color-text-muted)]"
       >
         <span className="material-symbols-outlined">chevron_left</span>
       </button>
@@ -250,7 +250,7 @@ function Pagination({
           <button
             key={page}
             onClick={() => onPageChange(page)}
-            className={`w-10 h-10 flex items-center justify-center rounded-xl font-bold text-sm transition-colors ${
+            className={`w-10 h-10 flex items-center justify-center rounded-md font-bold text-sm transition-colors ${
               page === currentPage
                 ? "bg-[var(--color-primary)] text-white"
                 : "bg-[var(--color-surface)] text-[var(--color-text-secondary)]"
@@ -264,7 +264,7 @@ function Pagination({
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="w-10 h-10 flex items-center justify-center rounded-xl transition-colors disabled:opacity-30 bg-[var(--color-surface)] text-[var(--color-text-muted)]"
+        className="w-10 h-10 flex items-center justify-center rounded-md transition-colors disabled:opacity-30 bg-[var(--color-surface)] text-[var(--color-text-muted)]"
       >
         <span className="material-symbols-outlined">chevron_right</span>
       </button>
@@ -525,7 +525,7 @@ export function TournamentsContent({
                     {/* 빈 상태 액션 버튼: 다른 탭 둘러보기 안내 */}
                     <Link
                       href="/tournaments"
-                      className="inline-flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-sm font-bold text-white transition-all active:scale-[0.97]"
+                      className="inline-flex items-center gap-1.5 rounded-md px-5 py-2.5 text-sm font-bold text-white transition-all active:scale-[0.97]"
                       style={{ backgroundColor: "var(--color-primary)" }}
                     >
                       <span className="material-symbols-outlined text-base">search</span>
