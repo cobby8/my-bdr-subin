@@ -26,14 +26,14 @@ export function TossSectionHeader({
 }: TossSectionHeaderProps) {
   return (
     <div className="flex items-end justify-between mb-4 pb-2 border-b-2 border-[var(--color-border)]">
-      <h3 className="text-xl md:text-2xl font-black italic uppercase tracking-tighter text-[var(--color-text-primary)] drop-shadow-sm">
+      <h3 className="text-xl md:text-2xl font-black uppercase tracking-tighter text-[var(--color-text-primary)] drop-shadow-sm">
         {title}
       </h3>
 
       {actionHref && (
         <Link
           href={actionHref}
-          className="flex items-center gap-0.5 text-[10px] font-black italic text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-primary)] uppercase tracking-wide"
+          className="flex items-center gap-0.5 text-[10px] font-black text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-primary)] uppercase tracking-wide"
         >
           {actionLabel}
           <span className="material-symbols-outlined text-sm font-bold">

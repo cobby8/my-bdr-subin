@@ -60,7 +60,7 @@ export function RecentActivity() {
     <section>
       {/* 2K 스타일 인라인 헤더: "RECENT PLAYS" (다른 홈 섹션과 동일 패턴) */}
       <div className="flex items-end justify-between mb-4 pb-2 border-b-2 border-[var(--color-border)]">
-        <h2 className="text-xl md:text-2xl font-black italic uppercase tracking-tighter drop-shadow-sm">
+        <h2 className="text-xl md:text-2xl font-black uppercase tracking-tighter drop-shadow-sm">
           RECENT PLAYS
         </h2>
       </div>

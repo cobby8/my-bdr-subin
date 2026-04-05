@@ -51,7 +51,7 @@ export function AdminDetailModal({
       <div className="relative mx-4 flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-md border-t-4 border-[var(--color-primary)] bg-[var(--color-card)] shadow-[0_0_25px_rgba(0,0,0,0.5)] animate-[modal-in_0.2s_ease-out]">
         {/* 상단: 제목 + X 닫기 버튼 */}
         <div className="flex items-center justify-between border-b border-[var(--color-border)] px-5 py-4">
-          <h2 className="text-[15px] font-black italic uppercase tracking-wide text-[var(--color-text-primary)] pr-1">
+          <h2 className="text-[15px] font-black uppercase tracking-wide text-[var(--color-text-primary)] pr-1">
             {title}
           </h2>
           <button
@@ -101,7 +101,7 @@ export function ModalInfoSection({
 }) {
   return (
     <div>
-      <p className="mb-1.5 text-[11px] font-black italic uppercase tracking-widest text-[var(--color-text-muted)] pr-1">
+      <p className="mb-1.5 text-[11px] font-black uppercase tracking-widest text-[var(--color-text-muted)] pr-1">
         {title}
       </p>
       <div className="overflow-hidden rounded-md border border-[var(--color-border)]">

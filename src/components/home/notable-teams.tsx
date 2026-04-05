@@ -60,12 +60,12 @@ export function NotableTeams({ fallbackData }: NotableTeamsProps = {}) {
     <section>
       {/* 2K 스타일 헤더 (굵은 이탤릭, 두꺼운 하단 보더) */}
       <div className="flex items-end justify-between mb-4 pb-2 border-b-2 border-[var(--color-border)]">
-        <h2 className="text-xl font-black italic uppercase tracking-tighter drop-shadow-sm">
+        <h2 className="text-xl font-black uppercase tracking-tighter drop-shadow-sm">
           NOTABLE TEAMS
         </h2>
         <Link
           href="/teams"
-          className="text-[10px] font-black italic text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors uppercase"
+          className="text-[10px] font-black text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors uppercase"
         >
           VIEW ALL &raquo;
         </Link>
@@ -92,7 +92,7 @@ export function NotableTeams({ fallbackData }: NotableTeamsProps = {}) {
               className={`flex items-center gap-3 p-2 bg-gradient-to-r from-[var(--color-surface)] to-[var(--color-card)] hover:to-[var(--color-surface-bright)] border-l-4 border-transparent hover:border-[var(--color-primary)] transition-all duration-200 group ${isFallback ? "pointer-events-none opacity-80" : ""}`}
             >
               {/* 순위 표기 느낌의 짧은 인덱스 */}
-              <div className="flex-none font-black italic text-lg text-[var(--color-text-disabled)] group-hover:text-[var(--color-primary)] w-5 text-center leading-none">
+              <div className="flex-none font-black text-lg text-[var(--color-text-disabled)] group-hover:text-[var(--color-primary)] w-5 text-center leading-none">
                 {index + 1}
               </div>
 
@@ -111,10 +111,10 @@ export function NotableTeams({ fallbackData }: NotableTeamsProps = {}) {
               {/* 중앙 텍스트 정보 */}
               <div className="grow min-w-0 flex flex-col justify-center">
                 <div className="flex justify-between items-baseline w-full">
-                  <h4 className="text-sm font-extrabold italic uppercase truncate text-[var(--color-text-primary)] tracking-tight">
+                  <h4 className="text-sm font-extrabold uppercase truncate text-[var(--color-text-primary)] tracking-tight">
                     {team.name}
                   </h4>
-                  <span className="text-sm font-black italic text-[var(--color-primary)] shrink-0 ml-2">
+                  <span className="text-sm font-black text-[var(--color-primary)] shrink-0 ml-2">
                     {!isFallback ? `${team.wins}W ${team.losses}L` : "0W 0L"}
                   </span>
                 </div>
@@ -124,7 +124,7 @@ export function NotableTeams({ fallbackData }: NotableTeamsProps = {}) {
                     {subtitle || "LOCATION TBD"}
                   </span>
                   {team.accepting_members && !isFallback && (
-                    <span className="text-[9px] font-black italic text-[var(--color-on-primary)] bg-[var(--color-info)] px-2 py-0.5 clip-slant-reverse ml-2 shrink-0">
+                    <span className="text-[9px] font-black text-[var(--color-on-primary)] bg-[var(--color-info)] px-2 py-0.5 clip-slant-reverse ml-2 shrink-0">
                       RECRUIT
                     </span>
                   )}

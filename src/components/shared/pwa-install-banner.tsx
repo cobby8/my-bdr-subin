@@ -102,13 +102,13 @@ export function PwaInstallBanner() {
       {/* 텍스트 영역 */}
       <div className="min-w-0 flex-1">
         <p
-          className="text-[13px] font-black italic uppercase tracking-wider pr-1 truncate"
+          className="text-[13px] font-black uppercase tracking-wider pr-1 truncate"
           style={{ color: "var(--color-text-primary)" }}
         >
           MyBDR 앱 설치
         </p>
         <p
-          className="mt-0.5 text-[10px] font-bold italic truncate"
+          className="mt-0.5 text-[10px] font-bold truncate"
           style={{ color: "var(--color-text-muted)" }}
         >
           {isIos
@@ -123,7 +123,7 @@ export function PwaInstallBanner() {
         {!isIos && (
           <button
             onClick={handleInstall}
-            className="px-3 py-1.5 text-[10px] font-black italic uppercase tracking-widest text-white clip-slant hover:brightness-110 transition-all shadow-glow-primary"
+            className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white clip-slant hover:brightness-110 transition-all shadow-glow-primary"
             style={{
               backgroundColor: "var(--color-primary)",
             }}

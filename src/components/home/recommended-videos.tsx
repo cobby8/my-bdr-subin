@@ -4,10 +4,10 @@
  * RecommendedVideos — BDR 추천 영상 섹션 (NBA 2K 스타일)
  *
  * 2K 스타일 적용:
- * - 인라인 2K 헤더 "HIGHLIGHTS" (font-black italic uppercase)
+ * - 인라인 2K 헤더 "HIGHLIGHTS" (font-black uppercase)
  * - 카드에 hover:shadow-glow-primary + hover:border-primary 효과
  * - LIVE 뱃지에 clip-slant-sm 적용
- * - 제목 font-extrabold italic uppercase
+ * - 제목 font-extrabold uppercase
  *
  * API/데이터 패칭 로직은 기존과 100% 동일.
  * ============================================================ */
@@ -85,22 +85,22 @@ export function RecommendedVideos() {
 
   return (
     <section>
-      {/* 2K 스타일 인라인 헤더: font-black italic uppercase (다른 홈 섹션과 통일) */}
+      {/* 2K 스타일 인라인 헤더: font-black uppercase (다른 홈 섹션과 통일) */}
       <div className="flex items-end justify-between mb-4 pb-2 border-b-2 border-[var(--color-border)]">
-        <h2 className="text-xl md:text-2xl font-black italic uppercase tracking-tighter drop-shadow-sm">
+        <h2 className="text-xl md:text-2xl font-black uppercase tracking-tighter drop-shadow-sm">
           HIGHLIGHTS
         </h2>
         <Link
           href="https://www.youtube.com/@BDRBASKET"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[10px] font-black italic text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors uppercase"
+          className="text-[10px] font-black text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors uppercase"
         >
           VIEW ALL &raquo;
         </Link>
       </div>
 
-      {/* 가로 스크롤 캐러셀: 2K 카드 스타일 (네온 호버, italic uppercase) */}
+      {/* 가로 스크롤 캐러셀: 2K 카드 스타일 (네온 호버, uppercase) */}
       <div className="flex gap-3 overflow-x-auto no-scrollbar -mx-5 px-5 pb-2">
         {hasApiData
           ? /* API 영상 카드 — 2K 스타일 적용 */
@@ -118,7 +118,7 @@ export function RecommendedVideos() {
                   style={{ boxShadow: "var(--shadow-card)" }}
                 >
                   {/* 워터마크: 호버 시 재생 아이콘 실루엣 */}
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-5 font-black italic text-7xl transition-all duration-500 pointer-events-none z-0">
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-5 font-black text-7xl transition-all duration-500 pointer-events-none z-0">
                     <span className="material-symbols-outlined text-8xl">play_arrow</span>
                   </div>
 
@@ -137,7 +137,7 @@ export function RecommendedVideos() {
                     </div>
                     {/* LIVE 뱃지: clip-slant-sm으로 2K 스타일 적용 */}
                     {v.is_live && (
-                      <span className="absolute top-2 left-2 bg-[var(--color-primary)] text-white text-[10px] px-2.5 py-1 font-black italic uppercase clip-slant-sm flex items-center gap-1">
+                      <span className="absolute top-2 left-2 bg-[var(--color-primary)] text-white text-[10px] px-2.5 py-1 font-black uppercase clip-slant-sm flex items-center gap-1">
                         <span className="relative flex h-1.5 w-1.5">
                           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
                           <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white" />
@@ -148,10 +148,10 @@ export function RecommendedVideos() {
                   </div>
                   {/* 정보 영역: gradient 배경 + 2K 폰트 스타일 */}
                   <div className="p-3 flex flex-col grow z-10 bg-gradient-to-br from-[var(--color-card)] to-[var(--color-surface)]">
-                    <h4 className="text-sm font-extrabold italic text-[var(--color-text-primary)] line-clamp-1 mb-1 tracking-tight uppercase group-hover:text-[var(--color-primary)] transition-colors">
+                    <h4 className="text-sm font-extrabold text-[var(--color-text-primary)] line-clamp-1 mb-1 tracking-tight uppercase group-hover:text-[var(--color-primary)] transition-colors">
                       {v.title}
                     </h4>
-                    <p className="text-[11px] font-bold text-[var(--color-text-muted)] italic uppercase">
+                    <p className="text-[11px] font-bold text-[var(--color-text-muted)] uppercase">
                       {formatDate(v.published_at)}
                     </p>
                   </div>
@@ -166,7 +166,7 @@ export function RecommendedVideos() {
                   style={{ boxShadow: "var(--shadow-card)" }}
                 >
                   {/* 워터마크 */}
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-5 font-black italic text-7xl transition-all duration-500 pointer-events-none z-0">
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-5 font-black text-7xl transition-all duration-500 pointer-events-none z-0">
                     <span className="material-symbols-outlined text-8xl">play_arrow</span>
                   </div>
 
@@ -181,15 +181,15 @@ export function RecommendedVideos() {
                       <span className="material-symbols-outlined text-white text-4xl">play_circle</span>
                     </div>
                     {/* 재생시간 뱃지: clip-slant-sm 스타일 */}
-                    <span className="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] px-2 py-0.5 font-black italic clip-slant-sm">
+                    <span className="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] px-2 py-0.5 font-black clip-slant-sm">
                       {v.duration}
                     </span>
                   </div>
                   <div className="p-3 flex flex-col grow z-10 bg-gradient-to-br from-[var(--color-card)] to-[var(--color-surface)]">
-                    <h4 className="text-sm font-extrabold italic text-[var(--color-text-primary)] line-clamp-1 mb-1 tracking-tight uppercase group-hover:text-[var(--color-primary)] transition-colors">
+                    <h4 className="text-sm font-extrabold text-[var(--color-text-primary)] line-clamp-1 mb-1 tracking-tight uppercase group-hover:text-[var(--color-primary)] transition-colors">
                       {v.title}
                     </h4>
-                    <p className="text-[11px] font-bold text-[var(--color-text-muted)] italic uppercase">
+                    <p className="text-[11px] font-bold text-[var(--color-text-muted)] uppercase">
                       {v.views} · {v.date}
                     </p>
                   </div>

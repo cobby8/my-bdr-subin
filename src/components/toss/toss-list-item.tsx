@@ -57,11 +57,11 @@ export function TossListItem({
       <div className="flex-1 min-w-0 flex flex-col justify-center">
         <div className="flex justify-between items-baseline w-full">
           {/* 이탤릭체 폰트 우측 잘림 방지를 위해 pr-1 요소 추가 */}
-          <p className="text-sm font-extrabold italic uppercase truncate text-[var(--color-text-primary)] tracking-tight pr-1">
+          <p className="text-sm font-extrabold uppercase truncate text-[var(--color-text-primary)] tracking-tight pr-1">
             {title}
           </p>
           {rightText && (
-            <p className="text-sm font-black italic text-[var(--color-primary)] shrink-0 ml-2 pr-1">
+            <p className="text-sm font-black text-[var(--color-primary)] shrink-0 ml-2 pr-1">
               {rightText}
             </p>
           )}
@@ -74,7 +74,7 @@ export function TossListItem({
           )}
           {/* 부가 정보(우측 하단)는 네온 뱃지로 처리 */}
           {rightSub && (
-            <span className="text-[9px] font-black italic text-[var(--color-card)] bg-[var(--color-text-primary)] px-2 py-0.5 clip-slant-reverse ml-2 shrink-0">
+            <span className="text-[9px] font-black text-[var(--color-card)] bg-[var(--color-text-primary)] px-2 py-0.5 clip-slant-reverse ml-2 shrink-0">
                {rightSub}
             </span>
           )}

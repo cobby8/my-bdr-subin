@@ -589,13 +589,13 @@ function RegistrationPage({
             href={`https://mybdr.kr/tournaments/${tournament.id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="block w-full rounded-sm clip-slant py-4 text-center text-[13px] font-black italic uppercase tracking-widest text-white transition-opacity hover:opacity-90 shadow-glow-primary"
+            className="block w-full rounded-sm clip-slant py-4 text-center text-[13px] font-black uppercase tracking-widest text-white transition-opacity hover:opacity-90 shadow-glow-primary"
             style={{ backgroundColor: primary }}
           >
             신청하기 →
           </a>
         ) : (
-          <div className="rounded-sm bg-[var(--color-surface)] p-4 text-center text-[11px] font-black italic uppercase tracking-widest text-[var(--color-text-secondary)]">
+          <div className="rounded-sm bg-[var(--color-surface)] p-4 text-center text-[11px] font-black uppercase tracking-widest text-[var(--color-text-secondary)]">
             {tournament.status === "completed"
               ? "대회가 종료되었습니다"
               : "현재 참가 신청을 받지 않습니다"}

@@ -1,9 +1,29 @@
 # 작업 스크래치패드
 
 ## 현재 작업
-- **요청**: Google Anti Gravity에서 작업한 코드 전체 검토 → 이후 홈 리디자인
-- **상태**: tester + reviewer 병렬 검토 중
-- **현재 담당**: tester + reviewer (병렬)
+- **요청**: 홈 추천 경기/대회 카드 컴팩트 축소
+- **상태**: developer 구현 완료 (tsc 통과)
+- **현재 담당**: developer → tester
+
+### 구현 기록
+
+구현한 기능: 추천 경기 카드 + 추천 대회 카드를 세로형(300px+) → 가로형 컴팩트(88px)로 축소
+
+| 파일 경로 | 변경 내용 | 신규/수정 |
+|----------|----------|----------|
+| src/components/home/recommended-games.tsx | GameCard를 가로형(썸네일64+우측정보)으로 변경, 스켈레톤 축소 | 수정 |
+| src/components/home/recommended-tournaments.tsx | TournamentCard를 가로형(아이콘64+우측정보)으로 변경, 스켈레톤 축소 | 수정 |
+
+tester 참고:
+- 테스트 방법: 홈 페이지에서 추천 경기/추천 대회 섹션 확인
+- 정상 동작: 카드가 가로형(좌측 썸네일/아이콘 + 우측 텍스트 정보)으로 표시, 높이 약 88px
+- 가로 스크롤 캐러셀 동작 유지 확인
+- 호버 시 네온 글로우 + 위로 살짝 이동 효과 유지 확인
+- 뱃지(clip-slant), 장소/시간 표시, 잔여석/참가현황 표시 확인
+
+reviewer 참고:
+- API/데이터 패칭 로직 변경 없음 (UI 렌더링만 교체)
+- 기존 tsc 에러 1건(personal-hero.tsx lucide-react)은 레거시 파일로 무관
 
 ## 기획설계 (planner-architect)
 
@@ -152,7 +172,86 @@ home-sidebar.tsx, hero-section.tsx, quick-menu.tsx, hero-bento.tsx, home-greetin
 
 ## 구현 기록 (developer)
 
-📝 구현한 기능: 슬라이드 메뉴 하단 유틸리티 영역 삭제
+📝 구현한 기능: 전체 프로젝트 italic CSS 클래스 일괄 제거
+
+| 파일 경로 | 변경 내용 | 신규/수정 |
+|----------|----------|----------|
+| src/components/ui/badge.tsx | font-black italic → font-black | 수정 |
+| src/components/shared/slide-menu.tsx | font-black italic → font-black | 수정 |
+| src/components/tournament/division-generator-modal.tsx | font-black italic (5곳) | 수정 |
+| src/components/shared/pwa-install-banner.tsx | font-black/bold italic (3곳) | 수정 |
+| src/components/shared/push-permission.tsx | font-black italic (6곳) | 수정 |
+| src/components/shared/profile-dropdown.tsx | font-black/bold italic (5곳) | 수정 |
+| src/components/shared/profile-completion-banner.tsx | font-black italic (2곳) | 수정 |
+| src/components/shared/profile-accordion.tsx | font-black italic (2곳) | 수정 |
+| src/components/shared/preference-form.tsx | font-black italic (5곳) | 수정 |
+| src/components/toss/toss-section-header.tsx | font-black italic (2곳) | 수정 |
+| src/components/toss/toss-list-item.tsx | font-extrabold/black italic (3곳) | 수정 |
+| src/components/toss/toss-button.tsx | font-black italic → font-black | 수정 |
+| src/components/site-templates/classic.tsx | font-black italic (2곳) | 수정 |
+| src/components/layout/right-sidebar.tsx | font-bold italic (2곳) | 수정 |
+| src/components/admin/admin-detail-modal.tsx | font-black italic (2곳) | 수정 |
+| src/components/home/home-community.tsx | font-black italic (2곳) | 수정 |
+| src/components/home/home-hero.tsx | font-extrabold/bold/black italic (3곳) | 수정 |
+| src/components/home/news-feed.tsx | font-black/bold italic (6곳) | 수정 |
+| src/components/home/notable-teams.tsx | font-black/extrabold italic (5곳) | 수정 |
+| src/components/home/profile-widget.tsx | font-black italic (6곳) | 수정 |
+| src/components/home/quick-actions.tsx | font-black italic (1곳) | 수정 |
+| src/components/home/recent-activity.tsx | font-black italic (1곳) | 수정 |
+| src/components/home/recommended-games.tsx | font-black/extrabold italic (4곳) | 수정 |
+| src/components/home/recommended-tournaments.tsx | font-black/extrabold italic (5곳) | 수정 |
+| src/components/home/recommended-videos.tsx | font-black/extrabold/bold italic (10곳+주석) | 수정 |
+| src/app/(web)/layout.tsx | font-black italic (6곳) | 수정 |
+
+제외 대상 (변경 안 함):
+- src/components/shared/header.tsx (주석만 포함)
+- src/app/(web)/courts/[id]/_components/court-events.tsx (fontStyle 인라인 스타일)
+
+💡 tester 참고:
+- 테스트 방법: 전체 페이지에서 텍스트가 기울어지지 않고 정상적으로 표시되는지 확인
+- 정상 동작: 모든 카드, 버튼, 뱃지, 제목의 텍스트가 기울임 없이 표시
+- tsc --noEmit 통과 확인 완료 (기존 에러 1건 lucide-react만 존재)
+
+---
+
+📝 구현한 기능: 홈 LATEST NEWS 배너 + 퀵 액션 버튼 컴팩트 축소
+
+| 파일 경로 | 변경 내용 | 신규/수정 |
+|----------|----------|----------|
+| src/components/home/quick-actions.tsx | 세로 카드(py-4, 아이콘28px 위+텍스트 아래) → 가로 pill(py-2, 아이콘18px+텍스트 가로 배치). gap-3→gap-2, hover:-translate-y-1→-0.5 | 수정 |
+| src/components/home/news-feed.tsx | 큰 카드(min-height 140px, 280px폭) → 컴팩트 1줄 인라인 행(px-3 py-2). 프로모션/일반 모두 가로 1줄로 축소. 스켈레톤도 h-10으로 축소. 제목 text-lg→text-sm | 수정 |
+
+💡 tester 참고:
+- 테스트 방법: 홈 페이지에서 LATEST NEWS 영역과 퀵 액션 버튼 확인
+- 정상 동작: 뉴스 항목이 각 1줄짜리 얇은 행으로 표시, 퀵 액션이 아이콘+텍스트 가로 배치 pill 형태
+- 주의: 프로모션 카드(그라디언트 배경)도 1줄 배너로 표시되는지, D-Day 뱃지가 잘 보이는지 확인
+
+⚠️ reviewer 참고:
+- API/데이터 패칭 변경 없음 (UI 렌더링만 교체)
+- 하드코딩 색상 없음 (모두 var(--color-*) 사용)
+- NBA 2K 스타일 유지 (italic, uppercase, clip-slant, shadow-glow-primary)
+
+---
+
+(이전) 📝 구현한 기능: 홈 프로필 위젯 2줄 컴팩트 카드(B안) 축소
+
+| 파일 경로 | 변경 내용 | 신규/수정 |
+|----------|----------|----------|
+| src/components/home/profile-widget.tsx | 세로 300px → 2줄 컴팩트(~80px)로 축소. 아바타 64→40px, 통계 3열그리드→인라인, XP바+미션 1줄화, 자주가는코트/다음경기 섹션 제거, StatBox→StatInline 교체, getDDayShort 함수 제거 | 수정 |
+
+💡 tester 참고:
+- 테스트 방법: 홈 페이지 로그인 상태에서 프로필 위젯 확인
+- 정상 동작: 1줄에 아바타+닉네임+레벨뱃지+통계3개, 2줄에 XP바+미션이 한 줄로 표시
+- 주의: 미션 클릭 시 /profile#gamification으로 이동하는지 확인
+
+⚠️ reviewer 참고:
+- API/데이터 패칭 변경 없음 (UI 렌더링만 교체)
+- dashboardData prop 인터페이스는 하위 호환을 위해 유지 (렌더링하지 않음)
+- 하드코딩 색상 없음 (모두 var(--color-*) 사용)
+
+---
+
+(이전) 📝 구현한 기능: 슬라이드 메뉴 하단 유틸리티 영역 삭제
 
 | 파일 경로 | 변경 내용 | 신규/수정 |
 |----------|----------|----------|

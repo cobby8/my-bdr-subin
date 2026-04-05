@@ -110,19 +110,19 @@ export function HomeHero() {
         <div className="relative z-10">
           {/* 큰 제목 */}
           <h1
-            className="text-4xl md:text-5xl font-extrabold text-white mb-2 italic tracking-tighter drop-shadow-xl"
+            className="text-4xl md:text-5xl font-extrabold text-white mb-2 tracking-tighter drop-shadow-xl"
             style={{ fontFamily: "var(--font-heading)" }}
           >
             BDR BASKET
           </h1>
           {/* 부제목 */}
-          <p className="text-white/85 text-base md:text-lg leading-relaxed mb-6 font-bold italic tracking-tight drop-shadow-md">
+          <p className="text-white/85 text-base md:text-lg leading-relaxed mb-6 font-bold tracking-tight drop-shadow-md">
             농구인을 위한 올인원 매칭 아레나
           </p>
           {/* 시작하기 버튼 (2K 버튼 스타일) */}
           <Link
             href="/signup"
-            className="inline-block rounded-none clip-slant-sm bg-white text-black px-8 py-3 text-sm font-black italic uppercase transition-all duration-300 hover:scale-[1.03] hover:bg-[var(--color-primary)] hover:text-white hover:shadow-glow-primary hover:tracking-wide active:scale-95"
+            className="inline-block rounded-none clip-slant-sm bg-[var(--color-card)] text-[var(--color-text-primary)] px-8 py-3 text-sm font-black uppercase transition-all duration-300 hover:scale-[1.03] hover:bg-[var(--color-primary)] hover:text-white hover:shadow-glow-primary hover:tracking-wide active:scale-95"
           >
             PLAY NOW
           </Link>

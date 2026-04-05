@@ -108,12 +108,12 @@ export function ProfileDropdown({ name }: ProfileDropdownProps) {
             </div>
             <div className="min-w-0 flex-1">
               <p
-                className="truncate text-[16px] font-black italic uppercase tracking-wide pr-1"
+                className="truncate text-[16px] font-black uppercase tracking-wide pr-1"
                 style={{ color: "var(--color-text-primary)" }}
               >
                 {displayName}
               </p>
-              <p className="text-[10px] font-bold italic uppercase" style={{ color: "var(--color-text-muted)" }}>
+              <p className="text-[10px] font-bold uppercase" style={{ color: "var(--color-text-muted)" }}>
                 내 프로필 보기
               </p>
             </div>
@@ -141,10 +141,10 @@ export function ProfileDropdown({ name }: ProfileDropdownProps) {
                   {item.icon}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[12px] font-black italic uppercase tracking-wider pr-1" style={{ color: "var(--color-text-primary)" }}>
+                  <p className="text-[12px] font-black uppercase tracking-wider pr-1" style={{ color: "var(--color-text-primary)" }}>
                     {item.label}
                   </p>
-                  <p className="text-[9px] font-bold italic uppercase tracking-widest" style={{ color: "var(--color-text-muted)" }}>
+                  <p className="text-[9px] font-bold uppercase tracking-widest" style={{ color: "var(--color-text-muted)" }}>
                     {item.subtitle}
                   </p>
                 </div>
@@ -174,7 +174,7 @@ export function ProfileDropdown({ name }: ProfileDropdownProps) {
                 logout
               </span>
               <span
-                className="text-[12px] font-black italic uppercase tracking-wider pr-1"
+                className="text-[12px] font-black uppercase tracking-wider pr-1"
                 style={{ color: "var(--color-error, #EF4444)" }}
               >
                 로그아웃

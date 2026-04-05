@@ -150,7 +150,7 @@ export function PushPermissionBanner() {
             notifications_active
           </span>
           <div>
-            <p className="text-[12px] font-black italic uppercase tracking-wider" style={{ color: "var(--color-text-primary)" }}>
+            <p className="text-[12px] font-black uppercase tracking-wider" style={{ color: "var(--color-text-primary)" }}>
               푸시 알림 활성화됨
             </p>
             <p className="text-[10px] font-bold mt-0.5" style={{ color: "var(--color-text-muted)" }}>
@@ -161,7 +161,7 @@ export function PushPermissionBanner() {
         <button
           onClick={handleUnsubscribe}
           disabled={loading}
-          className="text-[10px] font-black italic uppercase px-3 py-1.5 clip-slant transition-colors disabled:opacity-50"
+          className="text-[10px] font-black uppercase px-3 py-1.5 clip-slant transition-colors disabled:opacity-50"
           style={{ color: "var(--color-text-muted)", backgroundColor: "var(--color-surface-alt)" }}
         >
           {loading ? "처리 중..." : "해제"}
@@ -181,7 +181,7 @@ export function PushPermissionBanner() {
             notifications_off
           </span>
           <div>
-            <p className="text-[12px] font-black italic uppercase tracking-wider" style={{ color: "var(--color-text-primary)" }}>
+            <p className="text-[12px] font-black uppercase tracking-wider" style={{ color: "var(--color-text-primary)" }}>
               알림이 차단되었습니다
             </p>
             <p className="text-[10px] font-bold mt-0.5" style={{ color: "var(--color-text-muted)" }}>
@@ -210,7 +210,7 @@ export function PushPermissionBanner() {
           notifications
         </span>
         <div>
-          <p className="text-[12px] font-black italic uppercase tracking-wider pr-1" style={{ color: "var(--color-text-primary)" }}>
+          <p className="text-[12px] font-black uppercase tracking-wider pr-1" style={{ color: "var(--color-text-primary)" }}>
             알림 받기
           </p>
           <p className="text-[10px] font-bold mt-0.5" style={{ color: "var(--color-text-muted)" }}>
@@ -221,7 +221,7 @@ export function PushPermissionBanner() {
       <div className="flex items-center gap-2 shrink-0">
         <button
           onClick={() => setDismissed(true)}
-          className="text-[10px] font-black italic uppercase px-2 py-1.5"
+          className="text-[10px] font-black uppercase px-2 py-1.5"
           style={{ color: "var(--color-text-muted)" }}
         >
           나중에
@@ -229,7 +229,7 @@ export function PushPermissionBanner() {
         <button
           onClick={handleSubscribe}
           disabled={loading}
-          className="px-3 py-1.5 text-[10px] font-black italic uppercase tracking-widest text-white transition-colors disabled:opacity-50 clip-slant"
+          className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white transition-colors disabled:opacity-50 clip-slant"
           style={{ backgroundColor: "var(--color-primary)" }}
         >
           {loading ? "요청 중..." : "허용하기"}

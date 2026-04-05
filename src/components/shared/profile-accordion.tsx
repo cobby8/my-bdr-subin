@@ -24,8 +24,8 @@ interface Category {
 
 // 카테고리별 이동 경로 — 아코디언 대신 바로 해당 페이지로 이동
 const categories: Category[] = [
-  { id: "basketball", label: "내 농구", icon: "sports_basketball", href: "/teams" },
-  { id: "growth",     label: "내 성장", icon: "trending_up",       href: "/profile#gamification" },
+  { id: "basketball", label: "내 농구", icon: "sports_basketball", href: "/profile/basketball" },
+  { id: "growth",     label: "내 성장", icon: "trending_up",       href: "/profile/growth" },
   { id: "info",       label: "내 정보", icon: "person",            href: "/profile/edit" },
   { id: "preferences",label: "맞춤 설정", icon: "tune",            href: "/profile/preferences" },
   { id: "account",    label: "계정",    icon: "settings",          href: "/profile/subscription" },
@@ -68,7 +68,7 @@ export function ProfileAccordion({ name, region = "", teamName = "", position = 
       >
         {/* 아바타 원형 */}
         <div
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-base font-black italic text-white shadow-sm border border-[var(--color-primary)]/50"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-base font-black text-white shadow-sm border border-[var(--color-primary)]/50"
           style={{ backgroundColor: "var(--color-primary)" }}
         >
           {initial}
@@ -77,7 +77,7 @@ export function ProfileAccordion({ name, region = "", teamName = "", position = 
         {/* 텍스트 영역: 닉네임 + 부가 정보 */}
         <div className="flex-1 flex flex-col items-start truncate overflow-hidden">
           <span
-            className="w-full truncate text-left text-sm font-black italic uppercase tracking-wide"
+            className="w-full truncate text-left text-sm font-black uppercase tracking-wide"
             style={{ color: "var(--color-text-primary)" }}
           >
             {displayName}

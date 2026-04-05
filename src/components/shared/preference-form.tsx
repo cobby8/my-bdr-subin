@@ -111,7 +111,7 @@ function PillButton({
     <button
       type="button"
       onClick={onClick}
-      className={`clip-slant px-4 py-2 text-[11px] font-black italic uppercase tracking-widest transition-all duration-200 ${
+      className={`clip-slant px-4 py-2 text-[11px] font-black uppercase tracking-widest transition-all duration-200 ${
         selected
           ? "bg-[var(--color-primary)] text-white shadow-[0_0_15px_rgba(var(--color-primary-rgb),0.5)]"
           : "bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface-bright)]"
@@ -168,7 +168,7 @@ function ThemeSelector() {
           key={opt.value}
           type="button"
           onClick={() => applyTheme(opt.value)}
-          className={`flex items-center gap-2 clip-slant px-4 py-2.5 text-[11px] font-black italic uppercase tracking-widest transition-all duration-200 ${
+          className={`flex items-center gap-2 clip-slant px-4 py-2.5 text-[11px] font-black uppercase tracking-widest transition-all duration-200 ${
             theme === opt.value
               ? "bg-[var(--color-primary)] text-white shadow-[0_0_15px_rgba(var(--color-primary-rgb),0.5)]"
               : "bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface-bright)]"
@@ -218,7 +218,7 @@ function TextSizeSelector() {
             key={String(opt.value)}
             type="button"
             onClick={() => applySize(opt.value)}
-            className={`flex items-center gap-2 clip-slant px-4 py-2.5 text-[11px] font-black italic uppercase tracking-widest transition-all duration-200 ${
+            className={`flex items-center gap-2 clip-slant px-4 py-2.5 text-[11px] font-black uppercase tracking-widest transition-all duration-200 ${
               large === opt.value
                 ? "bg-[var(--color-primary)] text-white shadow-[0_0_15px_rgba(var(--color-primary-rgb),0.5)]"
                 : "bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface-bright)]"
@@ -429,7 +429,7 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
         <div className="flex items-center justify-between gap-4">
           <div className="flex-1">
             {/* 토글 라벨 */}
-            <h3 className="text-lg font-black italic uppercase tracking-widest text-[var(--color-text-primary)] pr-1">
+            <h3 className="text-lg font-black uppercase tracking-widest text-[var(--color-text-primary)] pr-1">
               원하는 정보만 보기
             </h3>
             {/* 토글 설명 - 모드에 따라 다른 안내 문구 */}
@@ -525,7 +525,7 @@ export function PreferenceForm({ mode, onComplete, onSkip }: PreferenceFormProps
                   setSelectedDivisions((prev) => [...new Set([...prev, ...currentDivisions])]);
                 }
               }}
-              className="text-[11px] font-black italic uppercase pr-1"
+              className="text-[11px] font-black uppercase pr-1"
               style={{ color: "var(--color-primary)" }}
             >
               {currentDivisions.every((d) => selectedDivisions.includes(d)) ? "전체해제" : "전체선택"}

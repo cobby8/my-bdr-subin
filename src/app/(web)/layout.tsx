@@ -426,7 +426,7 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
             const active = isActive(item.href);
             return (
               <Link key={item.href} href={item.href} prefetch={true}
-                className={`flex items-center gap-3 px-4 py-3 text-sm font-black italic uppercase tracking-wide transition-all rounded-none ${
+                className={`flex items-center gap-3 px-4 py-3 text-sm font-black uppercase tracking-wide transition-all rounded-none ${
                   active
                     ? "bg-[var(--color-surface)] text-[var(--color-primary)] border-l-4 border-[var(--color-primary)]"
                     : "text-[var(--color-text-secondary)] border-l-4 border-transparent hover:bg-[var(--color-surface)] hover:text-[var(--color-text-primary)]"
@@ -446,12 +446,12 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
           {user ? (
             /* 관리 링크만 표시 (프로필은 헤더 드롭다운으로 이동) */
             <Link href="/admin"
-              className="flex items-center gap-3 px-3 py-2.5 text-sm font-black italic uppercase tracking-wide text-[var(--color-primary)] hover:bg-[var(--color-surface)] transition-colors border-l-4 border-transparent hover:border-[var(--color-primary)]">
+              className="flex items-center gap-3 px-3 py-2.5 text-sm font-black uppercase tracking-wide text-[var(--color-primary)] hover:bg-[var(--color-surface)] transition-colors border-l-4 border-transparent hover:border-[var(--color-primary)]">
               <span className="material-symbols-outlined text-lg">admin_panel_settings</span>
               ADMIN
             </Link>
           ) : (
-            <Link href="/login" className="block w-full bg-[var(--color-primary)] py-3 text-center text-sm font-black italic uppercase tracking-wider text-white clip-slant shadow-glow-primary hover:bg-[var(--color-primary-hover)] transition-colors">
+            <Link href="/login" className="block w-full bg-[var(--color-primary)] py-3 text-center text-sm font-black uppercase tracking-wider text-white clip-slant shadow-glow-primary hover:bg-[var(--color-primary-hover)] transition-colors">
               로그인
             </Link>
           )}
@@ -506,7 +506,7 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
           ) : (
             <Link
               href="/login"
-              className="bg-[var(--color-primary)] px-3 py-1.5 text-xs font-black italic uppercase tracking-wider text-white transition-colors hover:bg-[var(--color-primary-hover)] clip-slant shadow-glow-primary"
+              className="bg-[var(--color-primary)] px-3 py-1.5 text-xs font-black uppercase tracking-wider text-white transition-colors hover:bg-[var(--color-primary-hover)] clip-slant shadow-glow-primary"
             >
               로그인
             </Link>
@@ -569,7 +569,7 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
                 className="flex flex-col items-center justify-center gap-0.5 text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-text-secondary)]"
               >
                 <span className="material-symbols-outlined text-2xl">menu</span>
-                <span className="text-[9px] font-black italic uppercase tracking-widest">{item.label}</span>
+                <span className="text-[9px] font-black uppercase tracking-widest">{item.label}</span>
               </button>
             );
           }
@@ -592,7 +592,7 @@ function WebLayoutInner({ children }: { children: React.ReactNode }) {
               >
                 {item.icon}
               </span>
-              <span className="text-[9px] font-black italic uppercase tracking-widest">{item.label}</span>
+              <span className="text-[9px] font-black uppercase tracking-widest">{item.label}</span>
             </Link>
           );
         })}

@@ -55,12 +55,12 @@ export function ProfileCompletionBanner({ userName }: ProfileCompletionBannerPro
       {/* 좌측: 안내 텍스트 + 완성하기 링크 */}
       <div className="flex items-center gap-3 text-white">
         <span className="material-symbols-outlined text-xl">person</span>
-        <span className="text-[12px] font-black italic uppercase tracking-wide">
+        <span className="text-[12px] font-black uppercase tracking-wide">
           프로필을 완성하고 경기에 참여하세요
         </span>
         <Link
           href="/profile/complete"
-          className="ml-1 px-3 py-1 text-[11px] font-black italic uppercase tracking-wider text-primary bg-white clip-slant transition-opacity hover:opacity-80"
+          className="ml-1 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-primary bg-white clip-slant transition-opacity hover:opacity-80"
         >
           완성하기
         </Link>

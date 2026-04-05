@@ -34,7 +34,7 @@ export function TossButton({
   fullWidth,
 }: TossButtonProps) {
   /* 변형별 기본 스타일 */
-  const baseStyles = "font-black italic uppercase tracking-widest transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed";
+  const baseStyles = "font-black uppercase tracking-widest transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed";
 
   const variantStyles = {
     /* primary: 풀와이드 CTA

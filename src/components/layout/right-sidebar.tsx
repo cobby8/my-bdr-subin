@@ -142,7 +142,7 @@ export function RightSidebar() {
       {/* 3. 인기 코트 */}
       <Widget title="인기 코트" moreHref="/courts">
         {data.courts.length === 0 ? (
-          <p className="py-4 text-center text-xs font-bold italic text-[var(--color-text-muted)]">
+          <p className="py-4 text-center text-xs font-bold text-[var(--color-text-muted)]">
             아직 데이터가 부족합니다
           </p>
         ) : (
@@ -163,7 +163,7 @@ export function RightSidebar() {
       {/* 4. 최근 활동 */}
       <Widget title="최근 활동">
         {data.activities.length === 0 ? (
-          <p className="py-4 text-center text-xs font-bold italic text-[var(--color-text-muted)]">
+          <p className="py-4 text-center text-xs font-bold text-[var(--color-text-muted)]">
             아직 활동이 없어요!
           </p>
         ) : (

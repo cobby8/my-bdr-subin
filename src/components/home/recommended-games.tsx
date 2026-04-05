@@ -121,9 +121,10 @@ export function RecommendedGames({ fallbackData }: RecommendedGamesProps) {
     return (
       <section>
         <Skeleton className="h-6 w-40 mb-4" />
-        <div className="flex gap-4 overflow-hidden">
+        {/* 컴팩트 카드에 맞춰 스켈레톤도 낮은 높이로 */}
+        <div className="flex gap-3 overflow-hidden">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="h-44 w-56 rounded-md shrink-0" />
+            <Skeleton key={i} className="h-[112px] w-[280px] rounded-md shrink-0" />
           ))}
         </div>
       </section>
@@ -149,7 +150,7 @@ export function RecommendedGames({ fallbackData }: RecommendedGamesProps) {
   );
 }
 
-/* ---- 개별 경기 카드: 토스 스타일 (둥근 모서리, 가벼운 그림자) ---- */
+/* ---- 개별 경기 카드: 컴팩트 가로형 (썸네일 64x64 + 우측 정보) ---- */
 function GameCard({ game, photoUrl }: { game: RecommendedGame; photoUrl?: string | null }) {
   const typeNum = Number(game.game_type ?? "0");
   const badge = TYPE_BADGE[typeNum] ?? TYPE_BADGE[0];
@@ -159,80 +160,73 @@ function GameCard({ game, photoUrl }: { game: RecommendedGame; photoUrl?: string
   const spotsText = game.spots_left !== null ? `${game.spots_left}자리 남음` : null;
 
   return (
-    <Link href={href} className="block shrink-0 w-[240px]">
-      {/* 2K 스타일 카드: 약간 각진 모서리, 강렬한 그림자, 네온 호버 효과 */}
+    <Link href={href} className="block shrink-0 w-[280px]">
+      {/* 컴팩트 카드: 가로 배치, 네온 호버 효과 유지 */}
       <div
-        className="group rounded-md overflow-hidden bg-[var(--color-card)] transition-all duration-300 hover:-translate-y-2 hover:shadow-glow-primary border border-transparent hover:border-[var(--color-primary)] h-full flex flex-col relative"
+        className="group rounded-md overflow-hidden bg-[var(--color-card)] transition-all duration-300 hover:-translate-y-1 hover:shadow-glow-primary border border-transparent hover:border-[var(--color-primary)] flex flex-row relative h-[112px]"
         style={{ boxShadow: "var(--shadow-card)" }}
       >
-        {/* OVR/번호 워터마크 효과 (호버 시 살짝 확대) */}
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-5 font-black italic text-8xl transition-all duration-500 pointer-events-none z-0">
-          99
-        </div>
-
-        {/* 이미지 영역 */}
+        {/* 좌측 썸네일 영역 (64x64 고정) */}
         <div
-          className={`relative h-32 flex items-center justify-center bg-cover bg-center shrink-0 z-10 ${photoUrl === undefined ? "animate-pulse bg-[var(--color-surface)]" : ""}`}
+          className={`relative w-16 h-[112px] shrink-0 flex items-center justify-center bg-cover bg-center ${photoUrl === undefined ? "animate-pulse bg-[var(--color-surface)]" : ""}`}
           style={photoUrl
             ? { backgroundImage: `url(${photoUrl})` }
             : photoUrl === null ? { background: badge.gradient } : undefined
           }
         >
-          {/* 그라디언트 하프 오버레이 (텍스트 가독성 + 드라마틱 연출) */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-card)] via-transparent to-black/30" />
-
           {/* 사진 없을 때 아이콘 */}
           {photoUrl === null && (
-            <span className="material-symbols-outlined text-6xl text-white/30 drop-shadow-md">{badge.icon}</span>
-          )}
-
-          {/* 유형 뱃지 (좌상단) - 네온 스타일로 변형 */}
-          <span
-            className="absolute top-2 left-2 px-2.5 py-1 text-[10px] font-black italic uppercase clip-slant-sm backdrop-blur-md"
-            style={{ backgroundColor: badge.bg, color: badge.color }}
-          >
-            {badge.label}
-          </span>
-
-          {/* 추천 이유 (우상단) */}
-          {game.match_reason.length > 0 && (
-            <span className="absolute top-2 right-2 clip-slant-reverse bg-white px-2 py-0.5 text-[10px] font-black italic text-[var(--color-primary)] shadow-sm">
-              {game.match_reason[0]}
-            </span>
+            <span className="material-symbols-outlined text-2xl text-white/40">{badge.icon}</span>
           )}
         </div>
 
-        {/* 정보 영역: 밀도를 높이고 폰트 두께 조절 (2K 스탯 패널 느낌) */}
-        <div className="p-3.5 flex flex-col grow z-10 bg-gradient-to-br from-[var(--color-card)] to-[var(--color-surface)]">
-          {/* 제목 */}
-          <h4 className="text-base font-extrabold italic text-[var(--color-text-primary)] line-clamp-2 leading-tight tracking-tight mb-2 uppercase group-hover:text-[var(--color-primary)] transition-colors">
-            {game.title ?? "GAME"}
-          </h4>
-
-          {/* 장소 + 시간 (스탯처럼 위아래로 좁게 배치) */}
-          <div className="mt-auto space-y-1.5 border-t border-[var(--color-border-subtle)] pt-2">
-            {location && (
-              <p className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)] font-medium">
-                <span className="material-symbols-outlined text-[14px]">location_on</span>
-                <span className="truncate">{location}</span>
-              </p>
-            )}
-            {scheduleStr && (
-              <p className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)] font-medium">
-                <span className="material-symbols-outlined text-[14px]">schedule</span>
-                {scheduleStr}
-              </p>
+        {/* 우측 정보 영역 */}
+        <div className="flex-1 min-w-0 p-2.5 flex flex-col justify-center gap-1">
+          {/* 1행: 유형 뱃지 + 추천 이유 */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span
+              className="px-1.5 py-0.5 text-[9px] font-black uppercase clip-slant-sm leading-none"
+              style={{ backgroundColor: badge.bg, color: badge.color }}
+            >
+              {badge.label}
+            </span>
+            {game.match_reason.length > 0 && (
+              <span className="clip-slant-reverse bg-white px-1.5 py-0.5 text-[9px] font-black text-[var(--color-primary)] leading-none">
+                {game.match_reason[0]}
+              </span>
             )}
           </div>
 
-          {/* 잔여석 - 네온 강조 느낌 */}
+          {/* 2행: 제목 (1줄 말줄임) */}
+          <h4 className="text-sm font-extrabold text-[var(--color-text-primary)] truncate leading-tight tracking-tight uppercase group-hover:text-[var(--color-primary)] transition-colors">
+            {game.title ?? "GAME"}
+          </h4>
+
+          {/* 3행: 장소 + 시간 (한 줄로 · 구분) */}
+          <p className="text-[11px] text-[var(--color-text-muted)] font-medium truncate flex items-center gap-1">
+            {location && (
+              <>
+                <span className="material-symbols-outlined text-[12px]">location_on</span>
+                <span className="truncate">{location}</span>
+              </>
+            )}
+            {location && scheduleStr && <span className="opacity-40">·</span>}
+            {scheduleStr && (
+              <>
+                <span className="material-symbols-outlined text-[12px]">schedule</span>
+                <span className="whitespace-nowrap">{scheduleStr}</span>
+              </>
+            )}
+          </p>
+
+          {/* 4행: 잔여석 (있을 때만) */}
           {spotsText && (
-            <div className="mt-3 flex items-center justify-between">
-              <span className="text-[10px] uppercase font-black tracking-wider text-[var(--color-text-muted)]">SPOT</span>
-              <span className="text-sm font-black italic text-[var(--color-primary)] animate-pulse">
+            <p className="flex items-center gap-1.5">
+              <span className="text-[9px] uppercase font-black tracking-wider text-[var(--color-text-muted)]">SPOT</span>
+              <span className="text-[11px] font-black text-[var(--color-primary)]">
                 {spotsText}
               </span>
-            </div>
+            </p>
           )}
         </div>
       </div>

@@ -79,7 +79,7 @@ export function SlideMenu({
                 <span className="text-[11px] font-semibold text-[var(--color-text-primary)] leading-tight">
                   PRO로 업그레이드하고 모든 기능 사용
                 </span>
-                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary)] text-[8px] font-black italic text-white shadow-sm">
+                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary)] text-[8px] font-black text-white shadow-sm">
                   GO
                 </div>
               </Link>

@@ -74,20 +74,20 @@ export function NewsFeed({ preferredRegions }: NewsFeedProps) {
     { dedupingInterval: 60000 }
   );
 
-  // 로딩: 스켈레톤 카드 3장
+  // 로딩: 컴팩트 스켈레톤 3줄
   if (isLoading) {
     return (
       <div>
         <h3
-          className="text-lg font-black italic uppercase text-[var(--color-text-secondary)] mb-3 tracking-wide"
+          className="text-sm font-black uppercase text-[var(--color-text-secondary)] mb-2 tracking-wide"
         >
           LATEST NEWS
         </h3>
-        <div className="flex gap-3 overflow-hidden">
+        <div className="flex flex-col gap-1.5">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="min-w-[280px] h-[140px] rounded-md border animate-pulse bg-[var(--color-card)] border-[var(--color-border)]"
+              className="h-10 rounded border animate-pulse bg-[var(--color-card)] border-[var(--color-border)]"
             />
           ))}
         </div>
@@ -109,21 +109,18 @@ export function NewsFeed({ preferredRegions }: NewsFeedProps) {
     );
   }
 
+  /* 컴팩트 리스트: 제목 축소 + 세로 리스트로 배치하여 공간 절약 */
   return (
     <div>
       <h3
-        className="text-lg font-black italic uppercase text-[var(--color-text-secondary)] mb-3 tracking-wide"
+        className="text-sm font-black uppercase text-[var(--color-text-secondary)] mb-2 tracking-wide"
       >
         LATEST NEWS
       </h3>
-      {/* 카드 1~2개면 세로 스택으로 꽉 채움, 3개 이상이면 가로 스크롤 */}
-      <div className={items.length <= 2
-        ? "flex flex-col gap-3"
-        : "flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory"
-      }>
+      {/* 컴팩트 세로 리스트 — 카드가 아닌 얇은 행으로 표시 */}
+      <div className="flex flex-col gap-1.5">
         {items.map((item, idx) => (
           <React.Fragment key={`${item.type}-${item.id}`}>
-            {/* 2번째 위치(index=1)에 네이티브 광고 삽입 — 광고 없으면 자동 숨김 */}
             {idx === 1 && <FeedAd />}
             <NewsCard item={item} />
           </React.Fragment>
@@ -133,107 +130,90 @@ export function NewsFeed({ preferredRegions }: NewsFeedProps) {
   );
 }
 
-/* 개별 소식 카드 — 타입별 렌더링 분기 */
+/* 개별 소식 카드 — 컴팩트 1줄 인라인 형태 */
 function NewsCard({ item }: { item: NewsItem }) {
-  // 프로모션 카드: 그라디언트 배경 + 특별 디자인
+  // 프로모션: 그라디언트 배경의 얇은 배너
   if (item.type === "promo") {
     return (
-      <div
-        className="min-w-[280px] flex-1 snap-start rounded-md p-5 flex flex-col justify-between shrink-0 shadow-glow-primary border-b-2 border-[var(--color-primary)]"
+      <Link
+        href={item.link}
+        className="flex items-center gap-2.5 rounded px-3 py-2 transition-all hover:brightness-110 shadow-glow-primary group"
         style={{
           background:
             "linear-gradient(135deg, var(--color-primary) 0%, var(--color-navy, #1B3C87) 100%)",
-          minHeight: "140px",
         }}
       >
-        <div>
-          <span
-            className="material-symbols-outlined text-2xl text-white/80 mb-2 block font-extrabold"
-          >
-            {item.icon ?? "campaign"}
-          </span>
-          <p className="text-[16px] font-black italic uppercase tracking-wider text-white mb-1 pr-1">{item.title}</p>
-          <p className="text-[10px] font-bold text-white/70 italic uppercase">{item.description}</p>
-        </div>
-        <Link
-          href={item.link}
-          className="mt-3 text-xs font-bold text-white/90 hover:text-white transition-colors"
-        >
-          자세히 보기 →
-        </Link>
-      </div>
+        {/* 아이콘 */}
+        <span className="material-symbols-outlined text-base text-white/80 shrink-0">
+          {item.icon ?? "campaign"}
+        </span>
+        {/* 제목 + 설명을 1줄로 */}
+        <span className="flex-1 min-w-0 truncate text-[11px] font-black uppercase tracking-wider text-white">
+          {item.title}
+        </span>
+        {/* 화살표 */}
+        <span className="material-symbols-outlined text-xs text-white/60 shrink-0">arrow_forward_ios</span>
+      </Link>
     );
   }
 
-  // 일반 카드 (대회/픽업/이벤트)
+  // 일반 카드 (대회/픽업/이벤트) — 컴팩트 1줄 행
   const config = getCardConfig(item);
 
   return (
     <Link
       href={item.link}
-      className="min-w-[280px] snap-start rounded-md border p-5 flex flex-col justify-between shrink-0 transition-all bg-[var(--color-card)] border-[var(--color-border)] hover:border-[var(--color-primary)] hover:shadow-glow-primary active:scale-[0.99] group overflow-hidden relative"
-      style={{
-        minHeight: "140px",
-      }}
+      className="flex items-center gap-2.5 rounded border px-3 py-2 transition-all bg-[var(--color-card)] border-[var(--color-border)] hover:border-[var(--color-primary)] hover:shadow-glow-primary active:scale-[0.99] group"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[var(--color-surface)] opacity-0 group-hover:opacity-40 transition-opacity pointer-events-none" />
-      <div className="relative z-10">
-        {/* 타입 아이콘 + 라벨 + 실내/야외 뱃지 */}
-        <div className="flex items-center gap-2 mb-2">
+      {/* 타입 아이콘 */}
+      <span
+        className="material-symbols-outlined text-base shrink-0"
+        style={{ color: config.color }}
+      >
+        {config.icon}
+      </span>
+
+      {/* 제목 + 부가 정보 — 1줄로 축소 */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5">
           <span
-            className="material-symbols-outlined text-lg"
-            style={{ color: config.color }}
-          >
-            {config.icon}
-          </span>
-          <span
-            className="text-[10px] font-black italic uppercase tracking-widest"
+            className="text-[10px] font-black uppercase tracking-widest shrink-0"
             style={{ color: config.color }}
           >
             {config.label}
           </span>
-          {/* 픽업 카드: 실내/야외 뱃지 */}
+          {/* 픽업: 실내/야외 뱃지 */}
           {item.type === "pickup" && item.court_type && item.court_type !== "unknown" && (
             <CourtTypeBadge courtType={item.court_type} />
           )}
-          {/* D-Day 뱃지 (대회만) */}
-          {item.type === "tournament" && item.registration_end_at && (
-            <span
-              className="ml-auto text-[10px] font-black italic uppercase px-2 py-0.5 clip-slant"
-              style={{
-                backgroundColor: "var(--color-primary)",
-                color: "#fff",
-              }}
-            >
-              {getDDay(item.registration_end_at)}
-            </span>
-          )}
+          <span
+            className="text-[11px] font-bold uppercase tracking-wide truncate group-hover:text-[var(--color-primary)] transition-colors"
+            style={{ color: "var(--color-text-primary)" }}
+          >
+            {item.title}
+          </span>
         </div>
-
-        {/* 제목 */}
-        <p
-          className="text-base font-black italic uppercase tracking-wide truncate mb-1 pr-1 group-hover:text-[var(--color-primary)] transition-colors"
-          style={{ color: "var(--color-text-primary)" }}
-        >
-          {item.title}
-        </p>
-
-        {/* 부가 정보 */}
-        <p
-          className="text-[11px] font-bold italic uppercase tracking-wider truncate"
-          style={{ color: "var(--color-text-muted)" }}
-        >
-          {config.subtitle}
-        </p>
       </div>
 
-      {/* 하단 CTA */}
-      <span
-        className="relative z-10 text-[10px] font-black italic uppercase tracking-widest mt-3 transition-colors"
-        style={{ color: config.color }}
-      >
-        {config.cta} <span className="material-symbols-outlined text-[10px]">arrow_forward_ios</span>
-      </span>
+      {/* D-Day 뱃지 (대회만) 또는 CTA 화살표 */}
+      {item.type === "tournament" && item.registration_end_at ? (
+        <span
+          className="text-[9px] font-black uppercase px-1.5 py-0.5 clip-slant shrink-0"
+          style={{
+            backgroundColor: "var(--color-primary)",
+            color: "#fff",
+          }}
+        >
+          {getDDay(item.registration_end_at)}
+        </span>
+      ) : (
+        <span
+          className="material-symbols-outlined text-xs shrink-0"
+          style={{ color: config.color }}
+        >
+          arrow_forward_ios
+        </span>
+      )}
     </Link>
   );
 }
