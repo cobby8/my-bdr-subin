@@ -2,6 +2,14 @@
 <!-- 담당: planner-architect | 최대 30항목 -->
 <!-- "왜 A 대신 B를 선택했는지" 기술 결정의 배경과 이유를 기록 -->
 
+### [2026-04-05] 전국 최강전 2트랙 대회 — group_name 기반 트랙 분리
+- **분류**: decision
+- **발견자**: planner-architect
+- **결정**: (1) 방송경기(트랙A)와 풀리그(트랙B)를 별도 대회로 분리하지 않고, 하나의 Tournament 안에서 TournamentMatch.group_name 필드로 구분. (2) group_name="방송경기" / "풀리그"로 입력, schedule/standings에서 탭 필터로 전환. (3) 각 트랙별 venue_name을 매치 단위로 다르게 설정 (화성시/남양주). (4) format은 "full_league_knockout"이 가장 유사하나, 실제로는 2트랙 병행이므로 format 필드보다는 group_name 기반 UI가 핵심.
+- **이유**: (1) 2개 대회로 분리하면 팀 중복 등록, 통합 순위 불가, 관리 복잡. (2) group_name은 이미 조별리그 그룹(A조/B조)용으로 존재하는 필드이므로 DB 변경 없음. (3) schedule-timeline.tsx에 group_name 필터만 추가하면 자연스럽게 트랙 전환 가능.
+- **대안 기각**: (A) 2개 별도 대회 생성 — 통합 관리 불가, 팀 8개를 2번 등록해야 함. (B) settings JSON에 트랙 정보 저장 — 표준 필드가 있는데 JSON 사용은 과잉.
+- **참조횟수**: 0
+
 ### [2026-04-02] 맞춤 설정 강화: 실력 7단계 + 메뉴 토글 + 카테고리 분리
 - **분류**: decision
 - **발견자**: planner-architect

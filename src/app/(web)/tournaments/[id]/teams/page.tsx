@@ -18,7 +18,8 @@ export default async function TournamentTeamsPage({ params }: { params: Promise<
       <h1 className="mb-6 text-xl font-bold sm:text-2xl">참가팀</h1>
       <div className="grid gap-4 sm:grid-cols-2">
         {teams.map((t) => (
-          <Card key={t.id.toString()}>
+          // 팀 카드: 좌측에 팀 고유색상 보더를 4px로 적용해 시각적 구분
+          <Card key={t.id.toString()} className="overflow-hidden border-l-4" style={{ borderLeftColor: t.team.primaryColor ?? "var(--color-primary)" }}>
             <div className="mb-3 flex items-center gap-3">
               {/* 팀 아이콘: primaryColor가 없으면 CSS 변수 --color-primary 사용 */}
               <div className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold" style={{ backgroundColor: t.team.primaryColor ? `${t.team.primaryColor}20` : "color-mix(in srgb, var(--color-primary) 12%, transparent)", color: t.team.primaryColor ?? "var(--color-primary)" }}>
