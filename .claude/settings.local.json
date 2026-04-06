@@ -213,7 +213,10 @@
       "Bash(ls \"C:\\\\0.programing\\\\my-bdr-subin-main\\\\src\\\\app\\\\\\(web\\)\")",
       "Bash(node:*)",
       "Bash(echo \"수정: $f\")",
-      "Bash(tasklist //fi \"pid eq 106908\" //v)"
+      "Bash(tasklist //fi \"pid eq 106908\" //v)",
+      "WebFetch(domain:claude.ai)",
+      "Bash(powershell -Command \"Get-Content 'C:\\\\Users\\\\cobby\\\\Downloads\\\\전국-최강전.jsx' -TotalCount 30\")",
+      "Bash(npx tsx:*)"
     ]
   }
 }

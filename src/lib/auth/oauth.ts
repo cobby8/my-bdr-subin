@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { prisma } from "@/lib/db/prisma";
 import { generateToken } from "./jwt";
 import { WEB_SESSION_COOKIE } from "./web-session";
+import { matchPlayersByPhone } from "@/lib/services/player-matching";
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -67,6 +68,13 @@ export async function handleOAuthLogin(profile: OAuthProfile): Promise<Response>
         status: "active",
       },
     });
+
+    // 신규 가입 시 phone이 있으면 미연결 선수 자동 매칭
+    if (phone) {
+      try {
+        await matchPlayersByPhone(user.id, phone);
+      } catch { /* 매칭 실패해도 가입 흐름에 영향 없음 */ }
+    }
   } else {
     // 프로필 이미지/닉네임 업데이트 (없는 경우만)
     const updates: Record<string, string> = {};
@@ -78,6 +86,13 @@ export async function handleOAuthLogin(profile: OAuthProfile): Promise<Response>
     if (!user.phone && phone) updates.phone = phone;
     if (Object.keys(updates).length > 0) {
       await prisma.user.update({ where: { id: user.id }, data: updates });
+
+      // 기존 유저의 phone이 새로 저장되었으면 미연결 선수 자동 매칭
+      if (updates.phone) {
+        try {
+          await matchPlayersByPhone(user.id, updates.phone);
+        } catch { /* 매칭 실패해도 로그인 흐름에 영향 없음 */ }
+      }
     }
   }
 

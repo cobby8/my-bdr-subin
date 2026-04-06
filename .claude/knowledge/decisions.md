@@ -2,6 +2,15 @@
 <!-- 담당: planner-architect | 최대 30항목 -->
 <!-- "왜 A 대신 B를 선택했는지" 기술 결정의 배경과 이유를 기록 -->
 
+### [2026-04-05] 선수-유저 자동 매칭 — 전화번호 기반 (수동 매칭에서 변경)
+- **분류**: decision
+- **발견자**: planner-architect
+- **결정**: (1) TournamentTeamPlayer에 phone 컬럼 추가 (DB 마이그레이션). (2) 관리자가 선수 등록 시 이름+전화번호 입력. (3) 유저가 가입 후 전화번호 인증 시 자동 매칭 — phone 일치하는 모든 TournamentTeamPlayer에 userId 연결. (4) 매칭 호출 3곳: verify/complete, profile PATCH, handleOAuthLogin.
+- **이유**: (1) 전화번호는 사실상 고유 식별자 — 동명이인 문제 해결. (2) User 모델에 이미 phone 필드 + SMS 인증 인프라 있음. (3) 수동 매칭 대비 관리자 부담 제로. (4) 가입 시 자동 연동되므로 사용자 경험 우수.
+- **이전 결정**: 수동 매칭(관리자가 직접 유저 검색+연결)이었으나, PM 요청으로 전화번호 자동 매칭으로 변경.
+- **주의**: phone 포맷 통일 필수(숫자만), 유니크 제약 (tournamentTeamId, userId) 위반 방지 필요.
+- **참조횟수**: 0
+
 ### [2026-04-05] 전국 최강전 2트랙 대회 — group_name 기반 트랙 분리
 - **분류**: decision
 - **발견자**: planner-architect

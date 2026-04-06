@@ -80,6 +80,8 @@ async function MatchesAndStandings({ tournamentId }: { tournamentId: string }) {
         id: true,
         homeScore: true,
         awayScore: true,
+        scheduledAt: true,   // 경기 날짜/시간
+        venue_name: true,    // 경기 장소
         homeTeam: { select: { team: { select: { name: true } } } },
         awayTeam: { select: { team: { select: { name: true } } } },
       },
@@ -111,22 +113,56 @@ async function MatchesAndStandings({ tournamentId }: { tournamentId: string }) {
             최근 경기
           </h2>
           <div className="space-y-2">
-            {matches.map((m) => (
-              <div
-                key={m.id.toString()}
-                className="flex items-center justify-between rounded-[var(--radius-card)] border p-3"
-                style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-card)" }}
-              >
-                <span className="text-sm font-medium">{m.homeTeam?.team.name ?? "TBD"}</span>
-                <span
-                  className="rounded-full px-3 py-1 text-sm font-bold"
-                  style={{ backgroundColor: "var(--color-elevated)" }}
+            {matches.map((m) => {
+              // 날짜/시간 포맷: "4/11(토) 19:00" 형태
+              const dateStr = m.scheduledAt
+                ? (() => {
+                    const d = new Date(m.scheduledAt);
+                    const days = ["일", "월", "화", "수", "목", "금", "토"];
+                    const month = d.getMonth() + 1;
+                    const date = d.getDate();
+                    const day = days[d.getDay()];
+                    const hours = String(d.getHours()).padStart(2, "0");
+                    const mins = String(d.getMinutes()).padStart(2, "0");
+                    return `${month}/${date}(${day}) ${hours}:${mins}`;
+                  })()
+                : null;
+              // 날짜와 장소를 · 로 연결
+              const subText = [dateStr, m.venue_name].filter(Boolean).join(" · ");
+
+              return (
+                <div
+                  key={m.id.toString()}
+                  className="rounded-[var(--radius-card)] border p-3"
+                  style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-card)" }}
                 >
-                  {m.homeScore}:{m.awayScore}
-                </span>
-                <span className="text-sm font-medium">{m.awayTeam?.team.name ?? "TBD"}</span>
-              </div>
-            ))}
+                  {/* 홈팀(우측정렬) — 스코어(고정중앙) — 원정팀(좌측정렬) */}
+                  <div className="flex items-center gap-2">
+                    <span className="flex-1 truncate text-right text-sm font-medium">
+                      {m.homeTeam?.team.name ?? "TBD"}
+                    </span>
+                    <span
+                      className="w-16 flex-shrink-0 rounded-full px-2 py-1 text-center text-sm font-bold"
+                      style={{ backgroundColor: "var(--color-elevated)" }}
+                    >
+                      {m.homeScore}:{m.awayScore}
+                    </span>
+                    <span className="flex-1 truncate text-left text-sm font-medium">
+                      {m.awayTeam?.team.name ?? "TBD"}
+                    </span>
+                  </div>
+                  {/* 날짜/장소 서브텍스트 */}
+                  {subText && (
+                    <p
+                      className="mt-1.5 text-center text-xs"
+                      style={{ color: "var(--color-text-tertiary)" }}
+                    >
+                      {subText}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
